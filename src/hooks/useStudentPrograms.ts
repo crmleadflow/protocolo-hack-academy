@@ -63,13 +63,17 @@ export function useStudentPrograms() {
 
       const moduleIds = (modulesData || []).map((m) => m.id);
 
-      const { data: lessonsData, error: lessonsError } = await supabase
-        .from("lessons")
-        .select("*")
-        .in("module_id", moduleIds)
-        .order("sort_order", { ascending: true });
+      let lessonsData: Tables<"lessons">[] = [];
+      if (moduleIds.length > 0) {
+        const { data, error: lessonsError } = await supabase
+          .from("lessons")
+          .select("*")
+          .in("module_id", moduleIds)
+          .order("sort_order", { ascending: true });
 
-      if (lessonsError) throw lessonsError;
+        if (lessonsError) throw lessonsError;
+        lessonsData = data || [];
+      }
 
       // Fetch user's progress if logged in
       let progressData: LessonProgress[] = [];
@@ -197,13 +201,17 @@ export function useStudentProgramDetail(programId: string | undefined) {
       const moduleIds = (modulesData || []).map((m) => m.id);
 
       // Fetch lessons
-      const { data: lessonsData, error: lessonsError } = await supabase
-        .from("lessons")
-        .select("*")
-        .in("module_id", moduleIds.length > 0 ? moduleIds : ["empty"])
-        .order("sort_order", { ascending: true });
+      let lessonsData: Tables<"lessons">[] = [];
+      if (moduleIds.length > 0) {
+        const { data, error: lessonsError } = await supabase
+          .from("lessons")
+          .select("*")
+          .in("module_id", moduleIds)
+          .order("sort_order", { ascending: true });
 
-      if (lessonsError) throw lessonsError;
+        if (lessonsError) throw lessonsError;
+        lessonsData = data || [];
+      }
 
       // Fetch user's progress if logged in
       let progressData: LessonProgress[] = [];

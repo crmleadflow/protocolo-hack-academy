@@ -114,10 +114,27 @@ function ProgramCard({
   return (
     <HolographicCard
       variant={program.progress > 0 ? "gradient" : "default"}
-      className="group cursor-pointer animate-fade-in flex flex-col"
+      className="group cursor-pointer animate-fade-in flex flex-col relative overflow-hidden"
       style={{ animationDelay: `${index * 0.05}s` }}
       onClick={onClick}
     >
+      {/* Locked Overlay */}
+      {isLocked && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center border-2 border-muted-foreground/30">
+              <Lock className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <span className="text-lg font-heading font-bold text-primary">
+              ${program.price} {program.currency}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Desbloquear acceso
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Program Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center transition-transform group-hover:scale-110 overflow-hidden">
@@ -136,15 +153,14 @@ function ProgramCard({
             <span className="text-xs font-bold">{program.progress}%</span>
           </ProgressRing>
         )}
-        {program.progress === 0 && isLocked && (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground flex items-center gap-1">
-            <Lock className="w-3 h-3" />
-            ${program.price}
-          </span>
-        )}
         {program.progress === 0 && !isLocked && program.price > 0 && (
           <span className="px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">
-            Desbloqueado
+            ✓ Desbloqueado
+          </span>
+        )}
+        {program.price === 0 && (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary">
+            Gratis
           </span>
         )}
       </div>
