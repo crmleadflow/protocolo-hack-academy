@@ -4,6 +4,7 @@ import {
   LayoutDashboard, BookOpen, Users, BarChart3, Settings, LogOut,
   Plus, FileVideo, DollarSign, MessageSquare
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -41,8 +42,14 @@ export function ProducerSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <Sidebar
@@ -158,7 +165,7 @@ export function ProducerSidebar() {
 
         {/* Logout */}
         <button 
-          onClick={() => navigate("/")}
+          onClick={handleLogout}
           className={cn(
             "flex items-center gap-3 px-3 py-2 rounded-lg w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all",
             collapsed && "justify-center"
