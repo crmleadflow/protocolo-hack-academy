@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Play, ChevronRight, Star, Users, BookOpen, Award, Sparkles, ArrowRight, Quote } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { 
+  Play, ChevronRight, Star, Users, BookOpen, Award, Sparkles, ArrowRight, Quote,
+  Zap, Target, Mic, Bot, Video, Crown, Package, UserCheck, Rocket, Globe, TrendingUp
+} from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ParticleBackground } from "@/components/ui/particle-background";
 import { NeonButton } from "@/components/ui/neon-button";
-import { CourseCarousel } from "@/components/courses/CourseCarousel";
 import { HolographicCard } from "@/components/ui/holographic-card";
-import { courses, testimonials, platformStats, categories } from "@/data/demo-data";
 import { cn } from "@/lib/utils";
 
 // Animated counter component
@@ -43,10 +44,85 @@ const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: strin
   );
 };
 
+// Programs data
+const programs = [
+  {
+    id: "protocolo-hack",
+    title: "Protocolo Hack",
+    description: "Mi programa insignia para hackear tu potencial financiero.",
+    icon: Zap,
+    color: "primary",
+  },
+  {
+    id: "neuro-talk",
+    title: "Neuro Talk",
+    description: "Domina la neuro oratoria persuasiva para cerrar ventas con el poder de tu comunicación.",
+    icon: Mic,
+    color: "secondary",
+  },
+  {
+    id: "closer-project",
+    title: "Closer Project",
+    description: "Conviértete en un cerrador de élite capaz de manejar cualquier objeción.",
+    icon: Target,
+    color: "accent",
+  },
+  {
+    id: "ia-negocio",
+    title: "IA para tu Negocio",
+    description: "Aprende a automatizar procesos y delegar tareas operativas a la inteligencia artificial.",
+    icon: Bot,
+    color: "primary",
+  },
+  {
+    id: "video-magnet",
+    title: "Video Magnet",
+    description: "Estrategias de contenido en video que atraen prospectos calificados en automático.",
+    icon: Video,
+    color: "secondary",
+  },
+  {
+    id: "marca-personal",
+    title: "Escalar tu Marca Personal",
+    description: "Pasa de ser un desconocido a ser una autoridad en tu nicho.",
+    icon: Crown,
+    color: "accent",
+  },
+  {
+    id: "producto-digital",
+    title: "Producto Digital",
+    description: "Mi guía paso a paso para monetizar tu conocimiento desde cero.",
+    icon: Package,
+    color: "primary",
+  },
+];
+
+// Mentor credentials
+const credentials = [
+  {
+    icon: Globe,
+    title: "25+ años de experiencia",
+    description: "Trayectoria en mundo corporativo y Network Marketing",
+  },
+  {
+    icon: Users,
+    title: "380,000+ personas",
+    description: "Comunidades construidas a nivel global",
+  },
+  {
+    icon: TrendingUp,
+    title: "94+ países",
+    description: "Conferencista internacional de élite",
+  },
+  {
+    icon: Bot,
+    title: "Lead Navigator CRM",
+    description: "Creador de tecnología de prospección",
+  },
+];
+
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const featuredCourses = courses.filter((c) => c.isFeatured);
-  const newCourses = courses.filter((c) => c.isNew);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -63,35 +139,39 @@ const LandingPage: React.FC = () => {
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-5xl mx-auto text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in">
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Plataforma #1 en Educación Tech</span>
+              <span className="text-sm font-medium">La Central de Inteligencia</span>
             </div>
 
             {/* Headline */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-              Domina el{" "}
-              <span className="text-gradient neon-text">Futuro</span>
-              <br />
-              del Desarrollo
+              <span className="text-gradient neon-text">Protocolo Hack</span>
             </h1>
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl font-heading text-muted-foreground mb-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
+              de <span className="text-foreground font-semibold">Hector Galensky</span>
+            </p>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Aprende las habilidades más demandadas del mercado con cursos creados por expertos de Google, Meta, Amazon y más.
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              El ecosistema de alto rendimiento donde el conocimiento se transforma en{" "}
+              <span className="text-primary font-medium">resultados financieros</span> y{" "}
+              <span className="text-secondary font-medium">personales</span>.
             </p>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <NeonButton size="xl" onClick={() => navigate("/register")}>
-                Comenzar Gratis
+                Accede a la Inteligencia
                 <ArrowRight className="w-5 h-5" />
               </NeonButton>
               <NeonButton variant="outline" size="xl" onClick={() => navigate("/catalog")}>
                 <Play className="w-5 h-5" />
-                Ver Demo
+                Ver Programas
               </NeonButton>
             </div>
 
@@ -99,27 +179,27 @@ const LandingPage: React.FC = () => {
             <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 animate-fade-in" style={{ animationDelay: "0.4s" }}>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-heading font-bold text-primary">
-                  <AnimatedCounter end={platformStats.students} suffix="+" />
+                  <AnimatedCounter end={380000} suffix="+" />
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">Estudiantes</p>
+                <p className="text-sm text-muted-foreground mt-1">Comunidad Global</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-heading font-bold text-secondary">
-                  <AnimatedCounter end={platformStats.courses} suffix="+" />
+                  <AnimatedCounter end={94} suffix="+" />
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">Cursos</p>
+                <p className="text-sm text-muted-foreground mt-1">Países</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-heading font-bold text-accent">
-                  <AnimatedCounter end={platformStats.completionRate} suffix="%" />
+                  <AnimatedCounter end={25} suffix="+" />
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">Tasa de Completitud</p>
+                <p className="text-sm text-muted-foreground mt-1">Años de Experiencia</p>
               </div>
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+                  <Star key={i} className="w-6 h-6 fill-primary text-primary" />
                 ))}
-                <span className="ml-2 font-medium">4.9/5</span>
+                <span className="ml-2 font-medium">Top Earner</span>
               </div>
             </div>
           </div>
@@ -133,113 +213,163 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Courses */}
+      {/* Mentor Section */}
       <section className="py-20 relative z-10">
         <div className="container mx-auto px-4">
-          <CourseCarousel
-            title="Cursos Destacados"
-            subtitle="Seleccionados por nuestros expertos"
-            courses={featuredCourses}
-            variant="featured"
-            onViewAll={() => navigate("/catalog")}
-          />
-        </div>
-      </section>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+                En un mundo lleno de teóricos, Protocolo Hack se basa en la práctica. 
+                Mi autoridad no viene de los títulos, sino de los <span className="text-primary">resultados comprobados</span>.
+              </p>
+            </div>
 
-      {/* Categories */}
-      <section className="py-20 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-              Explora por <span className="text-gradient">Categoría</span>
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Encuentra el camino de aprendizaje perfecto para ti
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category, index) => (
-              <Link key={category.id} to={`/catalog?category=${category.id}`}>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {credentials.map((credential, index) => (
                 <HolographicCard
-                  className={cn(
-                    "text-center py-8 animate-fade-in",
-                  )}
+                  key={index}
+                  variant="gradient"
+                  className="text-center animate-fade-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/20 flex items-center justify-center">
-                    <BookOpen className="w-6 h-6 text-primary" />
+                  <div className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <credential.icon className="w-7 h-7 text-primary" />
                   </div>
-                  <h3 className="font-heading font-semibold text-sm mb-1">{category.name}</h3>
-                  <p className="text-xs text-muted-foreground">{category.count} cursos</p>
+                  <h3 className="font-heading font-semibold text-lg mb-2">{credential.title}</h3>
+                  <p className="text-sm text-muted-foreground">{credential.description}</p>
                 </HolographicCard>
-              </Link>
-            ))}
+              ))}
+            </div>
+
+            {/* Expertise badges */}
+            <div className="mt-12 flex flex-wrap justify-center gap-4">
+              {["Neuro Oratoria", "Marketing Digital", "Network Marketing", "Automatización", "Lead Navigator CRM"].map((skill, i) => (
+                <div
+                  key={i}
+                  className="px-4 py-2 rounded-full glass text-sm font-medium text-primary animate-fade-in"
+                  style={{ animationDelay: `${0.5 + i * 0.1}s` }}
+                >
+                  {skill}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* New Courses */}
-      <section className="py-20 relative z-10">
-        <div className="container mx-auto px-4">
-          <CourseCarousel
-            title="Nuevos Lanzamientos"
-            subtitle="Contenido fresco cada semana"
-            courses={newCourses.length > 0 ? newCourses : courses.slice(0, 4)}
-            variant="default"
-            onViewAll={() => navigate("/catalog?sort=newest")}
-          />
-        </div>
-      </section>
-
-      {/* Why Choose Us */}
+      {/* Arsenal de Entrenamiento */}
       <section className="py-20 relative z-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+              <Rocket className="w-4 h-4 text-secondary" />
+              <span className="text-sm font-medium">Programas Incluidos</span>
+            </div>
             <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-              ¿Por qué <span className="text-gradient">Protocolo Hack</span>?
+              Tu <span className="text-gradient">Arsenal de Entrenamiento</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Más que una plataforma de cursos, somos tu compañero en el camino hacia el éxito
+              El aprendizaje es integral. No dividimos por categorías porque el éxito es una mezcla de mentalidad, técnica y herramientas.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: Award,
-                title: "Instructores Expertos",
-                description: "Aprende de profesionales de empresas top como Google, Meta y Amazon",
-              },
-              {
-                icon: BookOpen,
-                title: "Contenido Actualizado",
-                description: "Cursos constantemente actualizados con las últimas tecnologías",
-              },
-              {
-                icon: Users,
-                title: "Comunidad Activa",
-                description: "Conecta con miles de estudiantes y expertos en nuestra comunidad",
-              },
-              {
-                icon: Star,
-                title: "Certificaciones",
-                description: "Obtén certificados reconocidos por la industria tech",
-              },
-            ].map((feature, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {programs.map((program, index) => (
               <HolographicCard
-                key={index}
-                variant="gradient"
-                className="text-center animate-fade-in"
+                key={program.id}
+                className={cn(
+                  "group cursor-pointer animate-fade-in",
+                  index === 0 && "md:col-span-2 lg:col-span-1"
+                )}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                  <feature.icon className="w-7 h-7 text-primary" />
+                <div className={cn(
+                  "w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+                  program.color === "primary" && "bg-primary/20",
+                  program.color === "secondary" && "bg-secondary/20",
+                  program.color === "accent" && "bg-accent/20"
+                )}>
+                  <program.icon className={cn(
+                    "w-6 h-6",
+                    program.color === "primary" && "text-primary",
+                    program.color === "secondary" && "text-secondary",
+                    program.color === "accent" && "text-accent"
+                  )} />
                 </div>
-                <h3 className="font-heading font-semibold text-lg mb-3">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="font-heading font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                  {program.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">{program.description}</p>
               </HolographicCard>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* La Hermandad Hack */}
+      <section className="py-20 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="relative overflow-hidden rounded-3xl glass-strong holographic-border">
+            {/* Background effects */}
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-secondary/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
+
+            <div className="relative p-12 md:p-16">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                    <UserCheck className="w-4 h-4 text-accent" />
+                    <span className="text-sm font-medium">Comunidad Exclusiva</span>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-heading font-bold mb-6">
+                    La <span className="text-gradient">Hermandad Hack</span>
+                  </h2>
+                  <p className="text-muted-foreground mb-6 text-lg">
+                    Al unirte, accedes a una comunidad exclusiva de emprendedores que hablan tu mismo idioma, donde la colaboración y el networking son la base del crecimiento.
+                  </p>
+                  <ul className="space-y-4">
+                    {[
+                      "Networking con emprendedores de alto nivel",
+                      "Colaboración y apoyo mutuo",
+                      "Acceso a nuevos módulos constantemente",
+                      "Contenido actualizado cada semana"
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <ChevronRight className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-sm">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="relative">
+                  <div className="grid grid-cols-2 gap-4">
+                    <HolographicCard className="text-center py-8">
+                      <div className="text-3xl font-heading font-bold text-primary mb-2">
+                        <AnimatedCounter end={7} suffix="+" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">Programas Incluidos</p>
+                    </HolographicCard>
+                    <HolographicCard className="text-center py-8">
+                      <div className="text-3xl font-heading font-bold text-secondary mb-2">∞</div>
+                      <p className="text-sm text-muted-foreground">Actualizaciones</p>
+                    </HolographicCard>
+                    <HolographicCard className="text-center py-8">
+                      <div className="text-3xl font-heading font-bold text-accent mb-2">24/7</div>
+                      <p className="text-sm text-muted-foreground">Acceso Total</p>
+                    </HolographicCard>
+                    <HolographicCard className="text-center py-8">
+                      <div className="text-3xl font-heading font-bold text-primary mb-2">VIP</div>
+                      <p className="text-sm text-muted-foreground">Comunidad</p>
+                    </HolographicCard>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -249,39 +379,28 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-              Lo que dicen nuestros <span className="text-gradient">Estudiantes</span>
+              Lo que dicen los <span className="text-gradient">Resultados</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Miles de profesionales han transformado sus carreras con nosotros
+              Entrenar con Hector no es solo aprender marketing, es cambiar la forma en la que ves los negocios.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <HolographicCard
-                key={testimonial.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <Quote className="w-8 h-8 text-primary/40 mb-4" />
-                <p className="text-sm text-muted-foreground mb-6 line-clamp-4">
-                  "{testimonial.quote}"
+          <div className="max-w-4xl mx-auto">
+            <HolographicCard variant="gradient" className="relative overflow-hidden">
+              <Quote className="absolute top-6 left-6 w-16 h-16 text-primary/10" />
+              <div className="p-8 md:p-12 text-center">
+                <p className="text-xl md:text-2xl font-medium mb-8 relative z-10">
+                  "Mi facturación se <span className="text-primary">triplicó en 90 días</span> usando sus estrategias de automatización."
                 </p>
-                <div className="flex items-center gap-3">
-                  <img
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
-                    className="w-10 h-10 rounded-full border-2 border-primary"
-                  />
-                  <div>
-                    <p className="font-medium text-sm">{testimonial.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {testimonial.role} • {testimonial.company}
-                    </p>
-                  </div>
+                <div className="flex items-center justify-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-primary text-primary" />
+                  ))}
                 </div>
-              </HolographicCard>
-            ))}
+                <p className="text-muted-foreground">— Miembro de Protocolo Hack</p>
+              </div>
+            </HolographicCard>
           </div>
         </div>
       </section>
@@ -296,19 +415,23 @@ const LandingPage: React.FC = () => {
 
             <div className="relative p-12 md:p-20 text-center">
               <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">
-                ¿Listo para comenzar tu{" "}
-                <span className="text-gradient neon-text">transformación</span>?
+                ¿Estás listo para dejar de{" "}
+                <span className="text-muted-foreground">intentar</span> y empezar a{" "}
+                <span className="text-gradient neon-text">lograr</span>?
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
-                Únete a más de 125,000 estudiantes y comienza tu camino hacia el éxito profesional hoy mismo.
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
+                Bienvenido a la era de la precisión.
+              </p>
+              <p className="text-xl font-heading font-semibold text-primary mb-10">
+                Bienvenido a Protocolo Hack.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <NeonButton size="xl" onClick={() => navigate("/register")}>
-                  Crear Cuenta Gratis
+                  Únete Ahora
                   <ChevronRight className="w-5 h-5" />
                 </NeonButton>
                 <NeonButton variant="outline" size="lg" onClick={() => navigate("/catalog")}>
-                  Explorar Cursos
+                  Ver Programas
                 </NeonButton>
               </div>
             </div>
