@@ -10,6 +10,7 @@ import { ParticleBackground } from "@/components/ui/particle-background";
 import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
+import hectorImage from "@/assets/hector-galensky.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -217,14 +218,34 @@ const LandingPage: React.FC = () => {
       <section className="py-20 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-                Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
-              </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                En un mundo lleno de teóricos, Protocolo Hack se basa en la práctica. 
-                Mi autoridad no viene de los títulos, sino de los <span className="text-primary">resultados comprobados</span>.
-              </p>
+            <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              {/* Image */}
+              <div className="relative order-2 lg:order-1 flex justify-center">
+                <div className="relative">
+                  {/* Glow effect behind image */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/30 blur-3xl scale-110 rounded-full" />
+                  <img 
+                    src={hectorImage} 
+                    alt="Hector Galensky" 
+                    className="relative z-10 max-w-md w-full h-auto drop-shadow-2xl"
+                  />
+                </div>
+              </div>
+              
+              {/* Text */}
+              <div className="order-1 lg:order-2 text-center lg:text-left">
+                <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                  Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
+                </h2>
+                <p className="text-muted-foreground text-lg mb-6">
+                  En un mundo lleno de teóricos, Protocolo Hack se basa en la práctica. 
+                  Mi autoridad no viene de los títulos, sino de los <span className="text-primary">resultados comprobados</span>.
+                </p>
+                <p className="text-muted-foreground">
+                  Empresario, visionario y entrenador de élite. Con más de 25 años de trayectoria, 
+                  he construido comunidades de más de 380,000 personas y soy Top Earner en múltiples compañías a nivel global.
+                </p>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
