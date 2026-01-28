@@ -4,7 +4,6 @@ import { Search, Bell, Menu, X, User, LogOut, Settings, BookOpen } from "lucide-
 import { cn } from "@/lib/utils";
 import { GlassInput } from "@/components/ui/glass-input";
 import { NeonButton } from "@/components/ui/neon-button";
-import logo from "@/assets/logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,8 +45,7 @@ const Header: React.FC<HeaderProps> = ({ user, transparent = false }) => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="Protocolo Hack" className="h-10 md:h-12 w-auto" />
-            <span className="hidden sm:block font-heading font-bold text-xl tracking-wider text-gradient">
+            <span className="font-heading font-bold text-xl tracking-wider text-gradient">
               PROTOCOLO HACK
             </span>
           </Link>

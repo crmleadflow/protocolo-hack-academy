@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Github, Twitter, Linkedin, Youtube, Mail } from "lucide-react";
-import logo from "@/assets/logo.png";
 
 const Footer: React.FC = () => {
   const footerLinks = {
@@ -48,13 +47,12 @@ const Footer: React.FC = () => {
             {/* Brand */}
             <div className="col-span-2">
               <Link to="/" className="flex items-center gap-3 mb-6">
-                <img src={logo} alt="Protocolo Hack" className="h-12 w-auto" />
                 <span className="font-heading font-bold text-xl tracking-wider text-gradient">
                   PROTOCOLO HACK
                 </span>
               </Link>
               <p className="text-muted-foreground mb-6 max-w-xs">
-                Aprende las habilidades del futuro con los mejores instructores de la industria.
+                La Central de Inteligencia de Hector Galensky. Donde el conocimiento se transforma en resultados.
               </p>
               <div className="flex items-center gap-4">
                 {socialLinks.map((social) => (
