@@ -224,6 +224,8 @@ const LandingPage: React.FC = () => {
                     className="relative z-10 max-w-md w-full h-auto drop-shadow-2xl"
                     style={{ mixBlendMode: 'normal' }}
                   />
+                  {/* Bottom fade effect */}
+                  <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent z-20 pointer-events-none" />
                 </div>
               </div>
               
