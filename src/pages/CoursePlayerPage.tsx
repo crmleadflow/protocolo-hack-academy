@@ -2,71 +2,118 @@ import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, BookOpen, Clock, Users, Star, 
-  CheckCircle2, MessageSquare, Download, Share2,
-  Lock
+  CheckCircle2, Lock, Loader2, Play
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
-import { LessonList } from "@/components/video/LessonList";
 import { PayPalCheckout } from "@/components/payment/PayPalCheckout";
-import { demoCourses, DemoLesson } from "@/data/demo-data";
+import { useStudentProgramDetail, LessonWithProgress, ModuleWithProgress } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 const CoursePlayerPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
 
-  const course = demoCourses.find((c) => c.id === courseId) || demoCourses[0];
-  const modules = course.modules || [];
-
-  // Check enrollment
+  const { program, isLoading, markLessonCompleted } = useStudentProgramDetail(courseId);
   const { hasActiveEnrollment, isLoading: enrollmentLoading } = useEnrollment(courseId);
 
   // Admin always has access
   const hasAccess = isAdmin || hasActiveEnrollment;
 
-  // Get first unlocked lesson as default
-  const firstUnlockedLesson = useMemo(() => {
-    for (const mod of modules) {
-      const lesson = mod.lessons.find((l) => !l.locked && !l.completed);
-      if (lesson) return lesson;
-    }
-    return modules[0]?.lessons[0];
-  }, [modules]);
-
-  const [currentLesson, setCurrentLesson] = useState<DemoLesson | null>(
-    firstUnlockedLesson || null
-  );
-
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [currentLesson, setCurrentLesson] = useState<LessonWithProgress | null>(null);
+  const [openModules, setOpenModules] = useState<string[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [isMarkingComplete, setIsMarkingComplete] = useState(false);
 
-  const handleSelectLesson = (lesson: DemoLesson) => {
-    if (!hasAccess && !lesson.locked) {
-      // Only preview lessons are accessible
-      if (modules.flatMap(m => m.lessons).indexOf(lesson) === 0) {
-        setCurrentLesson(lesson);
-      } else {
-        setShowPaymentModal(true);
+  // Set initial lesson when program loads
+  useMemo(() => {
+    if (program && program.modules.length > 0 && !currentLesson) {
+      // Find first uncompleted lesson or first lesson
+      for (const mod of program.modules) {
+        const lesson = mod.lessons.find((l) => !l.completed);
+        if (lesson) {
+          setCurrentLesson(lesson);
+          setOpenModules([mod.id]);
+          return;
+        }
       }
-    } else if (hasAccess) {
-      setCurrentLesson(lesson);
-    } else {
-      setShowPaymentModal(true);
+      // If all completed, show first lesson
+      if (program.modules[0]?.lessons[0]) {
+        setCurrentLesson(program.modules[0].lessons[0]);
+        setOpenModules([program.modules[0].id]);
+      }
     }
+  }, [program]);
+
+  const toggleModule = (moduleId: string) => {
+    setOpenModules((prev) =>
+      prev.includes(moduleId)
+        ? prev.filter((id) => id !== moduleId)
+        : [...prev, moduleId]
+    );
   };
 
-  const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
-  const completedLessons = modules.reduce(
-    (acc, m) => acc + m.lessons.filter((l) => l.completed).length,
-    0
-  );
+  const handleSelectLesson = (lesson: LessonWithProgress) => {
+    if (!hasAccess && !lesson.is_preview) {
+      setShowPaymentModal(true);
+      return;
+    }
+    setCurrentLesson(lesson);
+  };
+
+  const handleMarkComplete = async () => {
+    if (!currentLesson) return;
+    setIsMarkingComplete(true);
+    await markLessonCompleted(currentLesson.id);
+    setIsMarkingComplete(false);
+  };
+
+  if (isLoading) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <AppSidebar />
+          <main className="flex-1 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </main>
+        </div>
+      </SidebarProvider>
+    );
+  }
+
+  if (!program) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <AppSidebar />
+          <main className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+              <h2 className="text-xl font-heading font-bold mb-2">
+                Programa no encontrado
+              </h2>
+              <NeonButton onClick={() => navigate("/catalog")}>
+                Ver Catálogo
+              </NeonButton>
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -80,39 +127,24 @@ const CoursePlayerPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <SidebarTrigger />
                 <button
-                  onClick={() => navigate("/dashboard")}
+                  onClick={() => navigate("/catalog")}
                   className="p-2 rounded-lg hover:bg-white/5 transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
-                <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center",
-                      course.color === "primary" && "bg-primary/20 text-primary",
-                      course.color === "secondary" && "bg-secondary/20 text-secondary",
-                      course.color === "accent" && "bg-accent/20 text-accent"
-                    )}
-                  >
-                    <course.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h1 className="font-heading font-bold text-lg">{course.title}</h1>
-                    <p className="text-xs text-muted-foreground">
-                      {completedLessons}/{totalLessons} lecciones completadas
-                    </p>
-                  </div>
+                <div>
+                  <h1 className="font-heading font-bold text-lg">{program.title}</h1>
+                  <p className="text-xs text-muted-foreground">
+                    {program.completedLessons}/{program.totalLessons} lecciones completadas
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                {!hasAccess && (
-                  <NeonButton
-                    size="sm"
-                    onClick={() => setShowPaymentModal(true)}
-                  >
+                {!hasAccess && !enrollmentLoading && (
+                  <NeonButton size="sm" onClick={() => setShowPaymentModal(true)}>
                     <Lock className="w-4 h-4" />
-                    Desbloquear Programa
+                    Desbloquear ${program.price}
                   </NeonButton>
                 )}
                 <NeonButton
@@ -128,7 +160,7 @@ const CoursePlayerPage: React.FC = () => {
             </div>
           </header>
 
-          {/* Locked Content Banner */}
+          {/* Locked Banner */}
           {!hasAccess && !enrollmentLoading && (
             <div className="bg-gradient-to-r from-primary/20 to-secondary/20 border-b border-primary/20 px-4 py-3">
               <div className="flex items-center justify-center gap-3">
@@ -150,69 +182,75 @@ const CoursePlayerPage: React.FC = () => {
               {currentLesson ? (
                 <>
                   <VideoPlayer
-                    videoUrl={currentLesson.videoUrl}
+                    videoUrl={currentLesson.video_url || ""}
                     title={currentLesson.title}
                   />
 
                   {/* Lesson Info */}
                   <HolographicCard className="space-y-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h2 className="text-xl font-heading font-bold">
-                          {currentLesson.title}
-                        </h2>
+                    <div>
+                      <h2 className="text-xl font-heading font-bold">
+                        {currentLesson.title}
+                      </h2>
+                      {currentLesson.description && (
                         <p className="text-muted-foreground mt-1">
                           {currentLesson.description}
                         </p>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <button className="p-2 rounded-lg glass hover:bg-white/5 transition-colors">
-                          <Download className="w-5 h-5" />
-                        </button>
-                        <button className="p-2 rounded-lg glass hover:bg-white/5 transition-colors">
-                          <Share2 className="w-5 h-5" />
-                        </button>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Action Buttons */}
+                    {/* Actions */}
                     <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/50">
-                      <NeonButton size="sm" disabled={!hasAccess}>
-                        <CheckCircle2 className="w-4 h-4" />
-                        Marcar como completada
-                      </NeonButton>
-                      <NeonButton variant="outline" size="sm">
-                        <MessageSquare className="w-4 h-4" />
-                        Preguntas ({Math.floor(Math.random() * 20 + 5)})
-                      </NeonButton>
-                      <div className="flex items-center gap-1 ml-auto text-sm text-muted-foreground">
-                        <Clock className="w-4 h-4" />
-                        <span>{currentLesson.duration}</span>
-                      </div>
+                      {hasAccess && !currentLesson.completed && (
+                        <NeonButton
+                          size="sm"
+                          onClick={handleMarkComplete}
+                          disabled={isMarkingComplete}
+                        >
+                          {isMarkingComplete ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
+                          Marcar como completada
+                        </NeonButton>
+                      )}
+                      {currentLesson.completed && (
+                        <span className="flex items-center gap-2 text-sm text-primary">
+                          <CheckCircle2 className="w-4 h-4" />
+                          Completada
+                        </span>
+                      )}
+                      {currentLesson.duration && (
+                        <div className="flex items-center gap-1 ml-auto text-sm text-muted-foreground">
+                          <Clock className="w-4 h-4" />
+                          <span>{currentLesson.duration}</span>
+                        </div>
+                      )}
                     </div>
                   </HolographicCard>
 
-                  {/* Course Stats */}
+                  {/* Stats */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <HolographicCard className="text-center p-4">
-                      <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
-                      <div className="text-lg font-bold">2,847</div>
-                      <div className="text-xs text-muted-foreground">Estudiantes</div>
-                    </HolographicCard>
-                    <HolographicCard className="text-center p-4">
-                      <Star className="w-6 h-6 mx-auto mb-2 text-secondary" />
-                      <div className="text-lg font-bold">4.9</div>
-                      <div className="text-xs text-muted-foreground">Calificación</div>
-                    </HolographicCard>
-                    <HolographicCard className="text-center p-4">
-                      <BookOpen className="w-6 h-6 mx-auto mb-2 text-accent" />
-                      <div className="text-lg font-bold">{totalLessons}</div>
+                      <BookOpen className="w-6 h-6 mx-auto mb-2 text-primary" />
+                      <div className="text-lg font-bold">{program.totalLessons}</div>
                       <div className="text-xs text-muted-foreground">Lecciones</div>
                     </HolographicCard>
                     <HolographicCard className="text-center p-4">
-                      <Clock className="w-6 h-6 mx-auto mb-2 text-primary" />
-                      <div className="text-lg font-bold">{course.duration}</div>
-                      <div className="text-xs text-muted-foreground">Duración</div>
+                      <CheckCircle2 className="w-6 h-6 mx-auto mb-2 text-secondary" />
+                      <div className="text-lg font-bold">{program.completedLessons}</div>
+                      <div className="text-xs text-muted-foreground">Completadas</div>
+                    </HolographicCard>
+                    <HolographicCard className="text-center p-4">
+                      <Star className="w-6 h-6 mx-auto mb-2 text-accent" />
+                      <div className="text-lg font-bold">{program.progress}%</div>
+                      <div className="text-xs text-muted-foreground">Progreso</div>
+                    </HolographicCard>
+                    <HolographicCard className="text-center p-4">
+                      <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
+                      <div className="text-lg font-bold">{program.modules.length}</div>
+                      <div className="text-xs text-muted-foreground">Módulos</div>
                     </HolographicCard>
                   </div>
                 </>
@@ -221,7 +259,9 @@ const CoursePlayerPage: React.FC = () => {
                   <div className="text-center">
                     <BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
                     <p className="text-muted-foreground">
-                      Selecciona una lección para comenzar
+                      {program.modules.length === 0
+                        ? "Este programa aún no tiene contenido"
+                        : "Selecciona una lección para comenzar"}
                     </p>
                   </div>
                 </div>
@@ -232,9 +272,9 @@ const CoursePlayerPage: React.FC = () => {
             {showSidebar && (
               <div className="w-full lg:w-96 flex-shrink-0 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-heading font-bold">Contenido del Curso</h3>
+                  <h3 className="font-heading font-bold">Contenido</h3>
                   <span className="text-sm text-muted-foreground">
-                    {course.progress}% completado
+                    {program.progress}% completado
                   </span>
                 </div>
 
@@ -242,27 +282,35 @@ const CoursePlayerPage: React.FC = () => {
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all"
-                    style={{ width: `${course.progress}%` }}
+                    style={{ width: `${program.progress}%` }}
                   />
                 </div>
 
-                {/* Lessons */}
-                <LessonList
-                  modules={modules}
-                  currentLessonId={currentLesson?.id || ""}
-                  onSelectLesson={handleSelectLesson}
-                  hasAccess={hasAccess}
-                />
+                {/* Modules */}
+                <div className="space-y-2">
+                  {program.modules.map((module, moduleIndex) => (
+                    <ModuleAccordion
+                      key={module.id}
+                      module={module}
+                      moduleIndex={moduleIndex}
+                      isOpen={openModules.includes(module.id)}
+                      onToggle={() => toggleModule(module.id)}
+                      currentLessonId={currentLesson?.id}
+                      onSelectLesson={handleSelectLesson}
+                      hasAccess={hasAccess}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </main>
 
-        {/* PayPal Checkout Modal */}
+        {/* PayPal Checkout */}
         <PayPalCheckout
           programId={courseId || ""}
-          programTitle={course.title}
-          price={497}
+          programTitle={program.title}
+          price={program.price}
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
         />
@@ -270,5 +318,110 @@ const CoursePlayerPage: React.FC = () => {
     </SidebarProvider>
   );
 };
+
+// Module Accordion Component
+function ModuleAccordion({
+  module,
+  moduleIndex,
+  isOpen,
+  onToggle,
+  currentLessonId,
+  onSelectLesson,
+  hasAccess,
+}: {
+  module: ModuleWithProgress;
+  moduleIndex: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  currentLessonId: string | undefined;
+  onSelectLesson: (lesson: LessonWithProgress) => void;
+  hasAccess: boolean;
+}) {
+  const completedInModule = module.lessons.filter((l) => l.completed).length;
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={onToggle}>
+      <HolographicCard className="overflow-hidden p-0">
+        <CollapsibleTrigger className="w-full">
+          <div className="flex items-center justify-between p-3 hover:bg-white/5 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                {moduleIndex + 1}
+              </div>
+              <div className="text-left">
+                <h4 className="font-medium text-sm">{module.title}</h4>
+                <p className="text-xs text-muted-foreground">
+                  {completedInModule}/{module.lessons.length} completadas
+                </p>
+              </div>
+            </div>
+            {isOpen ? (
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            )}
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent>
+          <div className="border-t border-border/50">
+            {module.lessons.map((lesson, lessonIndex) => {
+              const isLocked = !hasAccess && !lesson.is_preview;
+              const isCurrent = lesson.id === currentLessonId;
+
+              return (
+                <button
+                  key={lesson.id}
+                  onClick={() => onSelectLesson(lesson)}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 text-left hover:bg-white/5 transition-colors border-b border-border/30 last:border-0",
+                    isCurrent && "bg-primary/10"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center text-xs",
+                      lesson.completed
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {lesson.completed ? (
+                      <CheckCircle2 className="w-4 h-4" />
+                    ) : (
+                      lessonIndex + 1
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={cn(
+                        "text-sm truncate",
+                        isCurrent && "text-primary font-medium"
+                      )}
+                    >
+                      {lesson.title}
+                    </p>
+                    {lesson.duration && (
+                      <p className="text-xs text-muted-foreground">
+                        {lesson.duration}
+                      </p>
+                    )}
+                  </div>
+                  {isLocked ? (
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                  ) : lesson.is_preview ? (
+                    <span className="text-xs text-secondary">Gratis</span>
+                  ) : (
+                    <Play className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </CollapsibleContent>
+      </HolographicCard>
+    </Collapsible>
+  );
+}
 
 export default CoursePlayerPage;
