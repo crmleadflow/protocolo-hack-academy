@@ -254,23 +254,25 @@ export const LessonResourceManager: React.FC<LessonResourceManagerProps> = ({
                     : resource.file_name}
                 </p>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 {resource.type === "link" ? (
                   <a
                     href={resource.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors text-sm font-medium"
                   >
                     <ExternalLink className="w-4 h-4" />
+                    {!isAdmin && <span>Abrir enlace</span>}
                   </a>
                 ) : (
                   <a
                     href={resource.url}
                     download={resource.file_name}
-                    className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors text-sm font-medium"
                   >
                     <Download className="w-4 h-4" />
+                    {!isAdmin && <span>Descargar archivo</span>}
                   </a>
                 )}
                 {isAdmin && (
