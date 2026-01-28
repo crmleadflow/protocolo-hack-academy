@@ -10,6 +10,7 @@ import { GlassInput } from "@/components/ui/glass-input";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 const CatalogPage: React.FC = () => {
@@ -108,8 +109,10 @@ function ProgramCard({
   index: number;
   onClick: () => void;
 }) {
+  const { isAdmin } = useAuth();
   const { hasActiveEnrollment, isLoading } = useEnrollment(program.id);
-  const isLocked = !hasActiveEnrollment && program.price > 0;
+  // Admins can see all programs unlocked
+  const isLocked = !isAdmin && !hasActiveEnrollment && program.price > 0;
 
   return (
     <HolographicCard
