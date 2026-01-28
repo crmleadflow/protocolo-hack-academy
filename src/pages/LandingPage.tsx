@@ -165,7 +165,7 @@ const LandingPage: React.FC = () => {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <NeonButton size="xl" onClick={() => navigate("/register")}>
                 Accede a la Inteligencia
                 <ArrowRight className="w-5 h-5" />
@@ -178,7 +178,7 @@ const LandingPage: React.FC = () => {
           </div>
 
           {/* Social proof */}
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-8 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-heading font-bold text-primary">
                 <AnimatedCounter end={380000} suffix="+" />
@@ -209,7 +209,7 @@ const LandingPage: React.FC = () => {
 
 
       {/* Mentor Section */}
-      <section className="py-16 relative z-10">
+      <section className="py-6 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-10 items-center mb-12">
