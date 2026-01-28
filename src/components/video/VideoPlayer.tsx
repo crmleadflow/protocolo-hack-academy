@@ -1,5 +1,5 @@
-import React from "react";
-import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward } from "lucide-react";
+import React, { useRef, useState, useEffect } from "react";
+import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Slider } from "@/components/ui/slider";
@@ -14,29 +14,157 @@ interface VideoPlayerProps {
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   videoUrl,
   title,
+  onComplete,
   className,
 }) => {
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const [progress, setProgress] = React.useState(0);
-  const [volume, setVolume] = React.useState(80);
-  const [isMuted, setIsMuted] = React.useState(false);
-  const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolume] = useState(80);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showControls, setShowControls] = useState(true);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  // Detect if URL is an embed (YouTube, Vimeo) or direct video file
+  const isEmbedUrl = videoUrl.includes("youtube.com") || 
+                     videoUrl.includes("youtu.be") || 
+                     videoUrl.includes("vimeo.com") ||
+                     videoUrl.includes("embed");
 
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  // Format time in MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  };
+
+  // Handle video events
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || isEmbedUrl) return;
+
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+      setIsLoading(false);
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(video.currentTime);
+      setProgress((video.currentTime / video.duration) * 100);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      onComplete?.();
+    };
+
+    const handleWaiting = () => setIsLoading(true);
+    const handlePlaying = () => setIsLoading(false);
+
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    video.addEventListener("ended", handleEnded);
+    video.addEventListener("waiting", handleWaiting);
+    video.addEventListener("playing", handlePlaying);
+
+    return () => {
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+      video.removeEventListener("ended", handleEnded);
+      video.removeEventListener("waiting", handleWaiting);
+      video.removeEventListener("playing", handlePlaying);
+    };
+  }, [videoUrl, isEmbedUrl, onComplete]);
+
+  // Update volume
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = volume / 100;
+      videoRef.current.muted = isMuted;
+    }
+  }, [volume, isMuted]);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      video.pause();
+    } else {
+      video.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   const toggleMute = () => setIsMuted(!isMuted);
+
+  const handleSeek = (value: number[]) => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    const newTime = (value[0] / 100) * duration;
+    video.currentTime = newTime;
+    setProgress(value[0]);
+  };
+
+  const handleVolumeChange = (value: number[]) => {
+    setVolume(value[0]);
+    setIsMuted(value[0] === 0);
+  };
+
+  const skip = (seconds: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = Math.max(0, Math.min(duration, video.currentTime + seconds));
+  };
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
     } else {
       document.exitFullscreen();
-      setIsFullscreen(false);
     }
   };
 
+  const handleMouseMove = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    controlsTimeoutRef.current = setTimeout(() => {
+      if (isPlaying) setShowControls(false);
+    }, 3000);
+  };
+
+  // For embed URLs, use iframe
+  if (isEmbedUrl) {
+    return (
+      <div 
+        ref={containerRef}
+        className={cn(
+          "relative rounded-2xl overflow-hidden glass-strong",
+          className
+        )}
+      >
+        <AspectRatio ratio={16 / 9}>
+          <iframe
+            src={videoUrl}
+            title={title}
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </AspectRatio>
+      </div>
+    );
+  }
+
+  // For direct video files, use native video element
   return (
     <div 
       ref={containerRef}
@@ -44,26 +172,52 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         "relative rounded-2xl overflow-hidden glass-strong group",
         className
       )}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => isPlaying && setShowControls(false)}
     >
       <AspectRatio ratio={16 / 9}>
-        {/* Video Embed */}
-        <iframe
+        {/* Video Element */}
+        <video
+          ref={videoRef}
           src={videoUrl}
-          title={title}
-          className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+          className="w-full h-full object-contain bg-black"
+          playsInline
+          onClick={togglePlay}
         />
 
-        {/* Custom Overlay Controls (for demo purposes) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {/* Loading Spinner */}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <Loader2 className="w-12 h-12 animate-spin text-primary" />
+          </div>
+        )}
+
+        {/* Play Button Overlay (when paused) */}
+        {!isPlaying && !isLoading && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center cursor-pointer"
+            onClick={togglePlay}
+          >
+            <div className="p-6 rounded-full bg-primary/90 hover:bg-primary transition-colors">
+              <Play className="w-12 h-12 text-primary-foreground ml-1" />
+            </div>
+          </div>
+        )}
+
+        {/* Controls Overlay */}
+        <div 
+          className={cn(
+            "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300",
+            showControls || !isPlaying ? "opacity-100" : "opacity-0"
+          )}
+        >
           {/* Progress Bar */}
           <div className="absolute bottom-16 left-4 right-4">
             <Slider
               value={[progress]}
               max={100}
-              step={1}
-              onValueChange={(value) => setProgress(value[0])}
+              step={0.1}
+              onValueChange={handleSeek}
               className="cursor-pointer"
             />
           </div>
@@ -72,7 +226,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {/* Skip Back */}
-              <button className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+              <button 
+                onClick={() => skip(-10)}
+                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              >
                 <SkipBack className="w-5 h-5" />
               </button>
 
@@ -89,7 +246,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </button>
 
               {/* Skip Forward */}
-              <button className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+              <button 
+                onClick={() => skip(10)}
+                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              >
                 <SkipForward className="w-5 h-5" />
               </button>
 
@@ -99,7 +259,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   onClick={toggleMute}
                   className="p-2 rounded-lg hover:bg-white/10 transition-colors"
                 >
-                  {isMuted ? (
+                  {isMuted || volume === 0 ? (
                     <VolumeX className="w-5 h-5" />
                   ) : (
                     <Volume2 className="w-5 h-5" />
@@ -109,17 +269,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   value={[isMuted ? 0 : volume]}
                   max={100}
                   step={1}
-                  onValueChange={(value) => {
-                    setVolume(value[0]);
-                    setIsMuted(value[0] === 0);
-                  }}
+                  onValueChange={handleVolumeChange}
                   className="w-20"
                 />
               </div>
 
               {/* Time */}
               <span className="text-sm text-muted-foreground ml-4">
-                {Math.floor(progress * 0.12)}:{String(Math.floor((progress * 0.12 % 1) * 60)).padStart(2, '0')} / 12:34
+                {formatTime(currentTime)} / {formatTime(duration)}
               </span>
             </div>
 
