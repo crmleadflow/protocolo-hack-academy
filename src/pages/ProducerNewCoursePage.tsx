@@ -231,6 +231,30 @@ const ProducerNewCoursePage: React.FC = () => {
                   />
                 </div>
               </HolographicCard>
+
+              {/* Submit Button */}
+              <div className="flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={() => navigate("/producer/courses")}
+                  className="px-6 py-3 rounded-lg border border-border hover:bg-white/5 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <NeonButton type="submit" disabled={isSubmitting || !formData.title.trim()}>
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                      Creando...
+                    </div>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Crear Programa
+                    </>
+                  )}
+                </NeonButton>
+              </div>
             </form>
           </div>
         </main>
