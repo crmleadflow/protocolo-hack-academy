@@ -32,7 +32,7 @@ const menuItems = [
 
 const secondaryItems = [
   { title: "Crear Programa", url: "/producer/new-course", icon: Plus },
-  { title: "Subir Contenido", url: "/producer/upload", icon: FileVideo },
+  { title: "Subir Contenido", url: "/producer/courses", icon: FileVideo },
   { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
   { title: "Configuración", url: "/producer/settings", icon: Settings },
 ];
