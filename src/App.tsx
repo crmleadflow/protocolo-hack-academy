@@ -109,6 +109,15 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            {/* Alias for /producer/upload - redirects to courses list */}
+            <Route
+              path="/producer/upload"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerCoursesPage />
+                </ProtectedRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
