@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Plus, GripVertical, Play, Trash2, Edit, 
   Video, Clock, Save, Eye, Settings, Loader2,
-  ChevronDown, ChevronRight, Link2, X, Check
+  ChevronDown, ChevronRight, Upload, X, Check, FileVideo
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -15,6 +15,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useProgramDetail, Lesson, Module } from "@/hooks/usePrograms";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   Collapsible,
   CollapsibleContent,
@@ -74,6 +76,10 @@ const ProducerCourseEditPage: React.FC = () => {
     is_preview: false,
   });
   const [isSubmittingLesson, setIsSubmittingLesson] = useState(false);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   // Delete dialogs
   const [deleteModuleId, setDeleteModuleId] = useState<string | null>(null);
@@ -141,6 +147,7 @@ const ProducerCourseEditPage: React.FC = () => {
       duration: "",
       is_preview: false,
     });
+    setVideoFile(null);
     setLessonDialogOpen(true);
   };
 
@@ -154,7 +161,61 @@ const ProducerCourseEditPage: React.FC = () => {
       duration: lesson.duration || "",
       is_preview: lesson.is_preview,
     });
+    setVideoFile(null);
     setLessonDialogOpen(true);
+  };
+
+  const uploadVideo = async (file: File): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `videos/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('lesson-videos')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Error uploading video:', uploadError);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo subir el video"
+      });
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('lesson-videos')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
+  const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+      if (!validTypes.includes(file.type)) {
+        toast({
+          variant: "destructive",
+          title: "Formato no válido",
+          description: "Por favor sube un archivo de video (MP4, WebM, OGG, MOV)"
+        });
+        return;
+      }
+      setVideoFile(file);
+      setLessonForm(prev => ({ ...prev, video_url: "" }));
+    }
+  };
+
+  const removeVideoFile = () => {
+    setVideoFile(null);
+    if (videoInputRef.current) {
+      videoInputRef.current.value = "";
+    }
   };
 
   const handleLessonSubmit = async () => {
@@ -162,10 +223,26 @@ const ProducerCourseEditPage: React.FC = () => {
 
     setIsSubmittingLesson(true);
 
+    let videoUrl = lessonForm.video_url;
+
+    // Upload new video if file selected
+    if (videoFile) {
+      setIsUploadingVideo(true);
+      const uploadedUrl = await uploadVideo(videoFile);
+      setIsUploadingVideo(false);
+      
+      if (uploadedUrl) {
+        videoUrl = uploadedUrl;
+      } else {
+        setIsSubmittingLesson(false);
+        return;
+      }
+    }
+
     const lessonData = {
       title: lessonForm.title,
       description: lessonForm.description || null,
-      video_url: lessonForm.video_url || null,
+      video_url: videoUrl || null,
       duration: lessonForm.duration || null,
       is_preview: lessonForm.is_preview,
     };
@@ -183,6 +260,7 @@ const ProducerCourseEditPage: React.FC = () => {
 
     setIsSubmittingLesson(false);
     setLessonDialogOpen(false);
+    setVideoFile(null);
   };
 
   const handleDeleteLesson = async () => {
@@ -413,7 +491,7 @@ const ProducerCourseEditPage: React.FC = () => {
                                   {lesson.video_url ? (
                                     <Play className="w-4 h-4 text-primary" />
                                   ) : (
-                                    <Link2 className="w-4 h-4 text-muted-foreground" />
+                                    <FileVideo className="w-4 h-4 text-muted-foreground" />
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -561,21 +639,71 @@ const ProducerCourseEditPage: React.FC = () => {
                 />
               </div>
               <div>
-                <Label>URL del video</Label>
-                <div className="relative">
-                  <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <GlassInput
-                    placeholder="https://youtube.com/watch?v=... o URL directa"
-                    value={lessonForm.video_url}
-                    onChange={(e) =>
-                      setLessonForm((prev) => ({ ...prev, video_url: e.target.value }))
-                    }
-                    className="pl-10"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Soporta YouTube, Vimeo o URLs directas de video
-                </p>
+                <Label>Video de la lección</Label>
+                <input
+                  type="file"
+                  ref={videoInputRef}
+                  accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                  onChange={handleVideoFileChange}
+                  className="hidden"
+                />
+                
+                {videoFile ? (
+                  <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
+                    <FileVideo className="w-8 h-8 text-primary flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{videoFile.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeVideoFile}
+                      className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : lessonForm.video_url ? (
+                  <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
+                    <Play className="w-8 h-8 text-primary flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">Video actual</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {lessonForm.video_url}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setLessonForm(prev => ({ ...prev, video_url: "" }))}
+                      className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => videoInputRef.current?.click()}
+                    className="w-full p-6 rounded-lg border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-colors flex flex-col items-center gap-2"
+                  >
+                    <Upload className="w-8 h-8 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">
+                      Haz clic para subir un video
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      MP4, WebM, OGG o MOV
+                    </span>
+                  </button>
+                )}
+                
+                {isUploadingVideo && (
+                  <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Subiendo video...
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
