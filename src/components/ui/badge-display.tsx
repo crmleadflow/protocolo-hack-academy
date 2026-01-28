@@ -1,12 +1,14 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Award, Star, Zap, Trophy, Target, Flame } from "lucide-react";
+import { DemoBadge } from "@/data/demo-data";
 
 export type BadgeType = "streak" | "completion" | "achievement" | "level" | "special" | "xp";
 
 interface BadgeDisplayProps {
-  type: BadgeType;
-  label: string;
+  badge?: DemoBadge;
+  type?: BadgeType;
+  label?: string;
   value?: string | number;
   unlocked?: boolean;
   size?: "sm" | "md" | "lg";
@@ -29,13 +31,20 @@ const sizeConfig = {
 };
 
 const BadgeDisplay: React.FC<BadgeDisplayProps> = ({
-  type,
-  label,
-  value,
-  unlocked = true,
+  badge,
+  type: propType,
+  label: propLabel,
+  value: propValue,
+  unlocked: propUnlocked = true,
   size = "md",
   className,
 }) => {
+  // Use badge object if provided, otherwise use individual props
+  const type = badge?.type || propType || "achievement";
+  const label = badge?.label || propLabel || "";
+  const value = badge?.value || propValue;
+  const unlocked = badge?.unlocked ?? propUnlocked;
+
   const config = badgeConfig[type];
   const sizeClass = sizeConfig[size];
   const Icon = config.icon;
