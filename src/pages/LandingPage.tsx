@@ -131,7 +131,7 @@ const LandingPage: React.FC = () => {
       <Header transparent />
 
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center pt-24 pb-16">
+      <section className="relative flex items-center pt-24 pb-8">
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
         
@@ -205,14 +205,8 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/50 flex items-start justify-center p-2">
-            <div className="w-1 h-2 bg-primary rounded-full animate-pulse" />
-          </div>
-        </div>
       </section>
+
 
       {/* Mentor Section */}
       <section className="py-16 relative z-10">
