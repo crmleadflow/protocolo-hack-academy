@@ -8,6 +8,7 @@ interface ProgressRingProps {
   className?: string;
   showPercentage?: boolean;
   color?: "primary" | "secondary" | "accent";
+  children?: React.ReactNode;
 }
 
 const ProgressRing: React.FC<ProgressRingProps> = ({
@@ -15,8 +16,9 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
   size = 120,
   strokeWidth = 8,
   className,
-  showPercentage = true,
+  showPercentage = false,
   color = "primary",
+  children,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -65,13 +67,15 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
           }}
         />
       </svg>
-      {showPercentage && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-heading font-bold text-foreground">
-            {Math.round(progress)}%
-          </span>
-        </div>
-      )}
+      <div className="absolute inset-0 flex items-center justify-center">
+        {children ? children : (
+          showPercentage && (
+            <span className="text-2xl font-heading font-bold text-foreground">
+              {Math.round(progress)}%
+            </span>
+          )
+        )}
+      </div>
     </div>
   );
 };

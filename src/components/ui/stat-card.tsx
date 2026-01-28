@@ -5,52 +5,53 @@ import { LucideIcon } from "lucide-react";
 interface StatCardProps {
   title: string;
   value: string | number;
+  subtitle?: string;
   icon: LucideIcon;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
+  color?: "primary" | "secondary" | "accent";
+  trend?: "up" | "down";
   className?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
   title,
   value,
+  subtitle,
   icon: Icon,
+  color = "primary",
   trend,
   className,
 }) => {
+  const colorClasses = {
+    primary: "bg-primary/10 text-primary",
+    secondary: "bg-secondary/10 text-secondary",
+    accent: "bg-accent/10 text-accent",
+  };
+
   return (
     <div
       className={cn(
-        "glass rounded-xl p-6 hover-lift",
+        "glass rounded-xl p-5 hover-lift",
         className
       )}
     >
       <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground uppercase tracking-wider">
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">
             {title}
           </p>
-          <p className="text-3xl font-heading font-bold text-foreground">
+          <p className="text-2xl font-heading font-bold text-foreground">
             {value}
           </p>
-          {trend && (
-            <div className="flex items-center gap-1">
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  trend.isPositive ? "text-green-400" : "text-red-400"
-                )}
-              >
-                {trend.isPositive ? "+" : "-"}{Math.abs(trend.value)}%
-              </span>
-              <span className="text-xs text-muted-foreground">vs last month</span>
-            </div>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              {trend === "up" && <span className="text-green-400">↑</span>}
+              {trend === "down" && <span className="text-red-400">↓</span>}
+              {subtitle}
+            </p>
           )}
         </div>
-        <div className="p-3 rounded-lg bg-primary/10 text-primary">
-          <Icon className="w-6 h-6" />
+        <div className={cn("p-2.5 rounded-lg", colorClasses[color])}>
+          <Icon className="w-5 h-5" />
         </div>
       </div>
     </div>
