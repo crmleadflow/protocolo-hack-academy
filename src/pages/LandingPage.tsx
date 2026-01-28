@@ -10,7 +10,7 @@ import { ParticleBackground } from "@/components/ui/particle-background";
 import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
-import hectorHeroImage from "@/assets/hector-galensky-hero.png";
+import hectorImage from "@/assets/hector-galensky-hero.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -140,56 +140,40 @@ const LandingPage: React.FC = () => {
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-8 items-center max-w-7xl mx-auto">
-            {/* Text Content */}
-            <div className="text-center lg:text-left order-2 lg:order-1">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in">
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">La Central de Inteligencia</span>
-              </div>
-
-              {/* Headline */}
-              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                <span className="text-gradient neon-text">Protocolo Hack</span>
-              </h1>
-              
-              {/* Subtitle */}
-              <p className="text-xl md:text-2xl font-heading text-muted-foreground mb-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
-                de <span className="text-foreground font-semibold">Hector Galensky</span>
-              </p>
-
-              {/* Subheadline */}
-              <p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-10 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                El ecosistema de alto rendimiento donde el conocimiento se transforma en{" "}
-                <span className="text-primary font-medium">resultados financieros</span> y{" "}
-                <span className="text-secondary font-medium">personales</span>.
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                <NeonButton size="xl" onClick={() => navigate("/register")}>
-                  Accede a la Inteligencia
-                  <ArrowRight className="w-5 h-5" />
-                </NeonButton>
-                <NeonButton variant="outline" size="xl" onClick={() => navigate("/catalog")}>
-                  <Play className="w-5 h-5" />
-                  Ver Programas
-                </NeonButton>
-              </div>
+          <div className="max-w-5xl mx-auto text-center">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">La Central de Inteligencia</span>
             </div>
 
-            {/* Hero Image */}
-            <div className="relative order-1 lg:order-2 flex justify-center animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              <div className="relative">
-                {/* Glow effect behind image */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/40 blur-3xl scale-110 rounded-full" />
-                <img 
-                  src={hectorHeroImage} 
-                  alt="Hector Galensky" 
-                  className="relative z-10 max-w-sm md:max-w-md lg:max-w-lg w-full h-auto drop-shadow-2xl"
-                />
-              </div>
+            {/* Headline */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+              <span className="text-gradient neon-text">Protocolo Hack</span>
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl font-heading text-muted-foreground mb-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
+              de <span className="text-foreground font-semibold">Hector Galensky</span>
+            </p>
+
+            {/* Subheadline */}
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              El ecosistema de alto rendimiento donde el conocimiento se transforma en{" "}
+              <span className="text-primary font-medium">resultados financieros</span> y{" "}
+              <span className="text-secondary font-medium">personales</span>.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+              <NeonButton size="xl" onClick={() => navigate("/register")}>
+                Accede a la Inteligencia
+                <ArrowRight className="w-5 h-5" />
+              </NeonButton>
+              <NeonButton variant="outline" size="xl" onClick={() => navigate("/catalog")}>
+                <Play className="w-5 h-5" />
+                Ver Programas
+              </NeonButton>
             </div>
           </div>
 
@@ -234,15 +218,35 @@ const LandingPage: React.FC = () => {
       <section className="py-20 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-                Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
-              </h2>
-              <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
-                En un mundo lleno de teóricos, Protocolo Hack se basa en la práctica. 
-                Mi autoridad no viene de los títulos, sino de los <span className="text-primary">resultados comprobados</span>.
-                Empresario, visionario y entrenador de élite con más de 25 años de trayectoria.
-              </p>
+            <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              {/* Image */}
+              <div className="relative flex justify-center">
+                <div className="relative">
+                  {/* Glow effect behind image */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/30 blur-3xl scale-110 rounded-full" />
+                  <img 
+                    src={hectorImage} 
+                    alt="Hector Galensky" 
+                    className="relative z-10 max-w-md w-full h-auto drop-shadow-2xl"
+                    style={{ mixBlendMode: 'normal' }}
+                  />
+                </div>
+              </div>
+              
+              {/* Text */}
+              <div className="text-center lg:text-left">
+                <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                  Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
+                </h2>
+                <p className="text-muted-foreground text-lg mb-6">
+                  En un mundo lleno de teóricos, Protocolo Hack se basa en la práctica. 
+                  Mi autoridad no viene de los títulos, sino de los <span className="text-primary">resultados comprobados</span>.
+                </p>
+                <p className="text-muted-foreground">
+                  Empresario, visionario y entrenador de élite. Con más de 25 años de trayectoria, 
+                  he construido comunidades de más de 380,000 personas y soy Top Earner en múltiples compañías a nivel global.
+                </p>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
