@@ -10,8 +10,10 @@ import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { PayPalCheckout } from "@/components/payment/PayPalCheckout";
+import { LessonResourceManager } from "@/components/lesson/LessonResourceManager";
 import { useStudentProgramDetail, LessonWithProgress, ModuleWithProgress } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
+import { useLessonResources } from "@/hooks/useLessonResources";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -33,6 +35,10 @@ const CoursePlayerPage: React.FC = () => {
   const hasAccess = isAdmin || hasActiveEnrollment;
 
   const [currentLesson, setCurrentLesson] = useState<LessonWithProgress | null>(null);
+  
+  // Fetch resources for current lesson
+  const { resources: lessonResources, refetch: refetchResources } = useLessonResources(currentLesson?.id);
+
   const [openModules, setOpenModules] = useState<string[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -229,6 +235,14 @@ const CoursePlayerPage: React.FC = () => {
                       )}
                     </div>
                   </HolographicCard>
+
+                  {/* Lesson Resources */}
+                  <LessonResourceManager
+                    lessonId={currentLesson.id}
+                    resources={lessonResources}
+                    onResourcesChange={refetchResources}
+                    isAdmin={isAdmin}
+                  />
 
                   {/* Stats */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
