@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, BookOpen, Clock, Users, Star, 
   CheckCircle2, MessageSquare, Download, Share2,
-  ChevronRight
+  Lock
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -11,15 +11,25 @@ import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { LessonList } from "@/components/video/LessonList";
+import { PayPalCheckout } from "@/components/payment/PayPalCheckout";
 import { demoCourses, DemoLesson } from "@/data/demo-data";
+import { useEnrollment } from "@/hooks/useEnrollment";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 const CoursePlayerPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
   const course = demoCourses.find((c) => c.id === courseId) || demoCourses[0];
   const modules = course.modules || [];
+
+  // Check enrollment
+  const { hasActiveEnrollment, isLoading: enrollmentLoading } = useEnrollment(courseId);
+
+  // Admin always has access
+  const hasAccess = isAdmin || hasActiveEnrollment;
 
   // Get first unlocked lesson as default
   const firstUnlockedLesson = useMemo(() => {
@@ -35,9 +45,21 @@ const CoursePlayerPage: React.FC = () => {
   );
 
   const [showSidebar, setShowSidebar] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const handleSelectLesson = (lesson: DemoLesson) => {
-    setCurrentLesson(lesson);
+    if (!hasAccess && !lesson.locked) {
+      // Only preview lessons are accessible
+      if (modules.flatMap(m => m.lessons).indexOf(lesson) === 0) {
+        setCurrentLesson(lesson);
+      } else {
+        setShowPaymentModal(true);
+      }
+    } else if (hasAccess) {
+      setCurrentLesson(lesson);
+    } else {
+      setShowPaymentModal(true);
+    }
   };
 
   const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
@@ -84,6 +106,15 @@ const CoursePlayerPage: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2">
+                {!hasAccess && (
+                  <NeonButton
+                    size="sm"
+                    onClick={() => setShowPaymentModal(true)}
+                  >
+                    <Lock className="w-4 h-4" />
+                    Desbloquear Programa
+                  </NeonButton>
+                )}
                 <NeonButton
                   variant="ghost"
                   size="sm"
@@ -96,6 +127,21 @@ const CoursePlayerPage: React.FC = () => {
               </div>
             </div>
           </header>
+
+          {/* Locked Content Banner */}
+          {!hasAccess && !enrollmentLoading && (
+            <div className="bg-gradient-to-r from-primary/20 to-secondary/20 border-b border-primary/20 px-4 py-3">
+              <div className="flex items-center justify-center gap-3">
+                <Lock className="w-5 h-5 text-primary" />
+                <span className="text-sm">
+                  Este programa está bloqueado. Completa el pago para acceder a todo el contenido.
+                </span>
+                <NeonButton size="sm" onClick={() => setShowPaymentModal(true)}>
+                  Desbloquear Ahora
+                </NeonButton>
+              </div>
+            </div>
+          )}
 
           {/* Content */}
           <div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-6">
@@ -131,7 +177,7 @@ const CoursePlayerPage: React.FC = () => {
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/50">
-                      <NeonButton size="sm">
+                      <NeonButton size="sm" disabled={!hasAccess}>
                         <CheckCircle2 className="w-4 h-4" />
                         Marcar como completada
                       </NeonButton>
@@ -205,11 +251,21 @@ const CoursePlayerPage: React.FC = () => {
                   modules={modules}
                   currentLessonId={currentLesson?.id || ""}
                   onSelectLesson={handleSelectLesson}
+                  hasAccess={hasAccess}
                 />
               </div>
             )}
           </div>
         </main>
+
+        {/* PayPal Checkout Modal */}
+        <PayPalCheckout
+          programId={courseId || ""}
+          programTitle={course.title}
+          price={497}
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+        />
       </div>
     </SidebarProvider>
   );

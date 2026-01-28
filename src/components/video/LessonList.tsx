@@ -12,12 +12,14 @@ interface LessonListProps {
   modules: DemoModule[];
   currentLessonId: string;
   onSelectLesson: (lesson: DemoLesson) => void;
+  hasAccess?: boolean;
 }
 
 export const LessonList: React.FC<LessonListProps> = ({
   modules,
   currentLessonId,
   onSelectLesson,
+  hasAccess = true,
 }) => {
   const [openModules, setOpenModules] = React.useState<string[]>([modules[0]?.id]);
 
@@ -79,9 +81,10 @@ export const LessonList: React.FC<LessonListProps> = ({
 
             <CollapsibleContent>
               <div className="ml-4 mt-2 space-y-1">
-                {module.lessons.map((lesson) => {
+                {module.lessons.map((lesson, lessonIndex) => {
                   const isCurrent = lesson.id === currentLessonId;
-                  const isLocked = lesson.locked;
+                  // First lesson is always preview, rest require access
+                  const isLocked = !hasAccess && lessonIndex > 0;
                   const isCompleted = lesson.completed;
 
                   return (

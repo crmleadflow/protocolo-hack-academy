@@ -5,6 +5,8 @@ import { ParticleBackground } from "@/components/ui/particle-background";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { HolographicCard } from "@/components/ui/holographic-card";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
 const benefits = [
@@ -16,6 +18,8 @@ const benefits = [
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -31,12 +35,45 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Las contraseñas no coinciden",
+      });
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "La contraseña debe tener al menos 6 caracteres",
+      });
+      return;
+    }
+
     setIsLoading(true);
-    // Demo: simulate registration
-    setTimeout(() => {
+
+    const { error } = await signUp(formData.email, formData.password, formData.name);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error al crear cuenta",
+        description: error.message,
+      });
       setIsLoading(false);
-      navigate("/dashboard");
-    }, 1500);
+      return;
+    }
+
+    toast({
+      title: "¡Cuenta creada!",
+      description: "Bienvenido a Protocolo Hack",
+    });
+
+    navigate("/dashboard");
   };
 
   return (

@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Home, BookOpen, Trophy, Settings, LogOut, User,
-  Zap, MessageSquare, HelpCircle
+  Zap, MessageSquare, HelpCircle, Shield
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -19,7 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import logo from "@/assets/logo.png";
-import { demoUser } from "@/data/demo-data";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -40,9 +40,17 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
-  const user = demoUser;
+  const { user, isAdmin, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuario";
+  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <Sidebar
@@ -94,6 +102,33 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Admin Link */}
+        {isAdmin && (
+          <SidebarGroup className="mt-4">
+            {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Administración</SidebarGroupLabel>}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to="/producer" 
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
+                        isActive("/producer") 
+                          ? "bg-secondary/20 text-secondary neon-glow-purple" 
+                          : "hover:bg-white/5"
+                      )}
+                    >
+                      <Shield className="w-5 h-5 flex-shrink-0" />
+                      {!collapsed && <span>Panel Admin</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         {/* Secondary Menu */}
         <SidebarGroup className="mt-auto">
           {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Cuenta</SidebarGroupLabel>}
@@ -130,15 +165,15 @@ export function AppSidebar() {
         )}>
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
             <span className="font-heading font-bold text-primary-foreground">
-              {user.name.charAt(0)}
+              {initials}
             </span>
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{user.name}</p>
+              <p className="font-medium truncate">{displayName}</p>
               <div className="flex items-center gap-1 text-xs text-primary">
                 <Zap className="w-3 h-3" />
-                <span>{user.xp.toLocaleString()} XP</span>
+                <span>0 XP</span>
               </div>
             </div>
           )}
@@ -146,7 +181,7 @@ export function AppSidebar() {
 
         {/* Logout */}
         <button 
-          onClick={() => navigate("/")}
+          onClick={handleLogout}
           className={cn(
             "flex items-center gap-3 px-3 py-2 rounded-lg w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all",
             collapsed && "justify-center"
