@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save, Image, DollarSign } from "lucide-react";
+import { ArrowLeft, Save, Upload, DollarSign, X, Loader2 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
 import { HolographicCard } from "@/components/ui/holographic-card";
@@ -11,12 +11,15 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProducerNewCoursePage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { session } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -26,6 +29,8 @@ const ProducerNewCoursePage: React.FC = () => {
     thumbnail_url: "",
     is_published: false,
   });
+
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -37,12 +42,99 @@ const ProducerNewCoursePage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.title.trim()) {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast({
+        variant: "destructive",
+        title: "Archivo inválido",
+        description: "Solo se permiten imágenes (JPG, PNG, WebP, etc.)",
+      });
       return;
     }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "Archivo muy grande",
+        description: "La imagen no puede superar 5MB",
+      });
+      return;
+    }
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setThumbnailPreview(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to storage
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `thumbnails/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("program-thumbnails")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        toast({
+          variant: "destructive",
+          title: "Error al subir",
+          description: "No se pudo subir la imagen. Intenta de nuevo.",
+        });
+        setThumbnailPreview(null);
+        return;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("program-thumbnails")
+        .getPublicUrl(filePath);
+
+      setFormData((prev) => ({
+        ...prev,
+        thumbnail_url: urlData.publicUrl,
+      }));
+
+      toast({
+        title: "Imagen subida",
+        description: "La portada se cargó correctamente.",
+      });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Ocurrió un error al subir la imagen.",
+      });
+      setThumbnailPreview(null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveThumbnail = () => {
+    setThumbnailPreview(null);
+    setFormData((prev) => ({ ...prev, thumbnail_url: "" }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     if (!formData.title.trim()) {
       toast({
@@ -133,7 +225,10 @@ const ProducerNewCoursePage: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <NeonButton onClick={handleSubmit} disabled={isSubmitting || !formData.title.trim()}>
+              <NeonButton
+                onClick={handleSubmit}
+                disabled={isSubmitting || !formData.title.trim()}
+              >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
@@ -185,9 +280,7 @@ const ProducerNewCoursePage: React.FC = () => {
 
               {/* Pricing */}
               <HolographicCard>
-                <h2 className="font-heading font-bold text-lg mb-4">
-                  Precio
-                </h2>
+                <h2 className="font-heading font-bold text-lg mb-4">Precio</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="price">Precio</Label>
@@ -212,7 +305,12 @@ const ProducerNewCoursePage: React.FC = () => {
                       id="currency"
                       name="currency"
                       value={formData.currency}
-                      onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          currency: e.target.value,
+                        }))
+                      }
                       className="w-full glass rounded-lg px-3 py-2 bg-background border border-border"
                     >
                       <option value="USD">USD - Dólar</option>
@@ -223,39 +321,64 @@ const ProducerNewCoursePage: React.FC = () => {
                 </div>
               </HolographicCard>
 
-              {/* Media */}
+              {/* Media - File Upload */}
               <HolographicCard>
                 <h2 className="font-heading font-bold text-lg mb-4">
                   Imagen de Portada
                 </h2>
-                <div>
-                  <Label htmlFor="thumbnail_url">URL de la imagen</Label>
-                  <div className="relative">
-                    <Image className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <GlassInput
-                      id="thumbnail_url"
-                      name="thumbnail_url"
-                      placeholder="https://ejemplo.com/imagen.jpg"
-                      value={formData.thumbnail_url}
-                      onChange={handleChange}
-                      className="pl-10"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Ingresa la URL de una imagen. Recomendado: 1280x720px
-                  </p>
-                </div>
 
-                {formData.thumbnail_url && (
-                  <div className="mt-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  id="thumbnail-upload"
+                />
+
+                {!thumbnailPreview && !formData.thumbnail_url ? (
+                  <label
+                    htmlFor="thumbnail-upload"
+                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                  >
+                    {isUploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        <span className="text-sm text-muted-foreground">
+                          Subiendo...
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        <Upload className="w-8 h-8 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                          Haz clic para subir una imagen
+                        </span>
+                        <span className="text-xs text-muted-foreground/70">
+                          JPG, PNG o WebP. Máximo 5MB. Recomendado: 1280x720px
+                        </span>
+                      </div>
+                    )}
+                  </label>
+                ) : (
+                  <div className="relative">
                     <img
-                      src={formData.thumbnail_url}
-                      alt="Preview"
-                      className="w-full max-w-md rounded-lg border border-border"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
+                      src={thumbnailPreview || formData.thumbnail_url}
+                      alt="Portada del programa"
+                      className="w-full max-h-64 object-cover rounded-lg border border-border"
                     />
+                    <button
+                      type="button"
+                      onClick={handleRemoveThumbnail}
+                      className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    {isUploading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                      </div>
+                    )}
                   </div>
                 )}
               </HolographicCard>
@@ -290,7 +413,10 @@ const ProducerNewCoursePage: React.FC = () => {
                 >
                   Cancelar
                 </button>
-                <NeonButton type="submit" disabled={isSubmitting || !formData.title.trim()}>
+                <NeonButton
+                  type="submit"
+                  disabled={isSubmitting || !formData.title.trim()}
+                >
                   {isSubmitting ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
