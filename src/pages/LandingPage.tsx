@@ -131,7 +131,7 @@ const LandingPage: React.FC = () => {
       <Header transparent />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20">
+      <section className="relative min-h-[80vh] flex items-center pt-24 pb-16">
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
         
@@ -178,7 +178,7 @@ const LandingPage: React.FC = () => {
           </div>
 
           {/* Social proof */}
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 mt-12 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-8 animate-fade-in" style={{ animationDelay: "0.4s" }}>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-heading font-bold text-primary">
                 <AnimatedCounter end={380000} suffix="+" />
@@ -215,10 +215,10 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Mentor Section */}
-      <section className="py-20 relative z-10">
+      <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+            <div className="grid lg:grid-cols-2 gap-10 items-center mb-12">
               {/* Image */}
               <div className="relative flex justify-center">
                 <div className="relative">
@@ -283,10 +283,10 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Arsenal de Entrenamiento */}
-      <section className="py-20 relative z-10">
+      <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-4">
               <Rocket className="w-4 h-4 text-secondary" />
               <span className="text-sm font-medium">Programas Incluidos</span>
             </div>
@@ -332,7 +332,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* La Hermandad Hack */}
-      <section className="py-20 relative z-10">
+      <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="relative overflow-hidden rounded-3xl glass-strong holographic-border">
             {/* Background effects */}
@@ -397,13 +397,13 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 relative z-10">
+      <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-3">
               Lo que dicen los <span className="text-gradient">Resultados</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
               Entrenar con Hector no es solo aprender marketing, es cambiar la forma en la que ves los negocios.
             </p>
           </div>
@@ -428,7 +428,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 relative z-10">
+      <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="relative overflow-hidden rounded-3xl glass-strong holographic-border">
             {/* Background effects */}
