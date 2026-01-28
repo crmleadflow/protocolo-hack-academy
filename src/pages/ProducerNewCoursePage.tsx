@@ -9,13 +9,13 @@ import { GlassInput } from "@/components/ui/glass-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { usePrograms } from "@/hooks/usePrograms";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const ProducerNewCoursePage: React.FC = () => {
   const navigate = useNavigate();
-  const { createProgram } = usePrograms();
-  const { user } = useAuth();
+  const { toast } = useToast();
+  const { session } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -44,17 +44,66 @@ const ProducerNewCoursePage: React.FC = () => {
       return;
     }
 
+    if (!formData.title.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Falta el título",
+        description: "Escribe el título del programa para continuar.",
+      });
+      return;
+    }
+
+    if (!session?.access_token) {
+      toast({
+        variant: "destructive",
+        title: "Sesión no válida",
+        description: "Tu sesión expiró. Cierra sesión y vuelve a iniciar.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-create-program`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            title: formData.title,
+            description: formData.description,
+            price: formData.price,
+            currency: formData.currency,
+            thumbnail_url: formData.thumbnail_url,
+            is_published: formData.is_published,
+          }),
+        }
+      );
 
-    const program = await createProgram({
-      ...formData,
-      created_by: user?.id,
-    });
+      const data = await res.json().catch(() => null);
 
-    setIsSubmitting(false);
+      if (!res.ok) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description:
+            data?.error || "No se pudo crear el programa. Intenta de nuevo.",
+        });
+        return;
+      }
 
-    if (program) {
-      navigate(`/producer/course/${program.id}/edit`);
+      toast({
+        title: "Programa creado",
+        description: "El programa se creó correctamente.",
+      });
+
+      navigate(`/producer/course/${data.id}/edit`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
