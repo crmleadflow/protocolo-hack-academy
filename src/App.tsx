@@ -15,6 +15,7 @@ import CatalogPage from "./pages/CatalogPage";
 import CoursePlayerPage from "./pages/CoursePlayerPage";
 import ProducerDashboardPage from "./pages/ProducerDashboardPage";
 import ProducerCoursesPage from "./pages/ProducerCoursesPage";
+import ProducerNewCoursePage from "./pages/ProducerNewCoursePage";
 import ProducerCourseEditPage from "./pages/ProducerCourseEditPage";
 import AdminStudentsPage from "./pages/AdminStudentsPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
@@ -81,6 +82,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <ProducerCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/new-course"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerNewCoursePage />
                 </ProtectedRoute>
               }
             />
