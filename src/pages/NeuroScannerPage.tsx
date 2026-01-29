@@ -80,10 +80,14 @@ export default function NeuroScannerPage() {
   const [isSupported, setIsSupported] = useState(true);
   const [isNavOpen, setIsNavOpen] = useState(true);
 
-  // Only hide menu when navigating to programs (quick links)
-  const handleTabChange = (tab: string) => {
+  // Cambiar de pestaña debe ocultar el menú (Grabar/Resultados/Historial)
+  const goToTab = (tab: string) => {
     setActiveTab(tab);
-    // Menu stays open when switching between main tabs
+    setIsNavOpen(false);
+  };
+
+  const handleTabChange = (tab: string) => {
+    goToTab(tab);
   };
 
   // Hide menu when clicking on program links
@@ -184,6 +188,9 @@ export default function NeuroScannerPage() {
   }, []);
 
   const startRecording = async () => {
+    // Al usar cualquier función, ocultar el menú
+    setIsNavOpen(false);
+
     if (!isSupported || !recognitionRef.current) {
       setMicError("Tu navegador no soporta reconocimiento de voz. Usa Chrome, Edge o Safari.");
       return;
@@ -239,6 +246,9 @@ export default function NeuroScannerPage() {
   };
 
   const handleAnalyze = async () => {
+    // Al usar cualquier función, ocultar el menú
+    setIsNavOpen(false);
+
     if (transcript.trim().length < 20) {
       alert("El transcript debe tener al menos 20 caracteres");
       return;
@@ -253,7 +263,7 @@ export default function NeuroScannerPage() {
 
       if (result?.scan) {
         setSelectedScan(result.scan);
-        setActiveTab("results");
+        goToTab("results");
         setTranscript("");
         setTitle("");
         setRecordingTime(0);
@@ -622,7 +632,7 @@ export default function NeuroScannerPage() {
               {/* Results Tab */}
               <TabsContent value="results" className="space-y-6">
                 {selectedScan ? (
-                  <ScanResults scan={selectedScan} onBack={() => setActiveTab("record")} />
+                  <ScanResults scan={selectedScan} onBack={() => goToTab("record")} />
                 ) : (
                   <Card className="glass-card p-12 text-center">
                     <Brain className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
@@ -632,7 +642,7 @@ export default function NeuroScannerPage() {
                     <Button 
                       variant="outline" 
                       className="mt-4"
-                      onClick={() => setActiveTab("record")}
+                      onClick={() => goToTab("record")}
                     >
                       Ir a Grabar
                     </Button>
@@ -662,7 +672,7 @@ export default function NeuroScannerPage() {
                         className="glass-card hover:border-primary/40 transition-all cursor-pointer"
                         onClick={() => {
                           setSelectedScan(scan);
-                          setActiveTab("results");
+                          goToTab("results");
                         }}
                       >
                         <CardContent className="p-4">
