@@ -7,6 +7,7 @@ import {
   Loader2,
   ArrowLeft,
   Shield,
+  Trash2,
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -15,6 +16,16 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -37,7 +48,7 @@ import { es } from "date-fns/locale";
 
 const StudentMessagesPage: React.FC = () => {
   const { user } = useAuth();
-  const { messages, admins, isLoading, sendMessage, markAsRead, unreadCount } =
+  const { messages, admins, isLoading, sendMessage, markAsRead, deleteMessage, unreadCount } =
     useDirectMessages();
 
   const [showComposeModal, setShowComposeModal] = useState(false);
@@ -46,6 +57,8 @@ const StudentMessagesPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<DirectMessage | null>(null);
+  const [messageToDelete, setMessageToDelete] = useState<DirectMessage | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSendMessage = async () => {
     if (!selectedAdmin || !content.trim()) return;
@@ -75,6 +88,15 @@ const StudentMessagesPage: React.FC = () => {
     setSubject(`Re: ${message.subject || "Sin asunto"}`);
     setSelectedMessage(null);
     setShowComposeModal(true);
+  };
+
+  const handleDeleteMessage = async () => {
+    if (!messageToDelete) return;
+    setIsDeleting(true);
+    await deleteMessage(messageToDelete.id);
+    setIsDeleting(false);
+    setMessageToDelete(null);
+    setSelectedMessage(null);
   };
 
   return (
@@ -313,20 +335,59 @@ const StudentMessagesPage: React.FC = () => {
                   <p className="whitespace-pre-wrap">{selectedMessage.content}</p>
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="flex-col sm:flex-row gap-2">
                   <NeonButton variant="ghost" onClick={() => setSelectedMessage(null)}>
                     <ArrowLeft className="w-4 h-4" />
                     Volver
                   </NeonButton>
-                  <NeonButton onClick={() => handleReply(selectedMessage)}>
-                    <Send className="w-4 h-4" />
-                    Responder
-                  </NeonButton>
+                  <div className="flex gap-2">
+                    <NeonButton 
+                      variant="ghost" 
+                      onClick={() => setMessageToDelete(selectedMessage)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Eliminar
+                    </NeonButton>
+                    <NeonButton onClick={() => handleReply(selectedMessage)}>
+                      <Send className="w-4 h-4" />
+                      Responder
+                    </NeonButton>
+                  </div>
                 </DialogFooter>
               </>
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={!!messageToDelete} onOpenChange={() => setMessageToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar mensaje?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta acción no se puede deshacer. El mensaje será eliminado permanentemente de tu bandeja.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleDeleteMessage} 
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Eliminando...
+                  </>
+                ) : (
+                  "Eliminar"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </SidebarProvider>
   );
