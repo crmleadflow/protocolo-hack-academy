@@ -19,6 +19,7 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -38,17 +39,31 @@ const secondaryItems = [
 ];
 
 export function ProducerSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
+  const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Cerrar el sidebar en móvil al hacer clic en un enlace
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   const handleLogout = async () => {
+    handleLinkClick();
     await signOut();
     navigate("/");
+  };
+
+  const handleNavigate = (path: string) => {
+    handleLinkClick();
+    navigate(path);
   };
 
   return (
@@ -86,6 +101,7 @@ export function ProducerSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url} 
+                      onClick={handleLinkClick}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
                         isActive(item.url) 
@@ -113,6 +129,7 @@ export function ProducerSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url} 
+                      onClick={handleLinkClick}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
                         isActive(item.url) 
@@ -152,7 +169,7 @@ export function ProducerSidebar() {
 
         {/* Switch to Student View */}
         <button 
-          onClick={() => navigate("/dashboard")}
+          onClick={() => handleNavigate("/dashboard")}
           className={cn(
             "flex items-center gap-3 px-3 py-2 rounded-lg w-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all mb-2",
             collapsed && "justify-center"

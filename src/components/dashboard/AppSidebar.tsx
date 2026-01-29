@@ -21,6 +21,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useDirectMessages } from "@/hooks/useDirectMessages";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 import { Mail } from "lucide-react";
@@ -42,8 +43,9 @@ const secondaryItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
+  const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
   const { isAdmin, signOut } = useAuth();
@@ -52,7 +54,15 @@ export function AppSidebar() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Cerrar el sidebar en móvil al hacer clic en un enlace
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   const handleLogout = async () => {
+    handleLinkClick();
     await signOut();
     navigate("/");
   };
@@ -87,6 +97,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url} 
+                      onClick={handleLinkClick}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
                         isActive(item.url) 
@@ -124,6 +135,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to="/producer" 
+                      onClick={handleLinkClick}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
                         isActive("/producer") 
@@ -151,6 +163,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url} 
+                      onClick={handleLinkClick}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
                         isActive(item.url) 
