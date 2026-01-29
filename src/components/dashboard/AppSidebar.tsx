@@ -105,8 +105,36 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2">
+        {/* Admin Link - First if admin */}
+        {isAdmin && (
+          <SidebarGroup>
+            {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Administración</SidebarGroupLabel>}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to="/producer" 
+                      onClick={handleLinkClick}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
+                        isActive("/producer") 
+                          ? "bg-secondary/20 text-secondary neon-glow-purple" 
+                          : "hover:bg-white/5"
+                      )}
+                    >
+                      <Shield className="w-5 h-5 flex-shrink-0" />
+                      {!collapsed && <span>Panel Admin</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         {/* Main Menu */}
-        <SidebarGroup>
+        <SidebarGroup className={isAdmin ? "mt-4" : ""}>
           {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Menú Principal</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
@@ -142,34 +170,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {/* Admin Link */}
-        {isAdmin && (
-          <SidebarGroup className="mt-4">
-            {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Administración</SidebarGroupLabel>}
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to="/producer" 
-                      onClick={handleLinkClick}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
-                        isActive("/producer") 
-                          ? "bg-secondary/20 text-secondary neon-glow-purple" 
-                          : "hover:bg-white/5"
-                      )}
-                    >
-                      <Shield className="w-5 h-5 flex-shrink-0" />
-                      {!collapsed && <span>Panel Admin</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
 
         {/* Secondary Menu */}
         <SidebarGroup className="mt-auto">
