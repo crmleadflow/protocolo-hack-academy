@@ -27,6 +27,7 @@ import MentorPage from "./pages/MentorPage";
 import ProducerMentorPage from "./pages/ProducerMentorPage";
 import AdminMessagesPage from "./pages/AdminMessagesPage";
 import StudentMessagesPage from "./pages/StudentMessagesPage";
+import HelpPage from "./pages/HelpPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -187,6 +188,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <StudentMessagesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/help"
+              element={
+                <ProtectedRoute>
+                  <HelpPage />
                 </ProtectedRoute>
               }
             />
