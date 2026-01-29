@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { GlassInput } from "@/components/ui/glass-input";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
 import { useAuth } from "@/contexts/AuthContext";
@@ -92,6 +93,9 @@ const CatalogPage: React.FC = () => {
             </div>
           )}
         </main>
+        
+        {/* Floating button for mobile */}
+        <FloatingSidebarTrigger />
       </div>
     </SidebarProvider>
   );
