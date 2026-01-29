@@ -1,1 +1,4 @@
 project_id = "mvyroxrmhqxtzljoryzi"
+
+[functions.neuro-scanner]
+verify_jwt = false
