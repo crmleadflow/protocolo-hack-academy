@@ -232,41 +232,41 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               {/* Skip Back */}
               <button 
                 onClick={() => skip(-10)}
-                className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
+                className="p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_15px_rgba(0,217,255,0.2)]"
               >
-                <SkipBack className="w-5 h-5 text-white/90" />
+                <SkipBack className="w-5 h-5 text-white" />
               </button>
 
               {/* Play/Pause */}
               <button 
                 onClick={togglePlay}
-                className="p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_20px_rgba(0,217,255,0.3)]"
+                className="p-3.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_20px_rgba(0,217,255,0.3)]"
               >
                 {isPlaying ? (
-                  <Pause className="w-6 h-6 text-white" />
+                  <Pause className="w-7 h-7 text-white" />
                 ) : (
-                  <Play className="w-6 h-6 text-white ml-0.5" />
+                  <Play className="w-7 h-7 text-white ml-0.5" />
                 )}
               </button>
 
               {/* Skip Forward */}
               <button 
                 onClick={() => skip(10)}
-                className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
+                className="p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_15px_rgba(0,217,255,0.2)]"
               >
-                <SkipForward className="w-5 h-5 text-white/90" />
+                <SkipForward className="w-5 h-5 text-white" />
               </button>
 
               {/* Volume */}
               <div className="flex items-center gap-2 ml-2">
                 <button 
                   onClick={toggleMute}
-                  className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
+                  className="p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_15px_rgba(0,217,255,0.2)]"
                 >
                   {isMuted || volume === 0 ? (
-                    <VolumeX className="w-5 h-5 text-white/90" />
+                    <VolumeX className="w-5 h-5 text-white" />
                   ) : (
-                    <Volume2 className="w-5 h-5 text-white/90" />
+                    <Volume2 className="w-5 h-5 text-white" />
                   )}
                 </button>
                 <Slider
@@ -279,7 +279,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </div>
 
               {/* Time */}
-              <span className="text-sm text-white/70 ml-4 font-mono">
+              <span className="text-sm text-white/80 ml-4 font-mono px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </span>
             </div>
@@ -287,9 +287,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             {/* Fullscreen */}
             <button 
               onClick={toggleFullscreen}
-              className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
+              className="p-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_15px_rgba(0,217,255,0.2)]"
             >
-              <Maximize className="w-5 h-5 text-white/90" />
+              <Maximize className="w-5 h-5 text-white" />
             </button>
           </div>
         </div>
