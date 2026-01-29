@@ -80,9 +80,14 @@ export default function NeuroScannerPage() {
   const [isSupported, setIsSupported] = useState(true);
   const [isNavOpen, setIsNavOpen] = useState(true);
 
-  // Auto-hide menu when changing tabs or when recording/analyzing
+  // Only hide menu when navigating to programs (quick links)
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+    // Menu stays open when switching between main tabs
+  };
+
+  // Hide menu when clicking on program links
+  const handleProgramClick = () => {
     setIsNavOpen(false);
   };
   
@@ -375,6 +380,7 @@ export default function NeuroScannerPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                       <Link
                         to="/dashboard"
+                        onClick={handleProgramClick}
                         className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                       >
                         <Home className="w-5 h-5 text-primary" />
@@ -382,6 +388,7 @@ export default function NeuroScannerPage() {
                       </Link>
                       <Link
                         to="/catalog"
+                        onClick={handleProgramClick}
                         className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                       >
                         <BookOpen className="w-5 h-5 text-primary" />
@@ -389,6 +396,7 @@ export default function NeuroScannerPage() {
                       </Link>
                       <Link
                         to="/mentor"
+                        onClick={handleProgramClick}
                         className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                       >
                         <MessageSquare className="w-5 h-5 text-primary" />
@@ -396,6 +404,7 @@ export default function NeuroScannerPage() {
                       </Link>
                       <Link
                         to="/achievements"
+                        onClick={handleProgramClick}
                         className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                       >
                         <Trophy className="w-5 h-5 text-primary" />
@@ -403,6 +412,7 @@ export default function NeuroScannerPage() {
                       </Link>
                       <Link
                         to="/settings"
+                        onClick={handleProgramClick}
                         className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                       >
                         <Settings className="w-5 h-5 text-primary" />
