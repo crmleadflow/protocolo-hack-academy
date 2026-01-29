@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   Users,
   Check,
+  AlertTriangle,
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -62,6 +63,7 @@ const AdminMessagesPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<DirectMessage | null>(null);
+  const [showConfirmMassMessage, setShowConfirmMassMessage] = useState(false);
 
   // Filter students based on search term
   const filteredStudents = useMemo(() => {
@@ -86,7 +88,18 @@ const AdminMessagesPage: React.FC = () => {
     
     if (recipients.length === 0 || !content.trim()) return;
 
+    // Show confirmation for mass messages
+    if (sendToAll && students.length > 1) {
+      setShowConfirmMassMessage(true);
+      return;
+    }
+
+    await executeSendMessage(recipients);
+  };
+
+  const executeSendMessage = async (recipients: string[]) => {
     setIsSending(true);
+    setShowConfirmMassMessage(false);
     
     // Send message to each recipient
     for (const recipientId of recipients) {
@@ -469,6 +482,59 @@ const AdminMessagesPage: React.FC = () => {
                 </DialogFooter>
               </>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Confirm Mass Message Modal */}
+        <Dialog open={showConfirmMassMessage} onOpenChange={setShowConfirmMassMessage}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-destructive" />
+                </div>
+                <div>
+                  <DialogTitle>Confirmar envío masivo</DialogTitle>
+                  <DialogDescription>
+                    Esta acción no se puede deshacer
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                Estás a punto de enviar un mensaje a <strong className="text-foreground">{students.length} estudiantes</strong>.
+              </p>
+              <div className="mt-4 p-3 rounded-lg bg-muted/50 border border-border">
+                <p className="text-sm font-medium mb-1">{subject || "Sin asunto"}</p>
+                <p className="text-xs text-muted-foreground line-clamp-3">{content}</p>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <NeonButton variant="ghost" onClick={() => setShowConfirmMassMessage(false)}>
+                Cancelar
+              </NeonButton>
+              <NeonButton
+                variant="default"
+                onClick={() => executeSendMessage(students.map(s => s.user_id))}
+                disabled={isSending}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {isSending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Enviar a todos ({students.length})
+                  </>
+                )}
+              </NeonButton>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

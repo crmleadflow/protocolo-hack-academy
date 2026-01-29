@@ -21,6 +21,7 @@ import {
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
+import { useDirectMessages } from "@/hooks/useDirectMessages";
 import { cn } from "@/lib/utils";
 
 import { Mail } from "lucide-react";
@@ -29,7 +30,7 @@ const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Programas", url: "/catalog", icon: BookOpen },
   { title: "Mi Mentor", url: "/mentor", icon: Sparkles },
-  { title: "Mensajes", url: "/messages", icon: Mail },
+  { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
   { title: "Logros", url: "/achievements", icon: Trophy },
   { title: "Comunidad", url: "/community", icon: MessageSquare },
 ];
@@ -47,6 +48,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { isAdmin, signOut } = useAuth();
   const { profile, displayName, initials } = useProfile();
+  const { unreadCount } = useDirectMessages();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -89,7 +91,7 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
+                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
                         isActive(item.url) 
                           ? "bg-primary/20 text-primary neon-glow" 
                           : "hover:bg-white/5"
@@ -97,6 +99,16 @@ export function AppSidebar() {
                     >
                       <item.icon className="w-5 h-5 flex-shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
+                      {item.hasBadge && unreadCount > 0 && (
+                        <span className={cn(
+                          "absolute flex items-center justify-center bg-destructive text-destructive-foreground text-xs font-bold rounded-full",
+                          collapsed 
+                            ? "top-0 right-0 w-4 h-4 text-[10px]" 
+                            : "ml-auto w-5 h-5"
+                        )}>
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
