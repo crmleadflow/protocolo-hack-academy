@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Send, Trash2, Sparkles, ExternalLink } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback, memo } from "react";
+import { Send, Trash2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { useMentorChat, useMentorSettings } from "@/hooks/useMentor";
-import { Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import mentorAvatar from "@/assets/hector-galensky-mentor-avatar.png";
@@ -33,7 +32,7 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
     await sendMessage(message);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -59,13 +58,21 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
 
   if (settingsLoading) {
     return (
-      <div className={cn("glass-card rounded-xl p-6", className)}>
-        <div className="flex items-center gap-4 mb-6">
-          <Skeleton className="w-16 h-16 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-6 w-40" />
-            <Skeleton className="h-4 w-60" />
+      <div className={cn("flex flex-col h-[calc(100vh-200px)] min-h-[500px]", className)}>
+        <div className="glass-card rounded-t-xl p-4 border-b border-border/50">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-muted animate-pulse" />
+            <div className="flex-1 space-y-2">
+              <div className="h-5 w-32 bg-muted rounded animate-pulse" />
+              <div className="h-4 w-48 bg-muted rounded animate-pulse" />
+            </div>
           </div>
+        </div>
+        <div className="flex-1 glass-card flex items-center justify-center">
+          <div className="w-32 h-32 rounded-full bg-muted animate-pulse" />
+        </div>
+        <div className="glass-card rounded-b-xl p-4 border-t border-border/50">
+          <div className="h-12 bg-muted rounded-lg animate-pulse" />
         </div>
       </div>
     );
@@ -252,7 +259,7 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
           <GlassInput
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             placeholder="Pregunta lo que necesites..."
             className="flex-1"
             disabled={isLoading}
