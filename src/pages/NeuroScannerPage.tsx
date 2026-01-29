@@ -15,7 +15,7 @@ import {
   Brain, Mic, MicOff, Play, Square, Upload, Trash2, 
   TrendingUp, AlertTriangle, Sparkles, Clock, Zap,
   ChevronRight, ChevronDown, BarChart3, Target, Volume2, Home, BookOpen, 
-  MessageSquare, Trophy, Settings, ArrowLeft
+  MessageSquare, Trophy, Settings, ArrowLeft, Menu
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useNeuroScanner, NeuroScan } from "@/hooks/useNeuroScanner";
@@ -78,7 +78,13 @@ export default function NeuroScannerPage() {
   const [activeTab, setActiveTab] = useState("record");
   const [micError, setMicError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
-  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(true);
+
+  // Auto-hide menu when changing tabs or when recording/analyzing
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setIsNavOpen(false);
+  };
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -297,24 +303,30 @@ export default function NeuroScannerPage() {
                     </button>
                     
                     <CollapsibleTrigger asChild>
-                      <button className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer group">
-                        <Brain className="w-8 h-8 text-primary" />
-                        <div className="text-left">
-                          <div className="flex items-center gap-2">
-                            <h1 className="text-2xl md:text-3xl font-heading font-bold text-gradient">
-                              Neuro Scanner
-                            </h1>
-                            <ChevronDown className={cn(
-                              "w-5 h-5 text-muted-foreground transition-transform duration-200",
-                              isNavOpen && "rotate-180"
-                            )} />
-                          </div>
-                          <p className="text-sm text-muted-foreground hidden md:block">
-                            Toca para ver navegación
-                          </p>
-                        </div>
+                      <button 
+                        className={cn(
+                          "p-2 rounded-lg border border-border/50 transition-all",
+                          isNavOpen 
+                            ? "bg-primary/20 border-primary/50 text-primary" 
+                            : "hover:bg-muted/50"
+                        )}
+                        title={isNavOpen ? "Cerrar menú" : "Abrir menú"}
+                      >
+                        <Menu className="w-5 h-5" />
                       </button>
                     </CollapsibleTrigger>
+                    
+                    <div className="flex items-center gap-3">
+                      <Brain className="w-8 h-8 text-primary" />
+                      <div className="text-left">
+                        <h1 className="text-2xl md:text-3xl font-heading font-bold text-gradient">
+                          Neuro Scanner
+                        </h1>
+                        <p className="text-sm text-muted-foreground hidden md:block">
+                          Analiza tu discurso de venta
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   
                   {/* Stats Cards */}
@@ -407,7 +419,7 @@ export default function NeuroScannerPage() {
               </div>
             </Collapsible>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
               <TabsList className="glass-card">
                 <TabsTrigger value="record" className="flex items-center gap-2">
                   <Mic className="w-4 h-4" />
