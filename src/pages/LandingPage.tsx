@@ -10,7 +10,7 @@ import { ParticleBackground } from "@/components/ui/particle-background";
 import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
-import hectorImage from "@/assets/hector-galensky-hero-transparent.png";
+import hectorImage from "@/assets/hector-galensky-hero-transparent-v2.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
