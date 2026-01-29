@@ -13,6 +13,8 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { PayPalCheckout } from "@/components/payment/PayPalCheckout";
 import { LessonResourceManager } from "@/components/lesson/LessonResourceManager";
+import { LessonCommentsSection } from "@/components/lesson/LessonCommentsSection";
+import { LessonMentorQuestion } from "@/components/lesson/LessonMentorQuestion";
 
 import { useStudentProgramDetail, LessonWithProgress, ModuleWithProgress } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
@@ -558,6 +560,18 @@ function LessonPlayerView({
         </div>
       </div>
 
+      {/* Lesson Title Above Video */}
+      <div className="mb-2">
+        <h2 className="text-2xl font-heading font-bold text-foreground">
+          {currentLesson.title}
+        </h2>
+        {currentLesson.description && (
+          <p className="text-muted-foreground mt-1 text-sm line-clamp-2">
+            {currentLesson.description}
+          </p>
+        )}
+      </div>
+
       {/* Video Player */}
       <VideoPlayer
         videoUrl={currentLesson.video_url || ""}
@@ -645,43 +659,29 @@ function LessonPlayerView({
         </button>
       )}
 
-      {/* Lesson Info */}
-      <HolographicCard className="space-y-4">
-        <div>
-          <h2 className="text-xl font-heading font-bold">
-            {currentLesson.title}
-          </h2>
-          {currentLesson.description && (
-            <p className="text-muted-foreground mt-1">
-              {currentLesson.description}
-            </p>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-border/50">
-          <NeonButton variant="ghost" size="sm" onClick={onBackToList}>
-            <List className="w-4 h-4" />
-            Volver al listado
-          </NeonButton>
-          
-          {currentLesson.duration && (
-            <div className="flex items-center gap-1 ml-auto text-sm text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              <span>{currentLesson.duration}</span>
-            </div>
-          )}
-        </div>
-      </HolographicCard>
-
       {/* Lesson Resources */}
-      {/* Always show student view for resources - no admin buttons in course player */}
       <LessonResourceManager
         lessonId={currentLesson.id}
         resources={lessonResources}
         onResourcesChange={refetchResources}
         isAdmin={false}
       />
+
+      {/* Mentor Question Section */}
+      {hasAccess && (
+        <LessonMentorQuestion
+          lessonTitle={currentLesson.title}
+          programTitle={program.title}
+        />
+      )}
+
+      {/* Comments Section */}
+      {hasAccess && (
+        <LessonCommentsSection
+          lessonId={currentLesson.id}
+          lessonTitle={currentLesson.title}
+        />
+      )}
 
     </div>
   );
