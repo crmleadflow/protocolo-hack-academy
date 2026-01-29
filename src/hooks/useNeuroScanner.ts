@@ -105,8 +105,10 @@ export function useNeuroScanner() {
 
       return response.json();
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["neuro-scans"] });
+    onSuccess: async (data) => {
+      // Force refetch to ensure history updates
+      await queryClient.invalidateQueries({ queryKey: ["neuro-scans"] });
+      await queryClient.refetchQueries({ queryKey: ["neuro-scans", user?.id] });
       toast.success("¡Análisis completado!");
       setIsAnalyzing(false);
       return data.scan;
