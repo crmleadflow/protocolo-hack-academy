@@ -385,44 +385,33 @@ function ModuleLessonList({
               return (
                 <button
                   key={lesson.id}
-                  onClick={() => onSelectLesson(lesson)}
+                  onClick={() => !isLocked && onSelectLesson(lesson)}
+                  disabled={isLocked}
                   className={cn(
-                    "w-full flex items-center gap-4 p-4 text-left rounded-xl transition-all duration-300 group relative overflow-hidden",
-                    "hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent",
-                    lesson.completed && "bg-primary/5"
+                    "w-full flex items-center gap-3 py-3 px-3 text-left transition-all group relative",
+                    isLocked
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-white/5 cursor-pointer"
                   )}
                 >
-                  {/* Lesson Number/Status */}
-                  <div className="relative z-10 flex-shrink-0">
-                    <div
-                      className={cn(
-                        "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 relative",
-                        lesson.completed
-                          ? "bg-gradient-to-br from-accent to-accent/80 text-accent-foreground shadow-lg shadow-accent/20"
-                          : isLocked
-                          ? "bg-muted/50 text-muted-foreground"
-                          : "bg-gradient-to-br from-primary/20 to-primary/5 text-primary group-hover:from-primary group-hover:to-primary/80 group-hover:text-primary-foreground group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30"
-                      )}
-                    >
-                      {lesson.completed ? (
-                        <CheckCircle2 className="w-6 h-6" />
-                      ) : isLocked ? (
-                        <Lock className="w-5 h-5" />
-                      ) : (
-                        <>
-                          <span className="font-bold group-hover:hidden">{lessonIndex + 1}</span>
-                          <Play className="w-5 h-5 hidden group-hover:block ml-0.5" />
-                        </>
-                      )}
-                    </div>
+                  {/* Completion/Status indicator */}
+                  <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                    {lesson.completed ? (
+                      <CheckCircle2 className="w-5 h-5 text-accent" />
+                    ) : isLocked ? (
+                      <Lock className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <div className="w-2 h-2 rounded-full bg-muted-foreground/40 group-hover:bg-primary transition-colors" />
+                    )}
                   </div>
 
                   {/* Lesson Info */}
-                  <div className="flex-1 min-w-0 z-10">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h4 className={cn(
-                        "font-medium transition-colors line-clamp-1",
-                        lesson.completed ? "text-primary" : "group-hover:text-primary"
+                        "text-sm transition-colors truncate",
+                        lesson.completed && "text-muted-foreground line-through",
+                        !lesson.completed && !isLocked && "group-hover:text-primary"
                       )}>
                         {lesson.title}
                       </h4>
@@ -432,51 +421,14 @@ function ModuleLessonList({
                         </span>
                       )}
                     </div>
-                    
-                    {lesson.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
-                        {lesson.description}
-                      </p>
-                    )}
-                    
-                    <div className="flex items-center gap-3 mt-2">
-                      {lesson.duration && (
-                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <Clock className="w-3.5 h-3.5" />
-                          {lesson.duration}
-                        </span>
-                      )}
-                      
-                      {!isLocked && !lesson.completed && (
-                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground group-hover:text-primary transition-colors">
-                          <Play className="w-3.5 h-3.5" />
-                          Reproducir
-                        </span>
-                      )}
-                    </div>
                   </div>
 
-                  {/* Action indicator */}
-                  <div className="flex-shrink-0 z-10">
-                    {isLocked ? (
-                      <div className="w-10 h-10 rounded-xl bg-muted/30 flex items-center justify-center">
-                        <Lock className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                    ) : (
-                      <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
-                        lesson.completed 
-                          ? "bg-accent/20" 
-                          : "bg-primary/10 group-hover:bg-primary group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30"
-                      )}>
-                        {lesson.completed ? (
-                          <CheckCircle2 className="w-5 h-5 text-accent" />
-                        ) : (
-                          <ChevronRight className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {/* Duration */}
+                  {lesson.duration && (
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
+                      {lesson.duration}
+                    </span>
+                  )}
                 </button>
               );
             })}
