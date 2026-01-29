@@ -185,7 +185,7 @@ const LandingPage: React.FC = () => {
       <section className="relative z-10 -mt-12 pt-0 pb-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-10 items-center mb-12">
+            <div className="grid lg:grid-cols-2 gap-10 items-center mb-20">
               {/* Image */}
               <div className="relative flex justify-center">
                 <div className="relative">
