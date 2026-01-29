@@ -100,7 +100,7 @@ const CoursePlayerPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen flex w-full bg-background">
           <AppSidebar />
           <main className="flex-1 flex items-center justify-center">
@@ -113,7 +113,7 @@ const CoursePlayerPage: React.FC = () => {
 
   if (!program) {
     return (
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen flex w-full bg-background">
           <AppSidebar />
           <main className="flex-1 flex items-center justify-center">
@@ -133,7 +133,7 @@ const CoursePlayerPage: React.FC = () => {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
 
