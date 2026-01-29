@@ -177,33 +177,6 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Social proof */}
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-2 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-heading font-bold text-primary">
-                <AnimatedCounter end={380000} suffix="+" />
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">Comunidad Global</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-heading font-bold text-secondary">
-                <AnimatedCounter end={94} suffix="+" />
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">Países</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-heading font-bold text-accent">
-                <AnimatedCounter end={25} suffix="+" />
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">Años de Experiencia</p>
-            </div>
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-6 h-6 fill-primary text-primary" />
-              ))}
-              <span className="ml-2 font-medium">Top Earner</span>
-            </div>
-          </div>
         </div>
       </section>
 
