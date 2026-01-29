@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: Database["public"]["Enums"]["achievement_category"]
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          is_hidden: boolean
+          name: string
+          requirement_type: string
+          requirement_value: number
+          sort_order: number
+          updated_at: string
+          xp_reward: number
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["achievement_category"]
+          created_at?: string
+          description: string
+          icon?: string
+          id?: string
+          is_hidden?: boolean
+          name: string
+          requirement_type: string
+          requirement_value?: number
+          sort_order?: number
+          updated_at?: string
+          xp_reward?: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["achievement_category"]
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          is_hidden?: boolean
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+          sort_order?: number
+          updated_at?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
           created_at: string
@@ -360,6 +405,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          created_at: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          created_at?: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          created_at?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -411,6 +488,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_xp: {
+        Row: {
+          created_at: string
+          current_level: number
+          current_streak: number
+          id: string
+          last_activity_date: string | null
+          lessons_completed: number
+          longest_streak: number
+          modules_completed: number
+          programs_completed: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_level?: number
+          current_streak?: number
+          id?: string
+          last_activity_date?: string | null
+          lessons_completed?: number
+          longest_streak?: number
+          modules_completed?: number
+          programs_completed?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_level?: number
+          current_streak?: number
+          id?: string
+          last_activity_date?: string | null
+          lessons_completed?: number
+          longest_streak?: number
+          modules_completed?: number
+          programs_completed?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -429,6 +551,7 @@ export type Database = {
       }
     }
     Enums: {
+      achievement_category: "progress" | "social" | "milestone"
       app_role: "admin" | "student"
       enrollment_status: "pending" | "active" | "expired" | "cancelled"
       payment_status: "pending" | "completed" | "failed" | "refunded"
@@ -559,6 +682,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      achievement_category: ["progress", "social", "milestone"],
       app_role: ["admin", "student"],
       enrollment_status: ["pending", "active", "expired", "cancelled"],
       payment_status: ["pending", "completed", "failed", "refunded"],
