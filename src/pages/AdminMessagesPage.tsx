@@ -12,6 +12,8 @@ import {
   Check,
   AlertTriangle,
   Trash2,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -48,10 +50,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const AdminMessagesPage: React.FC = () => {
   const { user } = useAuth();
-  const { messages, students, isLoading, sendMessage, markAsRead, deleteMessage, unreadCount } =
+  const { messages, students, isLoading, sendMessage, markAsRead, deleteMessage, deleteMessages, unreadCount } =
     useDirectMessages();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,6 +71,8 @@ const AdminMessagesPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<DirectMessage | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedMessageIds, setSelectedMessageIds] = useState<Set<string>>(new Set());
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
   // Filter students based on search term
   const filteredStudents = useMemo(() => {
@@ -160,6 +165,35 @@ const AdminMessagesPage: React.FC = () => {
     return `${selectedStudents.length} estudiantes seleccionados`;
   };
 
+  const toggleMessageSelect = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedMessageIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAllMessages = () => {
+    if (selectedMessageIds.size === filteredMessages.length) {
+      setSelectedMessageIds(new Set());
+    } else {
+      setSelectedMessageIds(new Set(filteredMessages.map((m) => m.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    setIsDeleting(true);
+    await deleteMessages(Array.from(selectedMessageIds));
+    setIsDeleting(false);
+    setShowBulkDeleteConfirm(false);
+    setSelectedMessageIds(new Set());
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -236,6 +270,40 @@ const AdminMessagesPage: React.FC = () => {
               />
             </div>
 
+            {/* Bulk Actions */}
+            {filteredMessages.length > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={toggleSelectAllMessages}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {selectedMessageIds.size === filteredMessages.length ? (
+                      <CheckSquare className="w-5 h-5 text-primary" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                    {selectedMessageIds.size === filteredMessages.length ? "Deseleccionar todo" : "Seleccionar todo"}
+                  </button>
+                  {selectedMessageIds.size > 0 && (
+                    <span className="text-sm text-muted-foreground">
+                      ({selectedMessageIds.size} seleccionado{selectedMessageIds.size > 1 ? "s" : ""})
+                    </span>
+                  )}
+                </div>
+                {selectedMessageIds.size > 0 && (
+                  <NeonButton
+                    variant="ghost"
+                    onClick={() => setShowBulkDeleteConfirm(true)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Eliminar ({selectedMessageIds.size})
+                  </NeonButton>
+                )}
+              </div>
+            )}
+
             {/* Messages List */}
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
@@ -266,10 +334,19 @@ const AdminMessagesPage: React.FC = () => {
                       key={message.id}
                       className={`p-4 cursor-pointer transition-all hover:scale-[1.01] ${
                         !message.is_read && !isSent ? "border-l-4 border-l-primary" : ""
-                      }`}
+                      } ${selectedMessageIds.has(message.id) ? "ring-2 ring-primary" : ""}`}
                       onClick={() => handleOpenMessage(message)}
                     >
                       <div className="flex items-start gap-4">
+                        <div
+                          className="flex-shrink-0 pt-1"
+                          onClick={(e) => toggleMessageSelect(message.id, e)}
+                        >
+                          <Checkbox
+                            checked={selectedMessageIds.has(message.id)}
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                          />
+                        </div>
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
                           <span className="font-bold text-primary-foreground">
                             {otherParty?.full_name?.[0]?.toUpperCase() || "?"}
@@ -614,6 +691,55 @@ const AdminMessagesPage: React.FC = () => {
                   <>
                     <Trash2 className="w-4 h-4" />
                     Eliminar
+                  </>
+                )}
+              </NeonButton>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Delete Confirmation Modal */}
+        <Dialog open={showBulkDeleteConfirm} onOpenChange={setShowBulkDeleteConfirm}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-destructive" />
+                </div>
+                <div>
+                  <DialogTitle>Eliminar {selectedMessageIds.size} mensaje(s)</DialogTitle>
+                  <DialogDescription>
+                    Esta acción no se puede deshacer
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                ¿Estás seguro que deseas eliminar <strong className="text-foreground">{selectedMessageIds.size} mensaje(s)</strong> seleccionados?
+              </p>
+            </div>
+
+            <DialogFooter>
+              <NeonButton variant="ghost" onClick={() => setShowBulkDeleteConfirm(false)}>
+                Cancelar
+              </NeonButton>
+              <NeonButton
+                variant="default"
+                onClick={handleBulkDelete}
+                disabled={isDeleting}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Eliminando...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Eliminar ({selectedMessageIds.size})
                   </>
                 )}
               </NeonButton>
