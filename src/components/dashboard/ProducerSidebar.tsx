@@ -88,6 +88,19 @@ export function ProducerSidebar() {
             )}
           </div>
         </div>
+        
+        {/* Back to Main Menu */}
+        <button 
+          onClick={() => handleNavigate("/dashboard")}
+          className={cn(
+            "flex items-center gap-2 mt-4 px-3 py-2 rounded-lg w-full border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all",
+            collapsed && "justify-center px-2"
+          )}
+          title="Volver al menú principal"
+        >
+          <Users className="w-4 h-4 flex-shrink-0" />
+          {!collapsed && <span className="text-sm font-medium">Menú Principal</span>}
+        </button>
       </SidebarHeader>
 
       <SidebarContent className="px-2">
