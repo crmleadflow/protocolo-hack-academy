@@ -1,11 +1,21 @@
 import React, { useState, useRef } from "react";
-import { Plus, Link2, FileText, Trash2, Upload, Loader2, ExternalLink, Download } from "lucide-react";
+import {
+  Plus,
+  Link2,
+  FileText,
+  Trash2,
+  Upload,
+  Loader2,
+  ExternalLink,
+  Download,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { Label } from "@/components/ui/label";
+import { StudentLessonResources } from "@/components/lesson/StudentLessonResources";
 import {
   Dialog,
   DialogContent,
@@ -182,8 +192,9 @@ export const LessonResourceManager: React.FC<LessonResourceManagerProps> = ({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  if (!isAdmin && resources.length === 0) {
-    return null;
+  // Student view: always show the two action buttons below the video
+  if (!isAdmin) {
+    return <StudentLessonResources resources={resources} />;
   }
 
   return (
@@ -254,25 +265,27 @@ export const LessonResourceManager: React.FC<LessonResourceManagerProps> = ({
                     : resource.file_name}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+               <div className="flex items-center gap-2">
                 {resource.type === "link" ? (
                   <a
                     href={resource.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors text-sm font-medium"
+                    className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                    aria-label="Abrir enlace"
                   >
+                    <span className="sr-only">Abrir enlace</span>
                     <ExternalLink className="w-4 h-4" />
-                    {!isAdmin && <span>Abrir enlace</span>}
                   </a>
                 ) : (
                   <a
                     href={resource.url}
-                    download={resource.file_name}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors text-sm font-medium"
+                    download={resource.file_name ?? undefined}
+                    className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                    aria-label="Descargar archivo"
                   >
+                    <span className="sr-only">Descargar archivo</span>
                     <Download className="w-4 h-4" />
-                    {!isAdmin && <span>Descargar archivo</span>}
                   </a>
                 )}
                 {isAdmin && (
