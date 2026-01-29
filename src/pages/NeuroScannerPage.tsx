@@ -262,24 +262,57 @@ export default function NeuroScannerPage() {
                         className="glass-input"
                       />
 
-                      {/* Recording Button */}
-                      <div className="flex flex-col items-center gap-4">
-                        <button
-                          onClick={isRecording ? stopRecording : startRecording}
-                          disabled={isAnalyzing}
-                          className={cn(
-                            "w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300",
-                            isRecording 
-                              ? "bg-destructive/20 border-2 border-destructive animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.5)]"
-                              : "bg-primary/20 border-2 border-primary hover:bg-primary/30 shadow-[0_0_20px_rgba(0,217,255,0.3)] hover:shadow-[0_0_30px_rgba(0,217,255,0.5)]"
-                          )}
-                        >
-                          {isRecording ? (
-                            <Square className="w-12 h-12 text-destructive" />
-                          ) : (
-                            <Mic className="w-12 h-12 text-primary" />
-                          )}
-                        </button>
+                      {/* Recording Controls */}
+                      <div className="flex flex-col items-center gap-6">
+                        <div className="flex items-center gap-8">
+                          {/* Record Button */}
+                          <div className="flex flex-col items-center gap-2">
+                            <button
+                              onClick={isRecording ? stopRecording : startRecording}
+                              disabled={isAnalyzing}
+                              className={cn(
+                                "w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300",
+                                isRecording 
+                                  ? "bg-destructive/20 border-2 border-destructive animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.5)]"
+                                  : "bg-primary/20 border-2 border-primary hover:bg-primary/30 shadow-[0_0_20px_rgba(0,217,255,0.3)] hover:shadow-[0_0_30px_rgba(0,217,255,0.5)]"
+                              )}
+                            >
+                              {isRecording ? (
+                                <Square className="w-10 h-10 text-destructive" />
+                              ) : (
+                                <Mic className="w-10 h-10 text-primary" />
+                              )}
+                            </button>
+                            <p className="text-xs text-muted-foreground">
+                              {isRecording ? "Detener" : "Grabar"}
+                            </p>
+                          </div>
+
+                          {/* Analyze Button */}
+                          <div className="flex flex-col items-center gap-2">
+                            <button
+                              onClick={handleAnalyze}
+                              disabled={isAnalyzing || isRecording || transcript.trim().length < 20}
+                              className={cn(
+                                "w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300",
+                                isAnalyzing
+                                  ? "bg-secondary/30 border-2 border-secondary animate-pulse"
+                                  : transcript.trim().length >= 20 && !isRecording
+                                    ? "bg-secondary/20 border-2 border-secondary hover:bg-secondary/30 shadow-[0_0_20px_rgba(255,0,128,0.3)] hover:shadow-[0_0_30px_rgba(255,0,128,0.5)]"
+                                    : "bg-muted/20 border-2 border-muted-foreground/30 opacity-50 cursor-not-allowed"
+                              )}
+                            >
+                              {isAnalyzing ? (
+                                <Brain className="w-10 h-10 text-secondary animate-pulse" />
+                              ) : (
+                                <Zap className="w-10 h-10 text-secondary" />
+                              )}
+                            </button>
+                            <p className="text-xs text-muted-foreground">
+                              {isAnalyzing ? "Analizando..." : "Analizar"}
+                            </p>
+                          </div>
+                        </div>
                         
                         {isRecording && (
                           <div className="flex items-center gap-2 text-destructive">
@@ -288,10 +321,12 @@ export default function NeuroScannerPage() {
                           </div>
                         )}
                         
-                        <p className="text-sm text-muted-foreground text-center">
+                        <p className="text-sm text-muted-foreground text-center max-w-[280px]">
                           {isRecording 
-                            ? "Hablando... Presiona para detener" 
-                            : "Presiona para iniciar grabación"}
+                            ? "Hablando... El texto aparece a la derecha" 
+                            : transcript.trim().length >= 20
+                              ? "¡Listo! Presiona Analizar para ver tu puntaje"
+                              : "Graba tu discurso o pega texto a la derecha"}
                         </p>
                       </div>
                     </CardContent>
