@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Play, BookOpen, Trophy, Zap, Clock, ChevronRight,
-  Flame, Loader2
+  Lock, CheckCircle, Loader2
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -13,19 +13,30 @@ import { StatCard } from "@/components/ui/stat-card";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
 import { useAuth } from "@/contexts/AuthContext";
-
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { programs, isLoading } = useStudentPrograms();
+  const { enrollments } = useEnrollment();
+
+  // Helper to check if user has active enrollment for a program
+  const hasActiveEnrollment = (programId: string) => {
+    if (isAdmin) return true;
+    const enrollment = enrollments.find((e) => e.program_id === programId);
+    return enrollment?.status === "active" && 
+      (!enrollment.expires_at || new Date(enrollment.expires_at) > new Date());
+  };
 
   // Calculate stats
-  const inProgressPrograms = programs.filter(
+  const activePrograms = programs.filter(
+    (p) => hasActiveEnrollment(p.id) || p.price === 0
+  );
+  const inProgressPrograms = activePrograms.filter(
     (p) => p.progress > 0 && p.progress < 100
   );
-  const completedPrograms = programs.filter((p) => p.progress === 100);
-  const totalLessons = programs.reduce((acc, p) => acc + p.totalLessons, 0);
-  const completedLessons = programs.reduce(
+  const completedPrograms = activePrograms.filter((p) => p.progress === 100);
+  const totalLessons = activePrograms.reduce((acc, p) => acc + p.totalLessons, 0);
+  const completedLessons = activePrograms.reduce(
     (acc, p) => acc + p.completedLessons,
     0
   );
@@ -176,11 +187,19 @@ const DashboardPage: React.FC = () => {
 
               {/* All Programs */}
               <div className="space-y-4">
-                <h2 className="text-xl font-heading font-bold">
-                  {inProgressPrograms.length > 0
-                    ? "Explorar Más Programas"
-                    : "Programas Disponibles"}
-                </h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-heading font-bold">
+                    Programas Disponibles
+                  </h2>
+                  <NeonButton
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate("/catalog")}
+                  >
+                    Ver catálogo
+                    <ChevronRight className="w-4 h-4" />
+                  </NeonButton>
+                </div>
 
                 {programs.length === 0 ? (
                   <HolographicCard className="p-8 text-center">
@@ -194,48 +213,112 @@ const DashboardPage: React.FC = () => {
                   </HolographicCard>
                 ) : (
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {programs
-                      .filter((p) => p.progress === 0)
-                      .slice(0, 6)
-                      .map((program) => (
+                    {programs.map((program) => {
+                      const isActive = hasActiveEnrollment(program.id) || program.price === 0;
+                      const isLocked = !isActive && program.price > 0;
+
+                      return (
                         <HolographicCard
                           key={program.id}
-                          className="cursor-pointer group"
+                          variant={program.progress > 0 ? "gradient" : "default"}
+                          className="cursor-pointer group relative overflow-hidden"
                           onClick={() => navigate(`/course/${program.id}`)}
                         >
-                          <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
-                              {program.thumbnail_url ? (
-                                <img
-                                  src={program.thumbnail_url}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <BookOpen className="w-6 h-6 text-primary" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-heading font-semibold group-hover:text-primary transition-colors">
-                                {program.title}
-                              </h3>
-                              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                                {program.description || "Sin descripción"}
-                              </p>
-                              <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
-                                <span className="flex items-center gap-1">
-                                  <Play className="w-3 h-3" />
-                                  {program.totalLessons} lecciones
+                          {/* Thumbnail */}
+                          <div className="relative aspect-video -mx-4 -mt-4 mb-4 overflow-hidden bg-muted">
+                            {program.thumbnail_url ? (
+                              <img
+                                src={program.thumbnail_url}
+                                alt={program.title}
+                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                                <BookOpen className="w-12 h-12 text-muted-foreground" />
+                              </div>
+                            )}
+
+                            {/* Lock Overlay on hover */}
+                            {isLocked && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="flex flex-col items-center gap-2 text-center transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                                  <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary/50 shadow-lg shadow-primary/20">
+                                    <Lock className="w-7 h-7 text-primary" />
+                                  </div>
+                                  <span className="text-lg font-heading font-bold text-primary">
+                                    ${program.price} {program.currency}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    Click para desbloquear
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Status Badge */}
+                            <div className="absolute top-3 right-3">
+                              {isActive && program.price > 0 && (
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-primary/90 text-primary-foreground flex items-center gap-1 backdrop-blur-sm">
+                                  <CheckCircle className="w-3 h-3" />
+                                  Activo
                                 </span>
-                                <span>•</span>
-                                <span className="text-primary font-medium">
+                              )}
+                              {program.price === 0 && (
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-secondary/90 text-secondary-foreground backdrop-blur-sm">
+                                  Gratis
+                                </span>
+                              )}
+                              {isLocked && (
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-muted/90 text-muted-foreground backdrop-blur-sm flex items-center gap-1">
+                                  <Lock className="w-3 h-3" />
                                   ${program.price}
                                 </span>
-                              </div>
+                              )}
                             </div>
                           </div>
+
+                          {/* Program Info */}
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-heading font-semibold text-lg group-hover:text-primary transition-colors flex-1">
+                              {program.title}
+                            </h3>
+                            {program.progress > 0 && (
+                              <ProgressRing progress={program.progress} size={40} strokeWidth={3}>
+                                <span className="text-[10px] font-bold">{program.progress}%</span>
+                              </ProgressRing>
+                            )}
+                          </div>
+
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                            {program.description || "Sin descripción"}
+                          </p>
+
+                          {/* Meta */}
+                          <div className="flex items-center justify-between text-xs text-muted-foreground pt-4 border-t border-border/50">
+                            <div className="flex items-center gap-4">
+                              <span className="flex items-center gap-1">
+                                <Play className="w-3 h-3" />
+                                {program.totalLessons} lecciones
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {program.modules.length} módulos
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Progress bar */}
+                          {program.progress > 0 && program.progress < 100 && (
+                            <div className="mt-3 h-1 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
+                                style={{ width: `${program.progress}%` }}
+                              />
+                            </div>
+                          )}
                         </HolographicCard>
-                      ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
