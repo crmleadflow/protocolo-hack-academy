@@ -2,8 +2,17 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { 
   Users, Search, UserPlus, Check, X,
-  BookOpen, Loader2, CheckCircle2, GraduationCap
+  BookOpen, Loader2, CheckCircle2, GraduationCap, MoreHorizontal, Ban, RefreshCw
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
@@ -585,22 +594,55 @@ const StudentTable: React.FC<StudentTableProps> = ({
                       {student.enrollments.length === 0 ? (
                         <Badge variant="secondary">Sin inscripciones</Badge>
                       ) : (
-                        student.enrollments.slice(0, 3).map((enrollment) => (
-                          <Badge
-                            key={enrollment.id}
-                            variant={enrollment.status === "active" ? "default" : "secondary"}
-                            className="text-xs"
-                          >
-                            {enrollment.program_title.length > 12
-                              ? `${enrollment.program_title.slice(0, 12)}...`
-                              : enrollment.program_title}
-                          </Badge>
-                        ))
-                      )}
-                      {student.enrollments.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{student.enrollments.length - 3} más
-                        </Badge>
+                        <>
+                          {student.enrollments.slice(0, 3).map((enrollment) => (
+                            <div key={enrollment.id} className="flex items-center gap-1">
+                              <Badge
+                                variant={enrollment.status === "active" ? "default" : "secondary"}
+                                className="text-xs"
+                              >
+                                {enrollment.program_title.length > 12
+                                  ? `${enrollment.program_title.slice(0, 12)}...`
+                                  : enrollment.program_title}
+                              </Badge>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-5 w-5">
+                                    <MoreHorizontal className="h-3 w-3" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel className="text-xs">
+                                    {enrollment.program_title}
+                                  </DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  {enrollment.status === "active" ? (
+                                    <DropdownMenuItem
+                                      onClick={() => onRevoke(enrollment.id)}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Ban className="w-3 h-3 mr-2" />
+                                      Cancelar inscripción
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem
+                                      onClick={() => onReactivate(enrollment.id)}
+                                      className="text-primary focus:text-primary"
+                                    >
+                                      <RefreshCw className="w-3 h-3 mr-2" />
+                                      Reactivar acceso
+                                    </DropdownMenuItem>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          ))}
+                          {student.enrollments.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{student.enrollments.length - 3} más
+                            </Badge>
+                          )}
+                        </>
                       )}
                     </div>
                   </TableCell>
