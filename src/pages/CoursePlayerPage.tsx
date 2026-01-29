@@ -362,9 +362,10 @@ function LessonListView({
       </div>
 
       {/* Modules and Lessons - List or Cards */}
-      <div className="space-y-4">
-        {program.modules.map((module: ModuleWithProgress, moduleIndex: number) => (
-          displayMode === "list" ? (
+      {displayMode === "list" ? (
+        // List mode: stacked modules
+        <div className="space-y-4">
+          {program.modules.map((module: ModuleWithProgress, moduleIndex: number) => (
             <ModuleLessonList
               key={module.id}
               module={module}
@@ -372,27 +373,26 @@ function LessonListView({
               hasAccess={hasAccess}
               onSelectLesson={onSelectLesson}
             />
-          ) : (
-            <ModuleLessonCards
-              key={module.id}
-              module={module}
-              moduleIndex={moduleIndex}
-              hasAccess={hasAccess}
-              onSelectLesson={onSelectLesson}
-              columns={cardColumns}
-            />
-          )
-        ))}
+          ))}
+        </div>
+      ) : (
+        // Card mode: modules as cards in a grid
+        <ModulesCardGrid
+          modules={program.modules}
+          hasAccess={hasAccess}
+          onSelectLesson={onSelectLesson}
+          columns={cardColumns}
+        />
+      )}
 
-        {program.modules.length === 0 && (
-          <HolographicCard className="p-8 text-center">
-            <BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">
-              Este programa aún no tiene contenido
-            </p>
-          </HolographicCard>
-        )}
-      </div>
+      {program.modules.length === 0 && (
+        <HolographicCard className="p-8 text-center">
+          <BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+          <p className="text-muted-foreground">
+            Este programa aún no tiene contenido
+          </p>
+        </HolographicCard>
+      )}
     </div>
   );
 }
@@ -527,6 +527,249 @@ function ModuleLessonList({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Modules Card Grid - Shows modules as cards in a grid
+function ModulesCardGrid({
+  modules,
+  hasAccess,
+  onSelectLesson,
+  columns,
+}: {
+  modules: ModuleWithProgress[];
+  hasAccess: boolean;
+  onSelectLesson: (lesson: LessonWithProgress) => void;
+  columns: CardColumns;
+}) {
+  const [expandedModuleId, setExpandedModuleId] = useState<string | null>(null);
+
+  // Grid classes for modules (2 columns by default)
+  const moduleGridClasses = {
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+    5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+  };
+
+  const lessonGridClasses = {
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+    5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Modules Grid */}
+      <div className={cn("grid gap-6", moduleGridClasses[columns])}>
+        {modules.map((module, moduleIndex) => {
+          const completedLessons = module.lessons.filter((l) => l.completed).length;
+          const totalLessons = module.lessons.length;
+          const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+          const isExpanded = expandedModuleId === module.id;
+
+          return (
+            <button
+              key={module.id}
+              onClick={() => setExpandedModuleId(isExpanded ? null : module.id)}
+              className={cn(
+                "group text-left transition-all duration-300 rounded-xl overflow-hidden flex flex-col",
+                "bg-card/60 backdrop-blur-sm border border-border/40",
+                "hover-lift",
+                isExpanded ? "border-primary/50 ring-2 ring-primary/20" : "hover:border-primary/50"
+              )}
+            >
+              {/* Thumbnail Area */}
+              <div className="relative aspect-video overflow-hidden bg-muted">
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/30 via-primary/20 to-muted/20">
+                  <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-secondary/20 blur-3xl" />
+                  <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full bg-primary/20 blur-2xl" />
+                </div>
+
+                {/* Module Number in Center */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-5xl font-heading font-bold text-white/20">
+                    {String(moduleIndex + 1).padStart(2, '0')}
+                  </span>
+                </div>
+
+                {/* Expand indicator */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/40 backdrop-blur-sm">
+                  <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center shadow-lg shadow-secondary/30 transform scale-90 group-hover:scale-100 transition-transform">
+                    <ChevronDown className={cn("w-6 h-6 text-secondary-foreground transition-transform", isExpanded && "rotate-180")} />
+                  </div>
+                </div>
+
+                {/* Progress Badge */}
+                {progress > 0 && (
+                  <div className="absolute top-3 right-3">
+                    <span className={cn(
+                      "px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm flex items-center gap-1",
+                      progress === 100 
+                        ? "bg-accent text-accent-foreground" 
+                        : "bg-primary/90 text-primary-foreground"
+                    )}>
+                      {progress === 100 ? (
+                        <>
+                          <CheckCircle2 className="w-3 h-3" />
+                          Completo
+                        </>
+                      ) : (
+                        `${progress}%`
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Content Area */}
+              <div className="p-4 flex flex-col flex-1">
+                <h4 className="font-heading font-semibold text-sm group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                  {module.title}
+                </h4>
+
+                {module.description && (
+                  <p className="text-xs text-muted-foreground line-clamp-2 mb-2 flex-1">
+                    {module.description}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border/50 mt-auto">
+                  <span className="flex items-center gap-1">
+                    <Play className="w-3 h-3" />
+                    {totalLessons} lecciones
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {completedLessons}/{totalLessons}
+                  </span>
+                </div>
+
+                {/* Mini progress bar */}
+                {progress > 0 && progress < 100 && (
+                  <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Expanded Module Lessons */}
+      {expandedModuleId && (
+        <div className="animate-fade-in">
+          {modules
+            .filter((m) => m.id === expandedModuleId)
+            .map((module) => (
+              <div key={module.id} className="rounded-xl border border-primary/30 bg-card/40 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-heading font-semibold text-lg">{module.title}</h3>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedModuleId(null);
+                    }}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+                
+                {module.lessons.length === 0 ? (
+                  <div className="text-sm text-muted-foreground text-center py-4">Sin lecciones</div>
+                ) : (
+                  <div className={cn("grid gap-4", lessonGridClasses[columns])}>
+                    {module.lessons.map((lesson, lessonIndex) => {
+                      const isLocked = !hasAccess && !lesson.is_preview;
+
+                      return (
+                        <button
+                          key={lesson.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isLocked) onSelectLesson(lesson);
+                          }}
+                          disabled={isLocked}
+                          className={cn(
+                            "group/lesson text-left transition-all duration-300 rounded-xl overflow-hidden flex flex-col",
+                            "bg-card/60 backdrop-blur-sm border border-border/40",
+                            isLocked
+                              ? "opacity-70 cursor-not-allowed"
+                              : "hover:border-primary/50 hover:-translate-y-0.5"
+                          )}
+                        >
+                          {/* Lesson Thumbnail */}
+                          <div className="relative aspect-video overflow-hidden bg-muted">
+                            <div className={cn(
+                              "absolute inset-0",
+                              lesson.completed 
+                                ? "bg-gradient-to-br from-accent/30 via-accent/10 to-primary/10"
+                                : "bg-gradient-to-br from-primary/20 via-secondary/15 to-muted/20"
+                            )}>
+                              <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-primary/20 blur-2xl" />
+                            </div>
+
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-3xl font-heading font-bold text-white/20">
+                                {String(lessonIndex + 1).padStart(2, '0')}
+                              </span>
+                            </div>
+
+                            {!isLocked && (
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/lesson:opacity-100 transition-opacity duration-300 bg-background/40 backdrop-blur-sm">
+                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                                  <Play className="w-4 h-4 text-primary-foreground ml-0.5" fill="currentColor" />
+                                </div>
+                              </div>
+                            )}
+
+                            {isLocked && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm">
+                                <Lock className="w-5 h-5 text-muted-foreground" />
+                              </div>
+                            )}
+
+                            <div className="absolute top-2 right-2">
+                              {lesson.completed && (
+                                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-accent text-accent-foreground flex items-center gap-1">
+                                  <CheckCircle2 className="w-2.5 h-2.5" />
+                                </span>
+                              )}
+                              {lesson.is_preview && !lesson.completed && (
+                                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/90 text-primary-foreground">
+                                  Gratis
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="p-3">
+                            <h5 className="font-medium text-xs group-hover/lesson:text-primary transition-colors line-clamp-2">
+                              {lesson.title}
+                            </h5>
+                            {lesson.duration && (
+                              <div className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground">
+                                <Clock className="w-2.5 h-2.5" />
+                                {lesson.duration}
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 }
