@@ -4,10 +4,11 @@ import {
   ArrowLeft, Plus, GripVertical, Play, Trash2, Edit, 
   Video, Clock, Save, Eye, Settings, Loader2,
   ChevronDown, ChevronRight, Upload, X, Check, FileVideo, Image,
-  Link2, FileText
+  Link2, FileText, DollarSign
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -61,6 +62,17 @@ const ProducerCourseEditPage: React.FC = () => {
   } = useProgramDetail(courseId);
 
   const [openModules, setOpenModules] = useState<string[]>([]);
+  const [configOpen, setConfigOpen] = useState(false);
+  
+  // Program config editing state
+  const [programForm, setProgramForm] = useState({
+    title: "",
+    description: "",
+    price: 0,
+    currency: "USD",
+    is_published: false,
+  });
+  const [isSavingConfig, setIsSavingConfig] = useState(false);
   
   // Module dialog state
   const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
@@ -98,6 +110,65 @@ const ProducerCourseEditPage: React.FC = () => {
   const { resources, isLoading: isLoadingResources, refetch: refetchResources } = useLessonResources(
     editingLesson?.id
   );
+
+  // Initialize program form when program loads
+  React.useEffect(() => {
+    if (program) {
+      setProgramForm({
+        title: program.title,
+        description: program.description || "",
+        price: program.price,
+        currency: program.currency,
+        is_published: program.is_published,
+      });
+    }
+  }, [program]);
+
+  // Save program config
+  const handleSaveConfig = async () => {
+    if (!program || !programForm.title.trim()) return;
+    
+    setIsSavingConfig(true);
+    try {
+      const { error } = await supabase
+        .from("programs")
+        .update({
+          title: programForm.title,
+          description: programForm.description || null,
+          price: programForm.price,
+          currency: programForm.currency,
+          is_published: programForm.is_published,
+        })
+        .eq("id", program.id);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo guardar la configuración.",
+        });
+        return;
+      }
+
+      toast({
+        title: "Configuración guardada",
+        description: "Los cambios se aplicaron correctamente.",
+      });
+      
+      setConfigOpen(false);
+      // Trigger a refresh
+      window.location.reload();
+    } catch (error) {
+      console.error("Save error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Ocurrió un error al guardar.",
+      });
+    } finally {
+      setIsSavingConfig(false);
+    }
+  };
 
   const toggleModule = (moduleId: string) => {
     setOpenModules((prev) =>
@@ -462,16 +533,17 @@ const ProducerCourseEditPage: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
 
         <main className="flex-1 overflow-auto">
           {/* Header */}
           <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center justify-between px-4 md:px-6 py-4">
               <div className="flex items-center gap-4">
-                <SidebarTrigger />
+                <SidebarTrigger className="md:hidden" />
                 <button
                   onClick={() => navigate("/producer/courses")}
-                  className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+                  className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
@@ -487,6 +559,7 @@ const ProducerCourseEditPage: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate(`/course/${program.id}`)}
+                  className="hidden sm:flex"
                 >
                   <Eye className="w-4 h-4" />
                   Vista previa
@@ -495,8 +568,8 @@ const ProducerCourseEditPage: React.FC = () => {
                   className={cn(
                     "px-3 py-1 rounded-full text-xs font-medium",
                     program.is_published
-                      ? "bg-green-500/20 text-green-500"
-                      : "bg-yellow-500/20 text-yellow-500"
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-yellow-500/20 text-yellow-400"
                   )}
                 >
                   {program.is_published ? "Publicado" : "Borrador"}
@@ -505,48 +578,134 @@ const ProducerCourseEditPage: React.FC = () => {
             </div>
           </header>
 
-          <div className="p-6 space-y-6">
-            {/* Stats Bar */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <HolographicCard className="flex items-center gap-3 p-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Video className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-2xl font-heading font-bold">{totalLessons}</div>
-                  <div className="text-xs text-muted-foreground">Lecciones</div>
-                </div>
-              </HolographicCard>
-              <HolographicCard className="flex items-center gap-3 p-4">
-                <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-secondary" />
-                </div>
-                <div>
-                  <div className="text-2xl font-heading font-bold">{program.modules.length}</div>
-                  <div className="text-xs text-muted-foreground">Módulos</div>
-                </div>
-              </HolographicCard>
-              <HolographicCard className="flex items-center gap-3 p-4">
-                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                  <span className="text-accent font-bold">$</span>
-                </div>
-                <div>
-                  <div className="text-2xl font-heading font-bold">{program.price}</div>
-                  <div className="text-xs text-muted-foreground">{program.currency}</div>
-                </div>
-              </HolographicCard>
-              <HolographicCard className="flex items-center gap-3 p-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Play className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-2xl font-heading font-bold">
-                    {program.is_published ? "Activo" : "Inactivo"}
+          <div className="p-4 md:p-6 space-y-6">
+            {/* Collapsible Configuration Section */}
+            <Collapsible open={configOpen} onOpenChange={setConfigOpen}>
+              <HolographicCard className="overflow-hidden">
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+                        <Settings className="w-5 h-5 text-secondary" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-heading font-semibold">Configuración del Programa</h3>
+                        <p className="text-xs text-muted-foreground">
+                          Título, descripción, precio y estado
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="hidden sm:flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="text-primary font-medium">
+                          ${program.price} {program.currency}
+                        </span>
+                      </div>
+                      {configOpen ? (
+                        <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground">Estado</div>
-                </div>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                  <div className="border-t border-border/50 p-4 md:p-6 space-y-6">
+                    {/* Title & Description */}
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="edit-title">Título del programa</Label>
+                          <GlassInput
+                            id="edit-title"
+                            value={programForm.title}
+                            onChange={(e) => setProgramForm(prev => ({ ...prev, title: e.target.value }))}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="edit-description">Descripción</Label>
+                          <Textarea
+                            id="edit-description"
+                            value={programForm.description}
+                            onChange={(e) => setProgramForm(prev => ({ ...prev, description: e.target.value }))}
+                            className="glass min-h-[100px] mt-1"
+                            placeholder="Describe el contenido del programa..."
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        {/* Pricing */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="edit-price">Precio</Label>
+                            <div className="relative mt-1">
+                              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                              <GlassInput
+                                id="edit-price"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={programForm.price || ""}
+                                onChange={(e) => setProgramForm(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                                className="pl-9"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="edit-currency">Moneda</Label>
+                            <select
+                              id="edit-currency"
+                              value={programForm.currency}
+                              onChange={(e) => setProgramForm(prev => ({ ...prev, currency: e.target.value }))}
+                              className="w-full mt-1 glass rounded-lg px-3 py-2 bg-background border border-border"
+                            >
+                              <option value="USD">USD</option>
+                              <option value="EUR">EUR</option>
+                              <option value="MXN">MXN</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Publishing */}
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
+                          <div>
+                            <p className="font-medium text-sm">Estado de publicación</p>
+                            <p className="text-xs text-muted-foreground">
+                              {programForm.is_published 
+                                ? "Visible en el catálogo de alumnos" 
+                                : "Solo visible para administradores"
+                              }
+                            </p>
+                          </div>
+                          <Switch
+                            checked={programForm.is_published}
+                            onCheckedChange={(checked) => setProgramForm(prev => ({ ...prev, is_published: checked }))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Save Button */}
+                    <div className="flex justify-end pt-4 border-t border-border/50">
+                      <NeonButton
+                        onClick={handleSaveConfig}
+                        disabled={isSavingConfig || !programForm.title.trim()}
+                      >
+                        {isSavingConfig ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        Guardar Configuración
+                      </NeonButton>
+                    </div>
+                  </div>
+                </CollapsibleContent>
               </HolographicCard>
-            </div>
+            </Collapsible>
 
             {/* Thumbnail Editor */}
             <HolographicCard className="p-4">

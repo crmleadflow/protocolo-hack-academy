@@ -1,23 +1,60 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save, Upload, DollarSign, X, Loader2 } from "lucide-react";
+import { 
+  ArrowLeft, ArrowRight, Check, Upload, DollarSign, X, Loader2,
+  FileText, Image, CreditCard, Sparkles
+} from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
+
+interface StepProps {
+  isActive: boolean;
+  isCompleted: boolean;
+  stepNumber: number;
+  title: string;
+  icon: React.ReactNode;
+}
+
+const StepIndicator: React.FC<StepProps> = ({ isActive, isCompleted, stepNumber, title, icon }) => (
+  <div className={cn(
+    "flex items-center gap-3 transition-all duration-300",
+    isActive ? "opacity-100" : "opacity-50"
+  )}>
+    <div className={cn(
+      "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+      isCompleted 
+        ? "bg-green-500 text-white" 
+        : isActive 
+          ? "bg-primary text-primary-foreground ring-4 ring-primary/20" 
+          : "bg-muted text-muted-foreground"
+    )}>
+      {isCompleted ? <Check className="w-5 h-5" /> : icon}
+    </div>
+    <div className="hidden md:block">
+      <p className="text-xs text-muted-foreground">Paso {stepNumber}</p>
+      <p className={cn(
+        "font-medium text-sm transition-colors",
+        isActive ? "text-foreground" : "text-muted-foreground"
+      )}>{title}</p>
+    </div>
+  </div>
+);
 
 const ProducerNewCoursePage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { session } = useAuth();
+  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,10 +65,16 @@ const ProducerNewCoursePage: React.FC = () => {
     price: 0,
     currency: "USD",
     thumbnail_url: "",
-    is_published: true, // Por defecto siempre publicado para que sea visible en el catálogo
   });
 
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+
+  const steps = [
+    { number: 1, title: "Información", icon: <FileText className="w-5 h-5" /> },
+    { number: 2, title: "Portada", icon: <Image className="w-5 h-5" /> },
+    { number: 3, title: "Precio", icon: <CreditCard className="w-5 h-5" /> },
+    { number: 4, title: "Confirmar", icon: <Sparkles className="w-5 h-5" /> },
+  ];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,7 +90,6 @@ const ProducerNewCoursePage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast({
         variant: "destructive",
@@ -57,7 +99,6 @@ const ProducerNewCoursePage: React.FC = () => {
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
         variant: "destructive",
@@ -67,14 +108,12 @@ const ProducerNewCoursePage: React.FC = () => {
       return;
     }
 
-    // Show preview immediately
     const reader = new FileReader();
     reader.onload = (ev) => {
       setThumbnailPreview(ev.target?.result as string);
     };
     reader.readAsDataURL(file);
 
-    // Upload to storage
     setIsUploading(true);
     try {
       const fileExt = file.name.split(".").pop();
@@ -99,7 +138,6 @@ const ProducerNewCoursePage: React.FC = () => {
         return;
       }
 
-      // Get public URL
       const { data: urlData } = supabase.storage
         .from("program-thumbnails")
         .getPublicUrl(filePath);
@@ -134,9 +172,34 @@ const ProducerNewCoursePage: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return formData.title.trim().length > 0;
+      case 2:
+        return true; // Thumbnail is optional
+      case 3:
+        return true; // Price can be 0 (free)
+      case 4:
+        return true;
+      default:
+        return false;
+    }
+  };
 
+  const nextStep = () => {
+    if (currentStep < 4 && canProceed()) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = async () => {
     if (!formData.title.trim()) {
       toast({
         variant: "destructive",
@@ -172,7 +235,7 @@ const ProducerNewCoursePage: React.FC = () => {
             price: formData.price,
             currency: formData.currency,
             thumbnail_url: formData.thumbnail_url,
-            is_published: formData.is_published,
+            is_published: true,
           }),
         }
       );
@@ -190,15 +253,291 @@ const ProducerNewCoursePage: React.FC = () => {
       }
 
       toast({
-        title: "🎉 ¡Programa creado y publicado!",
-        description: formData.is_published 
-          ? "El programa ya está visible en el catálogo de estudiantes." 
-          : "El programa se creó como borrador.",
+        title: "🎉 ¡Programa creado!",
+        description: "Ahora puedes agregar módulos y lecciones.",
       });
 
       navigate(`/producer/course/${data.id}/edit`);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-heading font-bold mb-2">
+                Información del Programa
+              </h2>
+              <p className="text-muted-foreground">
+                Define el título y descripción de tu nuevo programa
+              </p>
+            </div>
+
+            <div className="max-w-xl mx-auto space-y-6">
+              <div>
+                <Label htmlFor="title" className="text-base">
+                  Título del programa *
+                </Label>
+                <GlassInput
+                  id="title"
+                  name="title"
+                  placeholder="Ej: Protocolo de Ventas Avanzado"
+                  value={formData.title}
+                  onChange={handleChange}
+                  className="mt-2 text-lg"
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Elige un título claro y atractivo para tus alumnos
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="description" className="text-base">
+                  Descripción
+                </Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Describe el contenido y objetivos del programa..."
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="glass min-h-[150px] mt-2"
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Ayuda a los alumnos a entender qué aprenderán
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-heading font-bold mb-2">
+                Imagen de Portada
+              </h2>
+              <p className="text-muted-foreground">
+                Una buena imagen atrae más alumnos a tu programa
+              </p>
+            </div>
+
+            <div className="max-w-xl mx-auto">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="thumbnail-upload"
+              />
+
+              {!thumbnailPreview && !formData.thumbnail_url ? (
+                <label
+                  htmlFor="thumbnail-upload"
+                  className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                >
+                  {isUploading ? (
+                    <div className="flex flex-col items-center gap-3">
+                      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                      <span className="text-muted-foreground">
+                        Subiendo imagen...
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Upload className="w-8 h-8 text-primary" />
+                      </div>
+                      <span className="text-foreground font-medium">
+                        Haz clic para subir una imagen
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        JPG, PNG o WebP • Máximo 5MB • Recomendado: 1280x720px
+                      </span>
+                    </div>
+                  )}
+                </label>
+              ) : (
+                <div className="relative">
+                  <img
+                    src={thumbnailPreview || formData.thumbnail_url}
+                    alt="Portada del programa"
+                    className="w-full h-64 object-cover rounded-xl border border-border"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveThumbnail}
+                    className="absolute top-3 right-3 p-2 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors shadow-lg"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                  {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-xl">
+                      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <p className="text-center text-sm text-muted-foreground mt-4">
+                Puedes agregar o cambiar la imagen después
+              </p>
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-heading font-bold mb-2">
+                Precio del Programa
+              </h2>
+              <p className="text-muted-foreground">
+                Define cuánto costará acceder a tu contenido
+              </p>
+            </div>
+
+            <div className="max-w-md mx-auto space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="price" className="text-base">Precio</Label>
+                  <div className="relative mt-2">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <GlassInput
+                      id="price"
+                      name="price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={formData.price || ""}
+                      onChange={handleChange}
+                      className="pl-10 text-2xl font-bold text-center"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="currency" className="text-base">Moneda</Label>
+                  <select
+                    id="currency"
+                    name="currency"
+                    value={formData.currency}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        currency: e.target.value,
+                      }))
+                    }
+                    className="w-full mt-2 glass rounded-lg px-3 py-3 bg-background border border-border text-lg"
+                  >
+                    <option value="USD">USD - Dólar</option>
+                    <option value="EUR">EUR - Euro</option>
+                    <option value="MXN">MXN - Peso Mexicano</option>
+                  </select>
+                </div>
+              </div>
+
+              <HolographicCard className="p-4 text-center">
+                <p className="text-muted-foreground text-sm mb-1">
+                  Tu precio final será:
+                </p>
+                <p className="text-3xl font-heading font-bold text-primary">
+                  {formData.price === 0 ? (
+                    <span className="text-green-500">GRATIS</span>
+                  ) : (
+                    `$${formData.price.toLocaleString()} ${formData.currency}`
+                  )}
+                </p>
+              </HolographicCard>
+
+              <p className="text-center text-sm text-muted-foreground">
+                Puedes cambiar el precio en cualquier momento
+              </p>
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-10 h-10 text-primary" />
+              </div>
+              <h2 className="text-2xl font-heading font-bold mb-2">
+                ¡Todo listo!
+              </h2>
+              <p className="text-muted-foreground">
+                Revisa los detalles de tu nuevo programa
+              </p>
+            </div>
+
+            <div className="max-w-xl mx-auto">
+              <HolographicCard variant="gradient" className="overflow-hidden">
+                {(thumbnailPreview || formData.thumbnail_url) && (
+                  <img
+                    src={thumbnailPreview || formData.thumbnail_url}
+                    alt="Portada"
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <div className="p-6 space-y-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Título
+                    </p>
+                    <p className="text-xl font-heading font-bold">
+                      {formData.title || "Sin título"}
+                    </p>
+                  </div>
+
+                  {formData.description && (
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                        Descripción
+                      </p>
+                      <p className="text-muted-foreground line-clamp-3">
+                        {formData.description}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                        Precio
+                      </p>
+                      <p className="text-2xl font-bold text-primary">
+                        {formData.price === 0 ? (
+                          "Gratis"
+                        ) : (
+                          `$${formData.price} ${formData.currency}`
+                        )}
+                      </p>
+                    </div>
+                    <div className="px-3 py-1 rounded-full bg-green-500/20 text-green-500 text-sm font-medium">
+                      Publicado
+                    </div>
+                  </div>
+                </div>
+              </HolographicCard>
+
+              <p className="text-center text-sm text-muted-foreground mt-6">
+                Después de crear el programa, podrás agregar módulos y lecciones
+              </p>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
     }
   };
 
@@ -208,12 +547,12 @@ const ProducerNewCoursePage: React.FC = () => {
         <ProducerSidebar />
         <FloatingSidebarTrigger />
 
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto flex flex-col">
           {/* Header */}
           <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center justify-between px-4 md:px-6 py-4">
               <div className="flex items-center gap-4">
-                <SidebarTrigger />
+                <SidebarTrigger className="md:hidden" />
                 <button
                   onClick={() => navigate("/producer/courses")}
                   className="p-2 rounded-lg hover:bg-white/5 transition-colors"
@@ -221,220 +560,92 @@ const ProducerNewCoursePage: React.FC = () => {
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                  <h1 className="text-xl font-heading font-bold">
+                  <h1 className="text-lg md:text-xl font-heading font-bold">
                     Crear Nuevo Programa
                   </h1>
-                  <p className="text-sm text-muted-foreground">
-                    Configura los detalles de tu nuevo programa
-                  </p>
                 </div>
               </div>
-              <NeonButton
-                onClick={handleSubmit}
-                disabled={isSubmitting || !formData.title.trim()}
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    Creando...
-                  </div>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" />
-                    Crear Programa
-                  </>
-                )}
-              </NeonButton>
             </div>
           </header>
 
-          <div className="p-6 max-w-3xl mx-auto space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Basic Info */}
-              <HolographicCard variant="gradient">
-                <h2 className="font-heading font-bold text-lg mb-4">
-                  Información Básica
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="title">Título del programa *</Label>
-                    <GlassInput
-                      id="title"
-                      name="title"
-                      placeholder="Ej: Protocolo de Ventas Avanzado"
-                      value={formData.title}
-                      onChange={handleChange}
-                      required
+          {/* Progress Steps */}
+          <div className="border-b border-border/50 glass">
+            <div className="max-w-4xl mx-auto px-4 py-4">
+              <div className="flex items-center justify-between">
+                {steps.map((step, index) => (
+                  <React.Fragment key={step.number}>
+                    <StepIndicator
+                      stepNumber={step.number}
+                      title={step.title}
+                      icon={step.icon}
+                      isActive={currentStep === step.number}
+                      isCompleted={currentStep > step.number}
                     />
-                  </div>
+                    {index < steps.length - 1 && (
+                      <div className={cn(
+                        "flex-1 h-0.5 mx-2 md:mx-4 transition-colors duration-300",
+                        currentStep > step.number ? "bg-green-500" : "bg-border"
+                      )} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </div>
 
-                  <div>
-                    <Label htmlFor="description">Descripción</Label>
-                    <Textarea
-                      id="description"
-                      name="description"
-                      placeholder="Describe el contenido y objetivos del programa..."
-                      value={formData.description}
-                      onChange={handleChange}
-                      className="glass min-h-[120px]"
-                    />
-                  </div>
-                </div>
-              </HolographicCard>
+          {/* Content */}
+          <div className="flex-1 p-4 md:p-8">
+            <div className="max-w-4xl mx-auto">
+              {renderStepContent()}
+            </div>
+          </div>
 
-              {/* Pricing */}
-              <HolographicCard>
-                <h2 className="font-heading font-bold text-lg mb-4">Precio</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="price">Precio</Label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                      <GlassInput
-                        id="price"
-                        name="price"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={formData.price || ""}
-                        onChange={handleChange}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="currency">Moneda</Label>
-                    <select
-                      id="currency"
-                      name="currency"
-                      value={formData.currency}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          currency: e.target.value,
-                        }))
-                      }
-                      className="w-full glass rounded-lg px-3 py-2 bg-background border border-border"
-                    >
-                      <option value="USD">USD - Dólar</option>
-                      <option value="EUR">EUR - Euro</option>
-                      <option value="MXN">MXN - Peso Mexicano</option>
-                    </select>
-                  </div>
-                </div>
-              </HolographicCard>
-
-              {/* Media - File Upload */}
-              <HolographicCard>
-                <h2 className="font-heading font-bold text-lg mb-4">
-                  Imagen de Portada
-                </h2>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  id="thumbnail-upload"
-                />
-
-                {!thumbnailPreview && !formData.thumbnail_url ? (
-                  <label
-                    htmlFor="thumbnail-upload"
-                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors"
+          {/* Footer Navigation */}
+          <div className="sticky bottom-0 glass-strong border-t border-border/50">
+            <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+              <div>
+                {currentStep > 1 && (
+                  <NeonButton 
+                    variant="ghost" 
+                    onClick={prevStep}
+                    disabled={isSubmitting}
                   >
-                    {isUploading ? (
-                      <div className="flex flex-col items-center gap-2">
-                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                        <span className="text-sm text-muted-foreground">
-                          Subiendo...
-                        </span>
+                    <ArrowLeft className="w-4 h-4" />
+                    Anterior
+                  </NeonButton>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3">
+                {currentStep < 4 ? (
+                  <NeonButton 
+                    onClick={nextStep} 
+                    disabled={!canProceed() || isUploading}
+                  >
+                    Siguiente
+                    <ArrowRight className="w-4 h-4" />
+                  </NeonButton>
+                ) : (
+                  <NeonButton 
+                    onClick={handleSubmit} 
+                    disabled={isSubmitting}
+                    className="min-w-[180px]"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Creando...
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <Upload className="w-8 h-8 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          Haz clic para subir una imagen
-                        </span>
-                        <span className="text-xs text-muted-foreground/70">
-                          JPG, PNG o WebP. Máximo 5MB. Recomendado: 1280x720px
-                        </span>
-                      </div>
+                      <>
+                        <Check className="w-4 h-4" />
+                        Crear Programa
+                      </>
                     )}
-                  </label>
-                ) : (
-                  <div className="relative">
-                    <img
-                      src={thumbnailPreview || formData.thumbnail_url}
-                      alt="Portada del programa"
-                      className="w-full max-h-64 object-cover rounded-lg border border-border"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleRemoveThumbnail}
-                      className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                    {isUploading && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
-                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                      </div>
-                    )}
-                  </div>
+                  </NeonButton>
                 )}
-              </HolographicCard>
-
-              {/* Publishing */}
-              <HolographicCard>
-                <h2 className="font-heading font-bold text-lg mb-4">
-                  Publicación
-                </h2>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Publicar inmediatamente</p>
-                    <p className="text-sm text-muted-foreground">
-                      Los alumnos podrán ver el programa en el catálogo
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.is_published}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, is_published: checked }))
-                    }
-                  />
-                </div>
-              </HolographicCard>
-
-              {/* Submit Button */}
-              <div className="flex justify-end gap-4">
-                <button
-                  type="button"
-                  onClick={() => navigate("/producer/courses")}
-                  className="px-6 py-3 rounded-lg border border-border hover:bg-white/5 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <NeonButton
-                  type="submit"
-                  disabled={isSubmitting || !formData.title.trim()}
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                      Creando...
-                    </div>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      Crear Programa
-                    </>
-                  )}
-                </NeonButton>
               </div>
-            </form>
+            </div>
           </div>
         </main>
       </div>
