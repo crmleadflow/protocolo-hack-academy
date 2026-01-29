@@ -208,12 +208,13 @@ const LandingPage: React.FC = () => {
                   Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
                 </h2>
                 <p className="text-muted-foreground text-lg mb-6">
-                  En un mundo lleno de teóricos, Protocolo Hack se basa en la práctica. 
-                  Mi autoridad no viene de los títulos, sino de los <span className="text-primary">resultados comprobados</span>.
+                  En un mundo saturado de teorías vacías, existe alguien que ha caminado el camino antes que tú. 
+                  Su autoridad no proviene de diplomas, sino de <span className="text-primary">resultados que hablan por sí solos</span>.
                 </p>
                 <p className="text-muted-foreground">
-                  Empresario, visionario y entrenador de élite. Con más de 25 años de trayectoria, 
-                  he construido comunidades de más de 380,000 personas y soy Top Earner en múltiples compañías a nivel global.
+                  Empresario, visionario y entrenador de élite. Con más de 25 años forjando éxitos, 
+                  ha construido comunidades de más de 380,000 personas y alcanzado la cima como Top Earner en múltiples compañías a nivel global. 
+                  <span className="text-secondary font-medium"> Ahora, está listo para guiarte hacia tu propia transformación.</span>
                 </p>
               </div>
             </div>
