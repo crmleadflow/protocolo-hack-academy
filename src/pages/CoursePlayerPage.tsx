@@ -619,102 +619,97 @@ function ModuleLessonCards({
                       onClick={() => !isLocked && onSelectLesson(lesson)}
                       disabled={isLocked}
                       className={cn(
-                        "relative group rounded-xl overflow-hidden text-left transition-all duration-300",
-                        "bg-card/60 backdrop-blur-sm border border-border/40",
+                        "relative group aspect-square rounded-xl overflow-hidden text-left transition-all duration-300",
+                        "bg-card/60 backdrop-blur-sm border border-border/40 flex flex-col",
                         isLocked
                           ? "opacity-50 cursor-not-allowed"
                           : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-0.5"
                       )}
                     >
-                      {/* Visual Header */}
+                      {/* Visual Background */}
                       <div className={cn(
-                        "relative overflow-hidden",
-                        isCompact ? "h-20" : "h-24",
+                        "absolute inset-0 overflow-hidden",
                         lesson.completed 
-                          ? "bg-gradient-to-br from-accent/30 via-accent/10 to-transparent"
-                          : "bg-gradient-to-br from-primary/20 via-secondary/10 to-muted/20"
+                          ? "bg-gradient-to-br from-accent/20 via-accent/5 to-transparent"
+                          : "bg-gradient-to-br from-primary/15 via-secondary/10 to-muted/10"
                       )}>
                         {/* Subtle pattern */}
-                        <div className="absolute inset-0">
-                          <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-primary/10 blur-xl" />
-                          <div className="absolute -bottom-4 -left-4 w-12 h-12 rounded-full bg-secondary/10 blur-lg" />
-                        </div>
-                        
-                        {/* Lesson Number */}
-                        <div className={cn(
-                          "absolute top-2 left-2 rounded-lg bg-background/80 backdrop-blur-sm font-bold flex items-center justify-center shadow-sm border border-border/30",
-                          isCompact ? "w-6 h-6 text-xs" : "w-7 h-7 text-sm"
-                        )}>
-                          {lessonIndex + 1}
-                        </div>
-
-                        {/* Status Icon */}
-                        <div className="absolute top-2 right-2">
-                          {lesson.completed ? (
-                            <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center shadow-sm">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-accent-foreground" />
-                            </div>
-                          ) : lesson.is_preview ? (
-                            <div className={cn(
-                              "rounded-full bg-primary/90 text-primary-foreground font-medium shadow-sm flex items-center justify-center",
-                              isCompact ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-0.5 text-[10px]"
-                            )}>
-                              Gratis
-                            </div>
-                          ) : isLocked ? (
-                            <div className="w-6 h-6 rounded-full bg-muted/80 flex items-center justify-center">
-                              <Lock className="w-3 h-3 text-muted-foreground" />
-                            </div>
-                          ) : null}
-                        </div>
-
-                        {/* Play overlay on hover */}
-                        {!isLocked && (
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
-                            <div className={cn(
-                              "rounded-full bg-primary flex items-center justify-center shadow-lg scale-90 group-hover:scale-100 transition-transform",
-                              isCompact ? "w-10 h-10" : "w-12 h-12"
-                            )}>
-                              <Play className={cn("text-primary-foreground ml-0.5", isCompact ? "w-4 h-4" : "w-5 h-5")} fill="currentColor" />
-                            </div>
-                          </div>
-                        )}
+                        <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-primary/10 blur-2xl" />
+                        <div className="absolute -bottom-8 -left-8 w-20 h-20 rounded-full bg-secondary/10 blur-xl" />
                       </div>
 
-                      {/* Content */}
-                      <div className={cn("p-3", isCompact && "p-2.5")}>
-                        <h4 className={cn(
-                          "font-medium leading-snug",
-                          isCompact ? "text-xs line-clamp-2" : "text-sm line-clamp-2",
-                          lesson.completed ? "text-muted-foreground" : "text-foreground"
-                        )}>
-                          {lesson.title}
-                        </h4>
+                      {/* Content overlay */}
+                      <div className="relative flex flex-col h-full p-3">
+                        {/* Top row: Number + Status */}
+                        <div className="flex items-start justify-between">
+                          <div className={cn(
+                            "rounded-lg bg-background/80 backdrop-blur-sm font-bold flex items-center justify-center shadow-sm border border-border/30",
+                            isCompact ? "w-6 h-6 text-xs" : "w-8 h-8 text-sm"
+                          )}>
+                            {lessonIndex + 1}
+                          </div>
 
-                        {/* Footer - hidden on compact */}
-                        {!isCompact && (
-                          <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                            {lesson.duration ? (
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                <span>{lesson.duration}</span>
+                          {/* Status Icon */}
+                          <div>
+                            {lesson.completed ? (
+                              <div className={cn(
+                                "rounded-full bg-accent flex items-center justify-center shadow-sm",
+                                isCompact ? "w-5 h-5" : "w-6 h-6"
+                              )}>
+                                <CheckCircle2 className={cn("text-accent-foreground", isCompact ? "w-3 h-3" : "w-3.5 h-3.5")} />
                               </div>
-                            ) : (
-                              <div />
-                            )}
-                            {lesson.completed && (
-                              <span className="text-accent text-[10px] font-medium">Completada</span>
-                            )}
+                            ) : lesson.is_preview ? (
+                              <div className={cn(
+                                "rounded-full bg-primary/90 text-primary-foreground font-medium shadow-sm flex items-center justify-center",
+                                isCompact ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-0.5 text-[10px]"
+                              )}>
+                                Gratis
+                              </div>
+                            ) : isLocked ? (
+                              <div className={cn(
+                                "rounded-full bg-muted/80 flex items-center justify-center",
+                                isCompact ? "w-5 h-5" : "w-6 h-6"
+                              )}>
+                                <Lock className={cn("text-muted-foreground", isCompact ? "w-2.5 h-2.5" : "w-3 h-3")} />
+                              </div>
+                            ) : null}
                           </div>
-                        )}
+                        </div>
 
-                        {/* Compact duration */}
-                        {isCompact && lesson.duration && (
-                          <div className="mt-1.5 flex items-center gap-1 text-[10px] text-muted-foreground">
-                            <Clock className="w-2.5 h-2.5" />
-                            <span>{lesson.duration}</span>
-                          </div>
-                        )}
+                        {/* Center: Play button on hover */}
+                        <div className="flex-1 flex items-center justify-center">
+                          {!isLocked && (
+                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-200">
+                              <div className={cn(
+                                "rounded-full bg-primary flex items-center justify-center shadow-lg scale-90 group-hover:scale-100 transition-transform",
+                                isCompact ? "w-10 h-10" : "w-12 h-12"
+                              )}>
+                                <Play className={cn("text-primary-foreground ml-0.5", isCompact ? "w-4 h-4" : "w-5 h-5")} fill="currentColor" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Bottom: Title + Duration */}
+                        <div className="mt-auto">
+                          <h4 className={cn(
+                            "font-medium leading-snug",
+                            isCompact ? "text-xs line-clamp-2" : "text-sm line-clamp-2",
+                            lesson.completed ? "text-muted-foreground" : "text-foreground"
+                          )}>
+                            {lesson.title}
+                          </h4>
+
+                          {lesson.duration && (
+                            <div className={cn(
+                              "mt-1.5 flex items-center gap-1 text-muted-foreground",
+                              isCompact ? "text-[10px]" : "text-xs"
+                            )}>
+                              <Clock className={cn(isCompact ? "w-2.5 h-2.5" : "w-3 h-3")} />
+                              <span>{lesson.duration}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </button>
                   );
