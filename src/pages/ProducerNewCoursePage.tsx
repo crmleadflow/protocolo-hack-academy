@@ -27,7 +27,7 @@ const ProducerNewCoursePage: React.FC = () => {
     price: 0,
     currency: "USD",
     thumbnail_url: "",
-    is_published: false,
+    is_published: true, // Por defecto siempre publicado para que sea visible en el catálogo
   });
 
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
