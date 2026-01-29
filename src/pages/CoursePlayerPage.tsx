@@ -6,6 +6,7 @@ import {
   ChevronLeft, ChevronRight, SkipForward
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
@@ -234,6 +235,9 @@ const CoursePlayerPage: React.FC = () => {
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
         />
+        
+        {/* Floating button for mobile */}
+        <FloatingSidebarTrigger />
       </div>
     </SidebarProvider>
   );
