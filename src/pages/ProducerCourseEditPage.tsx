@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Plus, GripVertical, Play, Trash2, Edit, 
   Video, Clock, Save, Eye, Settings, Loader2,
-  ChevronDown, ChevronRight, Upload, X, Check, FileVideo, Image
+  ChevronDown, ChevronRight, Upload, X, Check, FileVideo, Image,
+  Link2, FileText
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -40,6 +41,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { LessonResourceManager } from "@/components/lesson/LessonResourceManager";
+import { useLessonResources } from "@/hooks/useLessonResources";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ProducerCourseEditPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -89,6 +93,11 @@ const ProducerCourseEditPage: React.FC = () => {
   // Delete dialogs
   const [deleteModuleId, setDeleteModuleId] = useState<string | null>(null);
   const [deleteLessonId, setDeleteLessonId] = useState<string | null>(null);
+
+  // Lesson resources hook
+  const { resources, isLoading: isLoadingResources, refetch: refetchResources } = useLessonResources(
+    editingLesson?.id
+  );
 
   const toggleModule = (moduleId: string) => {
     setOpenModules((prev) =>
@@ -818,129 +827,262 @@ const ProducerCourseEditPage: React.FC = () => {
 
         {/* Lesson Dialog */}
         <Dialog open={lessonDialogOpen} onOpenChange={setLessonDialogOpen}>
-          <DialogContent className="glass-strong max-w-xl">
+          <DialogContent className="glass-strong max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
             <DialogHeader>
               <DialogTitle>
                 {editingLesson ? "Editar Lección" : "Nueva Lección"}
               </DialogTitle>
               <DialogDescription>
                 {editingLesson
-                  ? "Actualiza la información de la lección"
+                  ? "Actualiza la información y recursos de la lección"
                   : "Agrega una nueva lección al módulo"}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <Label>Título *</Label>
-                <GlassInput
-                  placeholder="Ej: Introducción al tema"
-                  value={lessonForm.title}
-                  onChange={(e) =>
-                    setLessonForm((prev) => ({ ...prev, title: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <Label>Descripción</Label>
-                <Textarea
-                  placeholder="Describe el contenido de la lección..."
-                  value={lessonForm.description}
-                  onChange={(e) =>
-                    setLessonForm((prev) => ({ ...prev, description: e.target.value }))
-                  }
-                  className="glass min-h-[60px]"
-                />
-              </div>
-              <div>
-                <Label>Video de la lección</Label>
-                <input
-                  type="file"
-                  ref={videoInputRef}
-                  accept="video/mp4,video/webm,video/ogg,video/quicktime"
-                  onChange={handleVideoFileChange}
-                  className="hidden"
-                />
+            
+            {editingLesson ? (
+              <Tabs defaultValue="info" className="flex-1 overflow-hidden flex flex-col">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="info" className="flex items-center gap-2">
+                    <Video className="w-4 h-4" />
+                    Información
+                  </TabsTrigger>
+                  <TabsTrigger value="resources" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Recursos ({resources.length})
+                  </TabsTrigger>
+                </TabsList>
                 
-                {videoFile ? (
-                  <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
-                    <FileVideo className="w-8 h-8 text-primary flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{videoFile.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
-                      </p>
+                <TabsContent value="info" className="flex-1 overflow-y-auto mt-4">
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Título *</Label>
+                      <GlassInput
+                        placeholder="Ej: Introducción al tema"
+                        value={lessonForm.title}
+                        onChange={(e) =>
+                          setLessonForm((prev) => ({ ...prev, title: e.target.value }))
+                        }
+                      />
                     </div>
-                    <button
-                      type="button"
-                      onClick={removeVideoFile}
-                      className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : lessonForm.video_url ? (
-                  <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
-                    <Play className="w-8 h-8 text-primary flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">Video actual</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {lessonForm.video_url}
-                      </p>
+                    <div>
+                      <Label>Descripción</Label>
+                      <Textarea
+                        placeholder="Describe el contenido de la lección..."
+                        value={lessonForm.description}
+                        onChange={(e) =>
+                          setLessonForm((prev) => ({ ...prev, description: e.target.value }))
+                        }
+                        className="glass min-h-[60px]"
+                      />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setLessonForm(prev => ({ ...prev, video_url: "" }))}
-                      className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+                    <div>
+                      <Label>Video de la lección</Label>
+                      <input
+                        type="file"
+                        ref={videoInputRef}
+                        accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                        onChange={handleVideoFileChange}
+                        className="hidden"
+                      />
+                      
+                      {videoFile ? (
+                        <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
+                          <FileVideo className="w-8 h-8 text-primary flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{videoFile.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={removeVideoFile}
+                            className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : lessonForm.video_url ? (
+                        <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
+                          <Play className="w-8 h-8 text-primary flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">Video actual</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {lessonForm.video_url}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setLessonForm(prev => ({ ...prev, video_url: "" }))}
+                            className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => videoInputRef.current?.click()}
+                          className="w-full p-6 rounded-lg border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-colors flex flex-col items-center gap-2"
+                        >
+                          <Upload className="w-8 h-8 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            Haz clic para subir un video
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            MP4, WebM, OGG o MOV
+                          </span>
+                        </button>
+                      )}
+                      
+                      {isUploadingVideo && (
+                        <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Subiendo video...
+                        </div>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Duración</Label>
+                        <GlassInput
+                          placeholder="Ej: 15:30"
+                          value={lessonForm.duration}
+                          onChange={(e) =>
+                            setLessonForm((prev) => ({ ...prev, duration: e.target.value }))
+                          }
+                        />
+                      </div>
+                      <div className="flex items-center gap-3 pt-6">
+                        <Switch
+                          checked={lessonForm.is_preview}
+                          onCheckedChange={(checked) =>
+                            setLessonForm((prev) => ({ ...prev, is_preview: checked }))
+                          }
+                        />
+                        <Label className="cursor-pointer">Vista previa gratuita</Label>
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => videoInputRef.current?.click()}
-                    className="w-full p-6 rounded-lg border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-colors flex flex-col items-center gap-2"
-                  >
-                    <Upload className="w-8 h-8 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      Haz clic para subir un video
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      MP4, WebM, OGG o MOV
-                    </span>
-                  </button>
-                )}
+                </TabsContent>
                 
-                {isUploadingVideo && (
-                  <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Subiendo video...
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+                <TabsContent value="resources" className="flex-1 overflow-y-auto mt-4">
+                  {isLoadingResources ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <LessonResourceManager
+                      lessonId={editingLesson.id}
+                      resources={resources}
+                      onResourcesChange={refetchResources}
+                      isAdmin={true}
+                    />
+                  )}
+                </TabsContent>
+              </Tabs>
+            ) : (
+              // New lesson - only show basic info
+              <div className="space-y-4 py-4">
                 <div>
-                  <Label>Duración</Label>
+                  <Label>Título *</Label>
                   <GlassInput
-                    placeholder="Ej: 15:30"
-                    value={lessonForm.duration}
+                    placeholder="Ej: Introducción al tema"
+                    value={lessonForm.title}
                     onChange={(e) =>
-                      setLessonForm((prev) => ({ ...prev, duration: e.target.value }))
+                      setLessonForm((prev) => ({ ...prev, title: e.target.value }))
                     }
                   />
                 </div>
-                <div className="flex items-center gap-3 pt-6">
-                  <Switch
-                    checked={lessonForm.is_preview}
-                    onCheckedChange={(checked) =>
-                      setLessonForm((prev) => ({ ...prev, is_preview: checked }))
+                <div>
+                  <Label>Descripción</Label>
+                  <Textarea
+                    placeholder="Describe el contenido de la lección..."
+                    value={lessonForm.description}
+                    onChange={(e) =>
+                      setLessonForm((prev) => ({ ...prev, description: e.target.value }))
                     }
+                    className="glass min-h-[60px]"
                   />
-                  <Label className="cursor-pointer">Vista previa gratuita</Label>
                 </div>
+                <div>
+                  <Label>Video de la lección</Label>
+                  <input
+                    type="file"
+                    ref={videoInputRef}
+                    accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                    onChange={handleVideoFileChange}
+                    className="hidden"
+                  />
+                  
+                  {videoFile ? (
+                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
+                      <FileVideo className="w-8 h-8 text-primary flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{videoFile.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeVideoFile}
+                        className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => videoInputRef.current?.click()}
+                      className="w-full p-6 rounded-lg border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-colors flex flex-col items-center gap-2"
+                    >
+                      <Upload className="w-8 h-8 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        Haz clic para subir un video
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        MP4, WebM, OGG o MOV
+                      </span>
+                    </button>
+                  )}
+                  
+                  {isUploadingVideo && (
+                    <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Subiendo video...
+                    </div>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Duración</Label>
+                    <GlassInput
+                      placeholder="Ej: 15:30"
+                      value={lessonForm.duration}
+                      onChange={(e) =>
+                        setLessonForm((prev) => ({ ...prev, duration: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 pt-6">
+                    <Switch
+                      checked={lessonForm.is_preview}
+                      onCheckedChange={(checked) =>
+                        setLessonForm((prev) => ({ ...prev, is_preview: checked }))
+                      }
+                    />
+                    <Label className="cursor-pointer">Vista previa gratuita</Label>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  💡 Podrás agregar archivos y enlaces después de crear la lección
+                </p>
               </div>
-            </div>
-            <DialogFooter>
+            )}
+            
+            <DialogFooter className="mt-4">
               <NeonButton variant="ghost" onClick={() => setLessonDialogOpen(false)}>
                 Cancelar
               </NeonButton>
