@@ -147,7 +147,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <div 
         ref={containerRef}
         className={cn(
-          "relative rounded-2xl overflow-hidden glass-strong",
+          "relative rounded-2xl overflow-hidden",
+          "bg-white/5 backdrop-blur-xl border border-white/10",
+          "shadow-[0_0_40px_rgba(0,217,255,0.15)]",
           className
         )}
       >
@@ -169,7 +171,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     <div 
       ref={containerRef}
       className={cn(
-        "relative rounded-2xl overflow-hidden glass-strong group",
+        "relative rounded-2xl overflow-hidden group",
+        "bg-white/5 backdrop-blur-xl border border-white/10",
+        "shadow-[0_0_40px_rgba(0,217,255,0.15)]",
         className
       )}
       onMouseMove={handleMouseMove}
@@ -180,15 +184,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <video
           ref={videoRef}
           src={videoUrl}
-          className="w-full h-full object-contain bg-black"
+          className="w-full h-full object-contain bg-transparent"
           playsInline
           onClick={togglePlay}
         />
 
         {/* Loading Spinner */}
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-            <Loader2 className="w-12 h-12 animate-spin text-primary" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+            <Loader2 className="w-12 h-12 animate-spin text-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.8)]" />
           </div>
         )}
 
@@ -198,8 +202,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             className="absolute inset-0 flex items-center justify-center cursor-pointer"
             onClick={togglePlay}
           >
-            <div className="p-6 rounded-full bg-primary/90 hover:bg-primary transition-colors">
-              <Play className="w-12 h-12 text-primary-foreground ml-1" />
+            <div className="p-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_30px_rgba(0,217,255,0.4)]">
+              <Play className="w-12 h-12 text-white ml-1 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
             </div>
           </div>
         )}
@@ -207,7 +211,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         {/* Controls Overlay */}
         <div 
           className={cn(
-            "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300",
+            "absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300",
             showControls || !isPlaying ? "opacity-100" : "opacity-0"
           )}
         >
@@ -228,41 +232,41 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               {/* Skip Back */}
               <button 
                 onClick={() => skip(-10)}
-                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
               >
-                <SkipBack className="w-5 h-5" />
+                <SkipBack className="w-5 h-5 text-white/90" />
               </button>
 
               {/* Play/Pause */}
               <button 
                 onClick={togglePlay}
-                className="p-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
+                className="p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_20px_rgba(0,217,255,0.3)]"
               >
                 {isPlaying ? (
-                  <Pause className="w-6 h-6 text-primary-foreground" />
+                  <Pause className="w-6 h-6 text-white" />
                 ) : (
-                  <Play className="w-6 h-6 text-primary-foreground ml-0.5" />
+                  <Play className="w-6 h-6 text-white ml-0.5" />
                 )}
               </button>
 
               {/* Skip Forward */}
               <button 
                 onClick={() => skip(10)}
-                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
               >
-                <SkipForward className="w-5 h-5" />
+                <SkipForward className="w-5 h-5 text-white/90" />
               </button>
 
               {/* Volume */}
               <div className="flex items-center gap-2 ml-2">
                 <button 
                   onClick={toggleMute}
-                  className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                  className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
                 >
                   {isMuted || volume === 0 ? (
-                    <VolumeX className="w-5 h-5" />
+                    <VolumeX className="w-5 h-5 text-white/90" />
                   ) : (
-                    <Volume2 className="w-5 h-5" />
+                    <Volume2 className="w-5 h-5 text-white/90" />
                   )}
                 </button>
                 <Slider
@@ -275,7 +279,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </div>
 
               {/* Time */}
-              <span className="text-sm text-muted-foreground ml-4">
+              <span className="text-sm text-white/70 ml-4 font-mono">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </span>
             </div>
@@ -283,9 +287,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             {/* Fullscreen */}
             <button 
               onClick={toggleFullscreen}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              className="p-2 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/15 transition-colors"
             >
-              <Maximize className="w-5 h-5" />
+              <Maximize className="w-5 h-5 text-white/90" />
             </button>
           </div>
         </div>
