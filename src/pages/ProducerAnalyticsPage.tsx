@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import { 
   Users, TrendingUp, DollarSign, BookOpen, 
   BarChart3, Play, Calendar, ArrowUpRight, ArrowDownRight
@@ -7,7 +6,6 @@ import {
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
-import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { useProducerAnalytics } from "@/hooks/useProducerAnalytics";
@@ -55,7 +53,6 @@ const chartConfig = {
 };
 
 const ProducerAnalyticsPage: React.FC = () => {
-  const location = useLocation();
   const { data: analytics, isLoading } = useProducerAnalytics();
 
   if (isLoading) {
@@ -97,14 +94,6 @@ const ProducerAnalyticsPage: React.FC = () => {
         
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Collapsible Navigation Header */}
-            <ProducerCollapsibleNav
-              title="Analytics"
-              subtitle="Métricas y estadísticas de tu plataforma"
-              icon={<BarChart3 className="w-8 h-8 text-secondary" />}
-              currentPath={location.pathname}
-            />
-
             <div className="space-y-8">
             {/* Main Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
