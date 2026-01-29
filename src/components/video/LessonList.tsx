@@ -93,33 +93,29 @@ export const LessonList: React.FC<LessonListProps> = ({
                       onClick={() => !isLocked && onSelectLesson(lesson)}
                       disabled={isLocked}
                       className={cn(
-                        "w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left",
+                        "w-full flex items-center gap-3 py-2.5 px-2 transition-all text-left group relative",
                         isCurrent
-                          ? "bg-primary/20 border border-primary/50"
+                          ? "text-primary"
                           : isLocked
                           ? "opacity-50 cursor-not-allowed"
-                          : "hover:bg-white/5 cursor-pointer"
+                          : "hover:text-primary cursor-pointer"
                       )}
                     >
-                      {/* Status Icon */}
-                      <div
-                        className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-                          isCompleted
-                            ? "bg-green-500/20 text-green-500"
-                            : isCurrent
-                            ? "bg-primary text-primary-foreground"
-                            : isLocked
-                            ? "bg-muted text-muted-foreground"
-                            : "bg-muted/50 text-muted-foreground"
-                        )}
-                      >
+                      {/* Left border indicator for current */}
+                      {isCurrent && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-full" />
+                      )}
+
+                      {/* Completion/Status indicator */}
+                      <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
                         {isCompleted ? (
-                          <CheckCircle2 className="w-4 h-4" />
+                          <CheckCircle2 className="w-5 h-5 text-green-500" />
                         ) : isLocked ? (
-                          <Lock className="w-4 h-4" />
+                          <Lock className="w-4 h-4 text-muted-foreground" />
+                        ) : isCurrent ? (
+                          <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
                         ) : (
-                          <Play className="w-4 h-4" />
+                          <div className="w-2 h-2 rounded-full bg-muted-foreground/40 group-hover:bg-primary/60 transition-colors" />
                         )}
                       </div>
 
@@ -127,23 +123,26 @@ export const LessonList: React.FC<LessonListProps> = ({
                       <div className="flex-1 min-w-0">
                         <h5
                           className={cn(
-                            "font-medium truncate",
-                            isCurrent && "text-primary"
+                            "text-sm transition-colors truncate",
+                            isCompleted && "text-muted-foreground",
+                            isCurrent && "font-medium text-primary"
                           )}
                         >
                           {lesson.title}
                         </h5>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {lesson.duration}
-                        </p>
                       </div>
+
+                      {/* Duration */}
+                      <span className="text-xs text-muted-foreground flex-shrink-0">
+                        {lesson.duration}
+                      </span>
 
                       {/* Playing indicator */}
                       {isCurrent && !isLocked && (
-                        <div className="flex items-center gap-1">
-                          <span className="w-1 h-3 bg-primary rounded-full animate-pulse" />
-                          <span className="w-1 h-4 bg-primary rounded-full animate-pulse delay-75" />
-                          <span className="w-1 h-2 bg-primary rounded-full animate-pulse delay-150" />
+                        <div className="flex items-center gap-0.5 ml-1">
+                          <span className="w-0.5 h-2.5 bg-primary rounded-full animate-pulse" />
+                          <span className="w-0.5 h-3.5 bg-primary rounded-full animate-pulse delay-75" />
+                          <span className="w-0.5 h-2 bg-primary rounded-full animate-pulse delay-150" />
                         </div>
                       )}
                     </button>
