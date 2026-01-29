@@ -551,8 +551,11 @@ function ModuleLessonCards({
   // Grid classes based on columns
   const gridClasses = {
     2: "grid-cols-1 sm:grid-cols-2",
-    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+    // Use md for 3-cols so desktop widths with sidebar still reach 3-up
+    3: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3",
+    // 4-cols should be reachable on typical desktop widths (not only xl)
+    4: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+    // Keep 5-cols only on very wide screens
     5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
   };
 
@@ -693,7 +696,8 @@ function ModuleLessonCards({
                         {/* Bottom: Title + Duration */}
                         <div className="mt-auto w-full">
                           <h4 className={cn(
-                            "font-medium leading-tight",
+                            // Prevent horizontal overflow on long words; keep within card width
+                            "font-medium leading-tight w-full max-w-full overflow-hidden break-words",
                             // Reserve 2 lines so titles align across cards even when some are 1-line
                             isCompact
                               ? "text-[10px] line-clamp-2 min-h-[2.6em]"
