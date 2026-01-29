@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, BookOpen, Clock, Users, 
   CheckCircle2, Lock, Loader2, Play, List,
-  ChevronLeft, ChevronRight, ChevronDown, SkipForward
+  ChevronLeft, ChevronRight, ChevronDown, SkipForward,
+  LayoutGrid, LayoutList
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
@@ -24,6 +25,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 type ViewMode = "list" | "lesson";
+type ListDisplayMode = "list" | "cards";
 
 const CoursePlayerPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -256,6 +258,7 @@ function LessonListView({
   hasAccess: boolean;
   onSelectLesson: (lesson: LessonWithProgress) => void;
 }) {
+  const [displayMode, setDisplayMode] = useState<ListDisplayMode>("list");
   return (
     <div className="p-4 lg:p-6 max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Program Header Card */}
@@ -296,16 +299,55 @@ function LessonListView({
         </div>
       </HolographicCard>
 
-      {/* Modules and Lessons List */}
+      {/* View Toggle */}
+      <div className="flex items-center justify-end gap-2">
+        <span className="text-sm text-muted-foreground mr-2">Vista:</span>
+        <button
+          onClick={() => setDisplayMode("list")}
+          className={cn(
+            "p-2 rounded-lg transition-all",
+            displayMode === "list" 
+              ? "bg-primary text-primary-foreground" 
+              : "bg-muted/50 text-muted-foreground hover:bg-muted"
+          )}
+          title="Vista de lista"
+        >
+          <LayoutList className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => setDisplayMode("cards")}
+          className={cn(
+            "p-2 rounded-lg transition-all",
+            displayMode === "cards" 
+              ? "bg-primary text-primary-foreground" 
+              : "bg-muted/50 text-muted-foreground hover:bg-muted"
+          )}
+          title="Vista de tarjetas"
+        >
+          <LayoutGrid className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Modules and Lessons - List or Cards */}
       <div className="space-y-4">
         {program.modules.map((module: ModuleWithProgress, moduleIndex: number) => (
-          <ModuleLessonList
-            key={module.id}
-            module={module}
-            moduleIndex={moduleIndex}
-            hasAccess={hasAccess}
-            onSelectLesson={onSelectLesson}
-          />
+          displayMode === "list" ? (
+            <ModuleLessonList
+              key={module.id}
+              module={module}
+              moduleIndex={moduleIndex}
+              hasAccess={hasAccess}
+              onSelectLesson={onSelectLesson}
+            />
+          ) : (
+            <ModuleLessonCards
+              key={module.id}
+              module={module}
+              moduleIndex={moduleIndex}
+              hasAccess={hasAccess}
+              onSelectLesson={onSelectLesson}
+            />
+          )
         ))}
 
         {program.modules.length === 0 && (
@@ -446,6 +488,156 @@ function ModuleLessonList({
                   </button>
                 );
               })
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Module with Lessons Cards Component (Card View)
+function ModuleLessonCards({
+  module,
+  moduleIndex,
+  hasAccess,
+  onSelectLesson,
+}: {
+  module: ModuleWithProgress;
+  moduleIndex: number;
+  hasAccess: boolean;
+  onSelectLesson: (lesson: LessonWithProgress) => void;
+}) {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const completedLessons = module.lessons.filter((l) => l.completed).length;
+  const totalLessons = module.lessons.length;
+
+  return (
+    <div className="rounded-xl border border-border/50 bg-card/20 overflow-hidden">
+      {/* Module Header */}
+      <button
+        onClick={() => setIsExpanded((v) => !v)}
+        className="w-full flex items-start justify-between gap-4 px-4 py-3 hover:bg-muted/20 transition-colors"
+      >
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="mt-0.5 w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
+            {moduleIndex + 1}
+          </div>
+
+          <div className="min-w-0 text-left">
+            <h3 className="font-heading font-semibold leading-snug truncate">
+              {module.title}
+            </h3>
+            {module.description && (
+              <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
+                {module.description}
+              </p>
+            )}
+            <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+              <span>{completedLessons}/{totalLessons} completadas</span>
+              <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+              <span>{totalLessons} lecciones</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "mt-0.5 w-9 h-9 rounded-lg border border-border/50 bg-background/40 flex items-center justify-center transition-transform",
+            isExpanded && "rotate-180"
+          )}
+          aria-hidden="true"
+        >
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        </div>
+      </button>
+
+      {/* Lesson Cards Grid */}
+      <div
+        className={cn(
+          "grid transition-all duration-300",
+          isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="p-4">
+            {module.lessons.length === 0 ? (
+              <div className="text-sm text-muted-foreground text-center py-4">Sin lecciones</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {module.lessons.map((lesson, lessonIndex) => {
+                  const isLocked = !hasAccess && !lesson.is_preview;
+
+                  return (
+                    <button
+                      key={lesson.id}
+                      onClick={() => !isLocked && onSelectLesson(lesson)}
+                      disabled={isLocked}
+                      className={cn(
+                        "relative group rounded-xl border border-border/50 bg-card/40 p-4 text-left transition-all",
+                        isLocked
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-card/80 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+                      )}
+                    >
+                      {/* Lesson Number Badge */}
+                      <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold flex items-center justify-center border border-primary/30">
+                        {lessonIndex + 1}
+                      </div>
+
+                      {/* Completion/Lock Status */}
+                      <div className="absolute top-3 right-3">
+                        {lesson.completed ? (
+                          <CheckCircle2 className="w-5 h-5 text-accent" />
+                        ) : isLocked ? (
+                          <Lock className="w-4 h-4 text-muted-foreground" />
+                        ) : (
+                          <Play className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="mt-2">
+                        <h4 className={cn(
+                          "font-medium text-sm line-clamp-2 pr-6",
+                          lesson.completed && "text-muted-foreground"
+                        )}>
+                          {lesson.title}
+                        </h4>
+                        
+                        {lesson.description && (
+                          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                            {lesson.description}
+                          </p>
+                        )}
+
+                        {/* Footer */}
+                        <div className="mt-3 flex items-center justify-between">
+                          {lesson.duration && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="w-3 h-3" />
+                              <span>{lesson.duration}</span>
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center gap-2">
+                            {lesson.is_preview && (
+                              <Badge variant="secondary" className="text-[10px] h-5">
+                                Gratis
+                              </Badge>
+                            )}
+                            {lesson.completed && (
+                              <Badge variant="outline" className="text-[10px] h-5 border-accent/50 text-accent">
+                                Completada
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
         </div>
