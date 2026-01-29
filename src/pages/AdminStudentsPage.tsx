@@ -1,17 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { 
-  Users, Search, UserPlus, Check, X,
-  BookOpen, Loader2, CheckCircle2, GraduationCap, MoreHorizontal, Ban, RefreshCw
+  Users, Search, UserPlus, Check, Ban,
+  BookOpen, Loader2, CheckCircle2, GraduationCap
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -596,46 +588,15 @@ const StudentTable: React.FC<StudentTableProps> = ({
                       ) : (
                         <>
                           {student.enrollments.slice(0, 3).map((enrollment) => (
-                            <div key={enrollment.id} className="flex items-center gap-1">
-                              <Badge
-                                variant={enrollment.status === "active" ? "default" : "secondary"}
-                                className="text-xs"
-                              >
-                                {enrollment.program_title.length > 12
-                                  ? `${enrollment.program_title.slice(0, 12)}...`
-                                  : enrollment.program_title}
-                              </Badge>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-5 w-5">
-                                    <MoreHorizontal className="h-3 w-3" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuLabel className="text-xs">
-                                    {enrollment.program_title}
-                                  </DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-                                  {enrollment.status === "active" ? (
-                                    <DropdownMenuItem
-                                      onClick={() => onRevoke(enrollment.id)}
-                                      className="text-destructive focus:text-destructive"
-                                    >
-                                      <Ban className="w-3 h-3 mr-2" />
-                                      Cancelar inscripción
-                                    </DropdownMenuItem>
-                                  ) : (
-                                    <DropdownMenuItem
-                                      onClick={() => onReactivate(enrollment.id)}
-                                      className="text-primary focus:text-primary"
-                                    >
-                                      <RefreshCw className="w-3 h-3 mr-2" />
-                                      Reactivar acceso
-                                    </DropdownMenuItem>
-                                  )}
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
+                            <Badge
+                              key={enrollment.id}
+                              variant={enrollment.status === "active" ? "default" : "secondary"}
+                              className="text-xs"
+                            >
+                              {enrollment.program_title.length > 12
+                                ? `${enrollment.program_title.slice(0, 12)}...`
+                                : enrollment.program_title}
+                            </Badge>
                           ))}
                           {student.enrollments.length > 3 && (
                             <Badge variant="outline" className="text-xs">
@@ -673,37 +634,52 @@ const StudentTable: React.FC<StudentTableProps> = ({
 
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    {filterProgramId && relevantEnrollments.length > 0 ? (
-                      relevantEnrollments.map((enrollment) =>
-                        enrollment.status === "active" ? (
-                          <button
-                            key={enrollment.id}
-                            onClick={() => onRevoke(enrollment.id)}
-                            className="p-2 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
-                            title="Revocar acceso"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        ) : (
-                          <button
-                            key={enrollment.id}
-                            onClick={() => onReactivate(enrollment.id)}
-                            className="p-2 rounded-lg hover:bg-primary/20 text-primary transition-colors"
-                            title="Reactivar acceso"
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                        )
-                      )
+                    {student.enrollments.length > 0 ? (
+                      <>
+                        {student.enrollments.map((enrollment) => (
+                          <div key={enrollment.id} className="flex items-center gap-1">
+                            {enrollment.status === "active" ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onRevoke(enrollment.id)}
+                                className="h-8 text-xs border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                              >
+                                <Ban className="w-3 h-3 mr-1" />
+                                Desactivar
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onReactivate(enrollment.id)}
+                                className="h-8 text-xs border-primary/50 text-primary hover:bg-primary/10 hover:text-primary"
+                              >
+                                <Check className="w-3 h-3 mr-1" />
+                                Activar
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onEnroll(student)}
+                          className="h-8 text-xs"
+                        >
+                          <UserPlus className="w-3 h-3" />
+                        </Button>
+                      </>
                     ) : (
-                      <NeonButton
+                      <Button
                         variant="outline"
                         size="sm"
                         onClick={() => onEnroll(student)}
+                        className="h-8"
                       >
-                        <UserPlus className="w-4 h-4" />
+                        <UserPlus className="w-4 h-4 mr-1" />
                         Inscribir
-                      </NeonButton>
+                      </Button>
                     )}
                   </div>
                 </TableCell>
