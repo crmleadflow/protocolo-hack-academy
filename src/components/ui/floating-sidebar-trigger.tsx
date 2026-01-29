@@ -12,15 +12,21 @@ export function FloatingSidebarTrigger() {
 
   return (
     <div className="fixed bottom-6 left-6 z-50 md:hidden">
+      {/* Pulse ring effect */}
+      <div className="absolute inset-0 rounded-full bg-primary/40 animate-ping" />
+      <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-primary via-secondary to-primary opacity-60 blur-md animate-pulse" />
+      
       <SidebarTrigger 
         className={cn(
-          "h-14 w-14 rounded-full",
-          "bg-primary text-primary-foreground",
-          "shadow-lg shadow-primary/30",
-          "hover:bg-primary/90 hover:scale-105",
-          "transition-all duration-200",
+          "relative h-14 w-14 rounded-full",
+          "bg-gradient-to-br from-primary to-secondary",
+          "text-primary-foreground",
+          "shadow-[0_0_20px_rgba(0,217,255,0.5),0_0_40px_rgba(176,38,255,0.3)]",
+          "hover:shadow-[0_0_30px_rgba(0,217,255,0.7),0_0_60px_rgba(176,38,255,0.5)]",
+          "hover:scale-110",
+          "transition-all duration-300",
           "flex items-center justify-center",
-          "animate-fade-in"
+          "border border-white/20"
         )}
       >
         <Menu className="h-6 w-6" />

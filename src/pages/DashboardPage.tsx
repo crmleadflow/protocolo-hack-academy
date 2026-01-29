@@ -5,6 +5,7 @@ import {
   Lock, CheckCircle, Loader2
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
@@ -325,6 +326,9 @@ const DashboardPage: React.FC = () => {
             </div>
           )}
         </main>
+        
+        {/* Floating button for mobile */}
+        <FloatingSidebarTrigger />
       </div>
     </SidebarProvider>
   );
