@@ -19,6 +19,8 @@ import ProducerNewCoursePage from "./pages/ProducerNewCoursePage";
 import ProducerCourseEditPage from "./pages/ProducerCourseEditPage";
 import AdminStudentsPage from "./pages/AdminStudentsPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,6 +67,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <PaymentSuccessPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
                 </ProtectedRoute>
               }
             />
