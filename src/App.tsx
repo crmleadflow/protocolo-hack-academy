@@ -25,6 +25,7 @@ import AchievementsPage from "./pages/AchievementsPage";
 import CommunityPage from "./pages/CommunityPage";
 import MentorPage from "./pages/MentorPage";
 import ProducerMentorPage from "./pages/ProducerMentorPage";
+import ProducerAnalyticsPage from "./pages/ProducerAnalyticsPage";
 import AdminMessagesPage from "./pages/AdminMessagesPage";
 import StudentMessagesPage from "./pages/StudentMessagesPage";
 import HelpPage from "./pages/HelpPage";
@@ -172,6 +173,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <ProducerMentorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/analytics"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerAnalyticsPage />
                 </ProtectedRoute>
               }
             />
