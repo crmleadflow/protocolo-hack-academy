@@ -228,18 +228,22 @@ export default function NeuroScannerPage() {
       return;
     }
 
-    const result = await analyze({
-      transcript: transcript.trim(),
-      durationSeconds: recordingTime || 60,
-      title: title || undefined,
-    });
+    try {
+      const result = await analyze({
+        transcript: transcript.trim(),
+        durationSeconds: recordingTime || 60,
+        title: title || undefined,
+      });
 
-    if (result?.scan) {
-      setSelectedScan(result.scan);
-      setActiveTab("results");
-      setTranscript("");
-      setTitle("");
-      setRecordingTime(0);
+      if (result?.scan) {
+        setSelectedScan(result.scan);
+        setActiveTab("results");
+        setTranscript("");
+        setTitle("");
+        setRecordingTime(0);
+      }
+    } catch {
+      // useNeuroScanner already shows a toast; avoid unhandled promise rejection
     }
   };
 

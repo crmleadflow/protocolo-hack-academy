@@ -24,7 +24,7 @@ export interface NeuroScan {
 }
 
 export function useNeuroScanner() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const queryClient = useQueryClient();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -61,22 +61,22 @@ export function useNeuroScanner() {
       title?: string;
     }) => {
       setIsAnalyzing(true);
-      
-      // Try multiple times to get the session
-      let session = null;
-      let attempts = 0;
-      
-      while (!session && attempts < 3) {
-        const { data } = await supabase.auth.getSession();
-        session = data.session;
-        if (!session) {
-          attempts++;
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
+
+      if (!user) {
+        throw new Error("Debes iniciar sesión para analizar");
       }
       
-      if (!session) {
-        throw new Error("Debes iniciar sesión para analizar");
+      // Prefer the in-memory session from AuthContext (more reliable than storage in some browsers)
+      // Fallback to getSession/refreshSession.
+      const accessToken =
+        session?.access_token ||
+        (await supabase.auth.getSession()).data.session?.access_token ||
+        (await supabase.auth.refreshSession()).data.session?.access_token;
+
+      if (!accessToken) {
+        throw new Error(
+          "Tu sesión no está disponible. Cierra sesión y vuelve a iniciar sesión para analizar."
+        );
       }
 
       const response = await fetch(
@@ -85,7 +85,7 @@ export function useNeuroScanner() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ transcript, durationSeconds, title }),
         }
