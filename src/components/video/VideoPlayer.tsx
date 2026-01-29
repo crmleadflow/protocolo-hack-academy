@@ -198,14 +198,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
         {/* Play Button Overlay (when paused) */}
         {!isPlaying && !isLoading && (
-          <div 
-            className="absolute inset-0 flex items-center justify-center cursor-pointer"
-            onClick={togglePlay}
+          <button 
+            type="button"
+            className="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlay();
+            }}
           >
-            <div className="p-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_30px_rgba(0,217,255,0.4)]">
+            <div className="p-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-[0_0_30px_rgba(0,217,255,0.4)] hover:scale-110">
               <Play className="w-12 h-12 text-white ml-1 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
             </div>
-          </div>
+          </button>
         )}
 
         {/* Controls Overlay */}
