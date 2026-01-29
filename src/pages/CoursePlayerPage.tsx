@@ -549,13 +549,12 @@ function ModuleLessonCards({
   const completedLessons = module.lessons.filter((l) => l.completed).length;
   const totalLessons = module.lessons.length;
 
-  // Grid classes - FORCE the selected column count on desktop, 
-  // only collapse on mobile (< 640px)
+  // Grid classes - 2 columns on desktop like catalog
   const gridClasses = {
-    2: "grid-cols-2",
-    3: "grid-cols-2 sm:grid-cols-3",
-    4: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4",
-    5: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+    5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
   };
 
   return (
@@ -611,10 +610,9 @@ function ModuleLessonCards({
             {module.lessons.length === 0 ? (
               <div className="text-sm text-muted-foreground text-center py-4">Sin lecciones</div>
             ) : (
-              <div className={cn("grid gap-4", gridClasses[columns])}>
+              <div className={cn("grid gap-6", gridClasses[columns])}>
                 {module.lessons.map((lesson, lessonIndex) => {
                   const isLocked = !hasAccess && !lesson.is_preview;
-                  const isCompact = columns >= 4;
 
                   return (
                     <button
@@ -622,103 +620,89 @@ function ModuleLessonCards({
                       onClick={() => !isLocked && onSelectLesson(lesson)}
                       disabled={isLocked}
                       className={cn(
-                        "relative group aspect-square rounded-xl overflow-hidden text-left transition-all duration-300",
-                        "bg-card/60 backdrop-blur-sm border border-border/40 flex flex-col",
+                        "group text-left transition-all duration-300 rounded-xl overflow-hidden flex flex-col",
+                        "bg-card/60 backdrop-blur-sm border border-border/40",
+                        "hover-lift",
                         isLocked
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-0.5"
+                          ? "opacity-70 cursor-not-allowed"
+                          : "hover:border-primary/50"
                       )}
                     >
-                      {/* Visual Background */}
-                      <div className={cn(
-                        "absolute inset-0 overflow-hidden",
-                        lesson.completed 
-                          ? "bg-gradient-to-br from-accent/20 via-accent/5 to-transparent"
-                          : "bg-gradient-to-br from-primary/15 via-secondary/10 to-muted/10"
-                      )}>
-                        {/* Subtle pattern */}
-                        <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-primary/10 blur-2xl" />
-                        <div className="absolute -bottom-8 -left-8 w-20 h-20 rounded-full bg-secondary/10 blur-xl" />
+                      {/* Thumbnail Area */}
+                      <div className="relative aspect-video overflow-hidden bg-muted">
+                        {/* Visual gradient background */}
+                        <div className={cn(
+                          "absolute inset-0",
+                          lesson.completed 
+                            ? "bg-gradient-to-br from-accent/30 via-accent/10 to-primary/10"
+                            : "bg-gradient-to-br from-primary/20 via-secondary/15 to-muted/20"
+                        )}>
+                          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-primary/20 blur-3xl" />
+                          <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full bg-secondary/20 blur-2xl" />
+                        </div>
+
+                        {/* Lesson Number in Center */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-4xl font-heading font-bold text-white/20">
+                            {String(lessonIndex + 1).padStart(2, '0')}
+                          </span>
+                        </div>
+
+                        {/* Play button on hover */}
+                        {!isLocked && (
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/40 backdrop-blur-sm">
+                            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30 transform scale-90 group-hover:scale-100 transition-transform">
+                              <Play className="w-6 h-6 text-primary-foreground ml-0.5" fill="currentColor" />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Lock overlay for locked lessons */}
+                        {isLocked && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm">
+                            <div className="w-12 h-12 rounded-full bg-muted/80 flex items-center justify-center">
+                              <Lock className="w-5 h-5 text-muted-foreground" />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Status Badge */}
+                        <div className="absolute top-3 right-3">
+                          {lesson.completed ? (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-accent text-accent-foreground flex items-center gap-1 backdrop-blur-sm">
+                              <CheckCircle2 className="w-3 h-3" />
+                              Completada
+                            </span>
+                          ) : lesson.is_preview ? (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-primary/90 text-primary-foreground backdrop-blur-sm">
+                              Gratis
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
 
-                      {/* Content overlay */}
-                      <div className="relative flex flex-col h-full p-3">
-                        {/* Top row: Number + Status */}
-                        <div className="flex items-start justify-between">
-                          <div className={cn(
-                            "rounded-lg bg-background/80 backdrop-blur-sm font-bold flex items-center justify-center shadow-sm border border-border/30",
-                            isCompact ? "w-6 h-6 text-xs" : "w-8 h-8 text-sm"
-                          )}>
-                            {lessonIndex + 1}
-                          </div>
+                      {/* Content Area */}
+                      <div className="p-4 flex flex-col flex-1">
+                        {/* Title */}
+                        <h4 className="font-heading font-semibold text-sm group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                          {lesson.title}
+                        </h4>
 
-                          {/* Status Icon */}
-                          <div>
-                            {lesson.completed ? (
-                              <div className={cn(
-                                "rounded-full bg-accent flex items-center justify-center shadow-sm",
-                                isCompact ? "w-5 h-5" : "w-6 h-6"
-                              )}>
-                                <CheckCircle2 className={cn("text-accent-foreground", isCompact ? "w-3 h-3" : "w-3.5 h-3.5")} />
-                              </div>
-                            ) : lesson.is_preview ? (
-                              <div className={cn(
-                                "rounded-full bg-primary/90 text-primary-foreground font-medium shadow-sm flex items-center justify-center",
-                                isCompact ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-0.5 text-[10px]"
-                              )}>
-                                Gratis
-                              </div>
-                            ) : isLocked ? (
-                              <div className={cn(
-                                "rounded-full bg-muted/80 flex items-center justify-center",
-                                isCompact ? "w-5 h-5" : "w-6 h-6"
-                              )}>
-                                <Lock className={cn("text-muted-foreground", isCompact ? "w-2.5 h-2.5" : "w-3 h-3")} />
-                              </div>
-                            ) : null}
-                          </div>
-                        </div>
+                        {/* Description placeholder or duration */}
+                        <div className="flex-1" />
 
-                        {/* Center: Play button on hover */}
-                        <div className="flex-1 flex items-center justify-center">
-                          {!isLocked && (
-                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-200">
-                              <div className={cn(
-                                "rounded-full bg-primary flex items-center justify-center shadow-lg scale-90 group-hover:scale-100 transition-transform",
-                                isCompact ? "w-10 h-10" : "w-12 h-12"
-                              )}>
-                                <Play className={cn("text-primary-foreground ml-0.5", isCompact ? "w-4 h-4" : "w-5 h-5")} fill="currentColor" />
-                              </div>
-                            </div>
+                        {/* Meta info */}
+                        <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border/50 mt-2">
+                          <span className="flex items-center gap-1">
+                            <Play className="w-3 h-3" />
+                            Lección {lessonIndex + 1}
+                          </span>
+                          {lesson.duration && (
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {lesson.duration}
+                            </span>
                           )}
-                        </div>
-
-                        {/* Bottom: Title + Duration - CONTAINED within card width */}
-                        <div className="mt-auto w-full min-w-0 overflow-hidden">
-                          <h4 
-                            className={cn(
-                              // Force text to stay within card: truncate + ellipsis
-                              "font-medium leading-tight truncate",
-                              isCompact ? "text-[10px]" : "text-xs",
-                              lesson.completed ? "text-muted-foreground" : "text-foreground"
-                            )}
-                            title={lesson.title}
-                          >
-                            {lesson.title}
-                          </h4>
-
-                          {/* Keep a fixed row for duration so title alignment doesn't jump */}
-                          <div
-                            className={cn(
-                              "mt-1 flex items-center gap-1 text-muted-foreground",
-                              isCompact ? "text-[9px]" : "text-[10px]",
-                              !lesson.duration && "opacity-0"
-                            )}
-                            aria-hidden={!lesson.duration}
-                          >
-                            <Clock className={cn(isCompact ? "w-2 h-2" : "w-2.5 h-2.5")} />
-                            <span>{lesson.duration ?? ""}</span>
-                          </div>
                         </div>
                       </div>
                     </button>
