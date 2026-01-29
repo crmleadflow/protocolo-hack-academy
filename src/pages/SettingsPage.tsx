@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Settings, Lock, Bell, Shield, Loader2, Eye, EyeOff, 
-  CheckCircle, AlertTriangle
+  CheckCircle, AlertTriangle, Save
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -27,10 +27,88 @@ const SettingsPage: React.FC = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  // Notification preferences (local state for now)
+  // Notification preferences
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [progressReminders, setProgressReminders] = useState(true);
   const [newContentAlerts, setNewContentAlerts] = useState(true);
+  const [settingsChanged, setSettingsChanged] = useState(false);
+
+  // Load user settings from database
+  useEffect(() => {
+    const loadSettings = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from("user_settings")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+          setEmailNotifications(data.email_notifications);
+          setProgressReminders(data.progress_reminders);
+          setNewContentAlerts(data.new_content_alerts);
+        }
+      } catch (error) {
+        console.error("Error loading settings:", error);
+      } finally {
+        setIsLoadingSettings(false);
+      }
+    };
+
+    loadSettings();
+  }, [user]);
+
+  // Track changes
+  const handleNotificationChange = (
+    setter: React.Dispatch<React.SetStateAction<boolean>>,
+    value: boolean
+  ) => {
+    setter(value);
+    setSettingsChanged(true);
+  };
+
+  // Save notification preferences
+  const handleSaveNotificationSettings = async () => {
+    if (!user) return;
+
+    setIsSavingSettings(true);
+    try {
+      const { error } = await supabase
+        .from("user_settings")
+        .upsert({
+          user_id: user.id,
+          email_notifications: emailNotifications,
+          progress_reminders: progressReminders,
+          new_content_alerts: newContentAlerts,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: "user_id"
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Preferencias guardadas",
+        description: "Tus preferencias de notificaciones han sido actualizadas.",
+      });
+      setSettingsChanged(false);
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar las preferencias.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
 
   const handleChangePassword = async () => {
     if (!newPassword || !confirmPassword) {
@@ -247,51 +325,82 @@ const SettingsPage: React.FC = () => {
 
             {/* Notification Preferences */}
             <HolographicCard className="p-6">
-              <h3 className="text-lg font-heading font-semibold mb-4 flex items-center gap-2">
-                <Bell className="w-5 h-5 text-primary" />
-                Preferencias de Notificaciones
-              </h3>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Notificaciones por email</p>
-                    <p className="text-sm text-muted-foreground">
-                      Recibe actualizaciones importantes por correo
-                    </p>
-                  </div>
-                  <Switch
-                    checked={emailNotifications}
-                    onCheckedChange={setEmailNotifications}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Recordatorios de progreso</p>
-                    <p className="text-sm text-muted-foreground">
-                      Recibe recordatorios para continuar tu aprendizaje
-                    </p>
-                  </div>
-                  <Switch
-                    checked={progressReminders}
-                    onCheckedChange={setProgressReminders}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Alertas de nuevo contenido</p>
-                    <p className="text-sm text-muted-foreground">
-                      Notificaciones cuando hay nuevos programas
-                    </p>
-                  </div>
-                  <Switch
-                    checked={newContentAlerts}
-                    onCheckedChange={setNewContentAlerts}
-                  />
-                </div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-heading font-semibold flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-primary" />
+                  Preferencias de Notificaciones
+                </h3>
+                {settingsChanged && (
+                  <span className="text-xs text-primary animate-pulse">
+                    Cambios sin guardar
+                  </span>
+                )}
               </div>
+
+              {isLoadingSettings ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Notificaciones por email</p>
+                      <p className="text-sm text-muted-foreground">
+                        Recibe actualizaciones importantes por correo
+                      </p>
+                    </div>
+                    <Switch
+                      checked={emailNotifications}
+                      onCheckedChange={(value) => handleNotificationChange(setEmailNotifications, value)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Recordatorios de progreso</p>
+                      <p className="text-sm text-muted-foreground">
+                        Recibe recordatorios para continuar tu aprendizaje
+                      </p>
+                    </div>
+                    <Switch
+                      checked={progressReminders}
+                      onCheckedChange={(value) => handleNotificationChange(setProgressReminders, value)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Alertas de nuevo contenido</p>
+                      <p className="text-sm text-muted-foreground">
+                        Notificaciones cuando hay nuevos programas
+                      </p>
+                    </div>
+                    <Switch
+                      checked={newContentAlerts}
+                      onCheckedChange={(value) => handleNotificationChange(setNewContentAlerts, value)}
+                    />
+                  </div>
+
+                  <NeonButton
+                    onClick={handleSaveNotificationSettings}
+                    disabled={isSavingSettings || !settingsChanged}
+                    className="w-full sm:w-auto mt-4"
+                  >
+                    {isSavingSettings ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Guardando...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Guardar Preferencias
+                      </>
+                    )}
+                  </NeonButton>
+                </div>
+              )}
             </HolographicCard>
 
             {/* Danger Zone */}
