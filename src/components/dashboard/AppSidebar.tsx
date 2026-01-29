@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Home, BookOpen, Trophy, Settings, LogOut, User,
-  Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain
+  Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain, PanelLeft
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -43,7 +43,7 @@ const secondaryItems = [
 ];
 
 export function AppSidebar() {
-  const { state, setOpenMobile } = useSidebar();
+  const { state, setOpenMobile, toggleSidebar } = useSidebar();
   const collapsed = state === "collapsed";
   const isMobile = useIsMobile();
   const location = useLocation();
@@ -76,13 +76,31 @@ export function AppSidebar() {
       collapsible="icon"
     >
       <SidebarHeader className="p-4">
-        <div 
-          className="flex items-center gap-3 cursor-pointer"
-          onClick={() => navigate("/")}
-        >
-          <span className="font-heading font-bold text-lg text-gradient">
-            {collapsed ? "PH" : "PROTOCOLO HACK"}
-          </span>
+        <div className="flex items-center justify-between gap-3">
+          <div 
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <span className="font-heading font-bold text-lg text-gradient">
+              {collapsed ? "PH" : "PROTOCOLO HACK"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSidebar();
+            }}
+            title={collapsed ? "Expandir menú" : "Colapsar menú"}
+            className={cn(
+              "p-2 rounded-lg border border-border/50 transition-colors",
+              "text-muted-foreground hover:text-foreground hover:bg-white/5",
+              collapsed && "mx-auto"
+            )}
+          >
+            <PanelLeft className={cn("w-5 h-5 transition-transform", collapsed && "rotate-180")} />
+          </button>
         </div>
       </SidebarHeader>
 
