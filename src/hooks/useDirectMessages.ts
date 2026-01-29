@@ -189,6 +189,35 @@ export function useDirectMessages() {
     }
   };
 
+  const deleteMessage = async (messageId: string) => {
+    if (!user || !isAdmin) return { error: new Error("Not authorized") };
+
+    try {
+      const { error } = await supabase
+        .from("direct_messages")
+        .delete()
+        .eq("id", messageId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Mensaje eliminado",
+        description: "El mensaje ha sido eliminado correctamente",
+      });
+
+      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+      return { error: null };
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo eliminar el mensaje",
+      });
+      return { error };
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchMessages();
@@ -233,6 +262,7 @@ export function useDirectMessages() {
     unreadCount,
     sendMessage,
     markAsRead,
+    deleteMessage,
     refetch: fetchMessages,
   };
 }

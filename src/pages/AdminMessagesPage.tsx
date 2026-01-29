@@ -11,6 +11,7 @@ import {
   Users,
   Check,
   AlertTriangle,
+  Trash2,
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -50,7 +51,7 @@ import { cn } from "@/lib/utils";
 
 const AdminMessagesPage: React.FC = () => {
   const { user } = useAuth();
-  const { messages, students, isLoading, sendMessage, markAsRead, unreadCount } =
+  const { messages, students, isLoading, sendMessage, markAsRead, deleteMessage, unreadCount } =
     useDirectMessages();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,6 +65,9 @@ const AdminMessagesPage: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<DirectMessage | null>(null);
   const [showConfirmMassMessage, setShowConfirmMassMessage] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<DirectMessage | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filter students based on search term
   const filteredStudents = useMemo(() => {
@@ -470,15 +474,28 @@ const AdminMessagesPage: React.FC = () => {
                   <p className="whitespace-pre-wrap">{selectedMessage.content}</p>
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="flex-col sm:flex-row gap-2">
                   <NeonButton variant="ghost" onClick={() => setSelectedMessage(null)}>
                     <ArrowLeft className="w-4 h-4" />
                     Volver
                   </NeonButton>
-                  <NeonButton onClick={() => handleReply(selectedMessage)}>
-                    <Send className="w-4 h-4" />
-                    Responder
-                  </NeonButton>
+                  <div className="flex gap-2">
+                    <NeonButton 
+                      variant="ghost" 
+                      onClick={() => {
+                        setMessageToDelete(selectedMessage);
+                        setShowDeleteConfirm(true);
+                      }}
+                      className="text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Eliminar
+                    </NeonButton>
+                    <NeonButton onClick={() => handleReply(selectedMessage)}>
+                      <Send className="w-4 h-4" />
+                      Responder
+                    </NeonButton>
+                  </div>
                 </DialogFooter>
               </>
             )}
@@ -531,6 +548,72 @@ const AdminMessagesPage: React.FC = () => {
                   <>
                     <Send className="w-4 h-4" />
                     Enviar a todos ({students.length})
+                  </>
+                )}
+              </NeonButton>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Modal */}
+        <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-destructive" />
+                </div>
+                <div>
+                  <DialogTitle>Eliminar mensaje</DialogTitle>
+                  <DialogDescription>
+                    Esta acción no se puede deshacer
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                ¿Estás seguro que deseas eliminar este mensaje?
+              </p>
+              {messageToDelete && (
+                <div className="mt-4 p-3 rounded-lg bg-muted/50 border border-border">
+                  <p className="text-sm font-medium mb-1">{messageToDelete.subject || "Sin asunto"}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{messageToDelete.content}</p>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <NeonButton variant="ghost" onClick={() => {
+                setShowDeleteConfirm(false);
+                setMessageToDelete(null);
+              }}>
+                Cancelar
+              </NeonButton>
+              <NeonButton
+                variant="default"
+                onClick={async () => {
+                  if (!messageToDelete) return;
+                  setIsDeleting(true);
+                  await deleteMessage(messageToDelete.id);
+                  setIsDeleting(false);
+                  setShowDeleteConfirm(false);
+                  setMessageToDelete(null);
+                  setSelectedMessage(null);
+                }}
+                disabled={isDeleting}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Eliminando...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Eliminar
                   </>
                 )}
               </NeonButton>
