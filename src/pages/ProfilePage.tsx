@@ -10,6 +10,7 @@ import { ImageCropper } from "@/components/profile/ImageCropper";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { notifyProfileUpdate } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 
 const ProfilePage: React.FC = () => {
@@ -71,6 +72,9 @@ const ProfilePage: React.FC = () => {
         .eq("user_id", user.id);
 
       if (error) throw error;
+
+      // Notify sidebar to refresh profile data
+      notifyProfileUpdate();
 
       toast({
         title: "Perfil actualizado",
@@ -163,6 +167,10 @@ const ProfilePage: React.FC = () => {
       if (updateError) throw updateError;
 
       setAvatarUrl(urlWithCacheBuster);
+      
+      // Notify sidebar to refresh profile data
+      notifyProfileUpdate();
+      
       toast({
         title: "Avatar actualizado",
         description: "Tu foto de perfil ha sido actualizada.",

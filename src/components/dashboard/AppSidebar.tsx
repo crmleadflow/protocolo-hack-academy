@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -40,7 +41,8 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAdmin, signOut } = useAuth();
+  const { isAdmin, signOut } = useAuth();
+  const { profile, displayName, initials } = useProfile();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -48,9 +50,6 @@ export function AppSidebar() {
     await signOut();
     navigate("/");
   };
-
-  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuario";
-  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <Sidebar
@@ -163,10 +162,18 @@ export function AppSidebar() {
           "flex items-center gap-3 mb-4",
           collapsed && "justify-center"
         )}>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
-            <span className="font-heading font-bold text-primary-foreground">
-              {initials}
-            </span>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 overflow-hidden">
+            {profile.avatarUrl ? (
+              <img
+                src={profile.avatarUrl}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="font-heading font-bold text-primary-foreground">
+                {initials}
+              </span>
+            )}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
