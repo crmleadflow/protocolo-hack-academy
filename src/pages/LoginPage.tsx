@@ -7,7 +7,6 @@ import { GlassInput } from "@/components/ui/glass-input";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@/assets/logo.png";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -60,7 +59,9 @@ const LoginPage: React.FC = () => {
         {/* Logo */}
         <div className="text-center mb-8 animate-fade-in">
           <Link to="/" className="inline-block">
-            <img src={logo} alt="Protocolo Hack" className="h-16 mx-auto mb-4" />
+            <span className="font-heading font-bold text-2xl tracking-wider text-gradient">
+              PROTOCOLO HACK
+            </span>
           </Link>
           <h1 className="text-2xl font-heading font-bold">
             Bienvenido de vuelta
