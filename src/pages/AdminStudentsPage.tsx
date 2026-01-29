@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { 
-  Users, Search, UserPlus, Check, X, Mail,
-  BookOpen, Loader2, CheckCircle2
+  Users, Search, UserPlus, Check, X,
+  BookOpen, Loader2, CheckCircle2, GraduationCap
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -9,6 +9,15 @@ import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +56,14 @@ interface Program {
   title: string;
 }
 
+interface ProgramStats {
+  programId: string;
+  programTitle: string;
+  totalStudents: number;
+  activeStudents: number;
+  inactiveStudents: number;
+}
+
 const AdminStudentsPage: React.FC = () => {
   const { toast } = useToast();
   const [students, setStudents] = useState<Student[]>([]);
@@ -57,8 +74,7 @@ const AdminStudentsPage: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedProgram, setSelectedProgram] = useState<string>("");
   const [isEnrolling, setIsEnrolling] = useState(false);
-  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
-  const [newStudentEmail, setNewStudentEmail] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   useEffect(() => {
     fetchStudentsAndPrograms();
@@ -67,14 +83,12 @@ const AdminStudentsPage: React.FC = () => {
   const fetchStudentsAndPrograms = async () => {
     setIsLoading(true);
     try {
-      // Fetch all profiles (students)
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("id, user_id, full_name");
 
       if (profilesError) throw profilesError;
 
-      // Fetch all programs
       const { data: programsData, error: programsError } = await supabase
         .from("programs")
         .select("id, title");
@@ -83,14 +97,12 @@ const AdminStudentsPage: React.FC = () => {
 
       setPrograms(programsData || []);
 
-      // Fetch enrollments
       const { data: enrollmentsData, error: enrollmentsError } = await supabase
         .from("enrollments")
         .select("id, user_id, program_id, status, enrolled_at, is_manual");
 
       if (enrollmentsError) throw enrollmentsError;
 
-      // Combine data
       const studentsWithEnrollments: Student[] = (profilesData || []).map((profile) => {
         const userEnrollments = (enrollmentsData || [])
           .filter((e) => e.user_id === profile.user_id)
@@ -107,7 +119,7 @@ const AdminStudentsPage: React.FC = () => {
           id: profile.id,
           user_id: profile.user_id,
           full_name: profile.full_name,
-          email: "", // Email comes from auth.users, we'll use user_id for display
+          email: "",
           enrollments: userEnrollments,
         };
       });
@@ -214,16 +226,63 @@ const AdminStudentsPage: React.FC = () => {
     }
   };
 
-  const filteredStudents = students.filter(
-    (student) =>
-      student.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.user_id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Calculate program statistics
+  const programStats: ProgramStats[] = useMemo(() => {
+    return programs.map((program) => {
+      const studentsInProgram = students.filter((student) =>
+        student.enrollments.some((e) => e.program_id === program.id)
+      );
+      const activeStudents = students.filter((student) =>
+        student.enrollments.some((e) => e.program_id === program.id && e.status === "active")
+      );
+      const inactiveStudents = studentsInProgram.length - activeStudents.length;
+
+      return {
+        programId: program.id,
+        programTitle: program.title,
+        totalStudents: studentsInProgram.length,
+        activeStudents: activeStudents.length,
+        inactiveStudents,
+      };
+    });
+  }, [programs, students]);
+
+  // Filter students based on active tab and search term
+  const filteredStudents = useMemo(() => {
+    let filtered = students;
+
+    // Filter by program if not "all"
+    if (activeTab !== "all") {
+      filtered = students.filter((student) =>
+        student.enrollments.some((e) => e.program_id === activeTab)
+      );
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (student) =>
+          student.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.user_id.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [students, activeTab, searchTerm]);
+
+  // Get students with no enrollments for "Sin Programa" tab
+  const studentsWithoutEnrollments = useMemo(() => {
+    return students.filter((student) => student.enrollments.length === 0);
+  }, [students]);
 
   const openEnrollModal = (student: Student) => {
     setSelectedStudent(student);
     setShowEnrollModal(true);
   };
+
+  const totalActiveEnrollments = students.filter((s) =>
+    s.enrollments.some((e) => e.status === "active")
+  ).length;
 
   return (
     <SidebarProvider>
@@ -239,7 +298,7 @@ const AdminStudentsPage: React.FC = () => {
                 <div>
                   <h1 className="text-2xl font-heading font-bold">Gestión de Estudiantes</h1>
                   <p className="text-sm text-muted-foreground">
-                    Administra inscripciones y accesos a programas
+                    Administra inscripciones y accesos por programa
                   </p>
                 </div>
               </div>
@@ -247,21 +306,8 @@ const AdminStudentsPage: React.FC = () => {
           </header>
 
           <div className="p-4 lg:p-6 space-y-6">
-            {/* Search and filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <GlassInput
-                  placeholder="Buscar por nombre o ID..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Global Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <HolographicCard className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
@@ -269,7 +315,7 @@ const AdminStudentsPage: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-2xl font-bold">{students.length}</div>
-                    <div className="text-sm text-muted-foreground">Total Estudiantes</div>
+                    <div className="text-sm text-muted-foreground">Total Usuarios</div>
                   </div>
                 </div>
               </HolographicCard>
@@ -280,10 +326,8 @@ const AdminStudentsPage: React.FC = () => {
                     <CheckCircle2 className="w-5 h-5 text-secondary" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold">
-                      {students.filter((s) => s.enrollments.some((e) => e.status === "active")).length}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Con Inscripciones Activas</div>
+                    <div className="text-2xl font-bold">{totalActiveEnrollments}</div>
+                    <div className="text-sm text-muted-foreground">Con Acceso Activo</div>
                   </div>
                 </div>
               </HolographicCard>
@@ -295,98 +339,131 @@ const AdminStudentsPage: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-2xl font-bold">{programs.length}</div>
-                    <div className="text-sm text-muted-foreground">Programas Disponibles</div>
+                    <div className="text-sm text-muted-foreground">Programas</div>
+                  </div>
+                </div>
+              </HolographicCard>
+
+              <HolographicCard className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-destructive/20 flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-destructive" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{studentsWithoutEnrollments.length}</div>
+                    <div className="text-sm text-muted-foreground">Sin Programa</div>
                   </div>
                 </div>
               </HolographicCard>
             </div>
 
-            {/* Students list */}
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              </div>
-            ) : filteredStudents.length === 0 ? (
-              <HolographicCard className="p-12 text-center">
-                <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">No hay estudiantes registrados</h3>
-                <p className="text-muted-foreground">
-                  Los estudiantes aparecerán aquí cuando se registren
-                </p>
-              </HolographicCard>
-            ) : (
-              <div className="space-y-4">
-                {filteredStudents.map((student) => (
-                  <HolographicCard key={student.id} className="p-4">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold text-lg">
-                          {student.full_name?.[0]?.toUpperCase() || "?"}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{student.full_name || "Sin nombre"}</h3>
-                          <p className="text-sm text-muted-foreground font-mono">
-                            ID: {student.user_id.slice(0, 8)}...
-                          </p>
-                        </div>
+            {/* Program Stats Cards */}
+            {programStats.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {programStats.map((stat) => (
+                  <HolographicCard key={stat.programId} className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="font-semibold text-sm line-clamp-1">{stat.programTitle}</h3>
+                      <Badge variant="outline" className="shrink-0">
+                        {stat.totalStudents} alumnos
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                        <span className="text-muted-foreground">Activos:</span>
+                        <span className="font-medium">{stat.activeStudents}</span>
                       </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        {student.enrollments.length === 0 ? (
-                          <Badge variant="secondary">Sin inscripciones</Badge>
-                        ) : (
-                          student.enrollments.map((enrollment) => (
-                            <div
-                              key={enrollment.id}
-                              className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass"
-                            >
-                              <span className="text-sm">{enrollment.program_title}</span>
-                              <Badge
-                                variant={enrollment.status === "active" ? "default" : "secondary"}
-                                className="text-xs"
-                              >
-                                {enrollment.status === "active" ? "Activo" : "Inactivo"}
-                              </Badge>
-                              {enrollment.is_manual && (
-                                <Badge variant="outline" className="text-xs">
-                                  Manual
-                                </Badge>
-                              )}
-                              {enrollment.status === "active" ? (
-                                <button
-                                  onClick={() => handleRevokeEnrollment(enrollment.id)}
-                                  className="p-1 rounded hover:bg-destructive/20 text-destructive transition-colors"
-                                  title="Revocar acceso"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleReactivateEnrollment(enrollment.id)}
-                                  className="p-1 rounded hover:bg-primary/20 text-primary transition-colors"
-                                  title="Reactivar acceso"
-                                >
-                                  <Check className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          ))
-                        )}
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                        <span className="text-muted-foreground">Inactivos:</span>
+                        <span className="font-medium">{stat.inactiveStudents}</span>
                       </div>
-
-                      <NeonButton
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEnrollModal(student)}
-                      >
-                        <UserPlus className="w-4 h-4" />
-                        Inscribir
-                      </NeonButton>
                     </div>
                   </HolographicCard>
                 ))}
               </div>
             )}
+
+            {/* Tabs for filtering by program */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-4">
+                <TabsList className="flex-wrap h-auto gap-1 bg-muted/50 p-1">
+                  <TabsTrigger value="all" className="text-xs sm:text-sm">
+                    Todos ({students.length})
+                  </TabsTrigger>
+                  {programs.map((program) => {
+                    const count = programStats.find((s) => s.programId === program.id)?.totalStudents || 0;
+                    return (
+                      <TabsTrigger key={program.id} value={program.id} className="text-xs sm:text-sm">
+                        {program.title.length > 15 ? `${program.title.slice(0, 15)}...` : program.title} ({count})
+                      </TabsTrigger>
+                    );
+                  })}
+                  <TabsTrigger value="none" className="text-xs sm:text-sm">
+                    Sin Programa ({studentsWithoutEnrollments.length})
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Search */}
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <GlassInput
+                    placeholder="Buscar por nombre..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 h-9"
+                  />
+                </div>
+              </div>
+
+              {/* Content for all tabs */}
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <>
+                  <TabsContent value="all" className="mt-0">
+                    <StudentTable
+                      students={filteredStudents}
+                      onEnroll={openEnrollModal}
+                      onRevoke={handleRevokeEnrollment}
+                      onReactivate={handleReactivateEnrollment}
+                      showPrograms
+                    />
+                  </TabsContent>
+
+                  {programs.map((program) => (
+                    <TabsContent key={program.id} value={program.id} className="mt-0">
+                      <StudentTable
+                        students={filteredStudents}
+                        onEnroll={openEnrollModal}
+                        onRevoke={handleRevokeEnrollment}
+                        onReactivate={handleReactivateEnrollment}
+                        filterProgramId={program.id}
+                      />
+                    </TabsContent>
+                  ))}
+
+                  <TabsContent value="none" className="mt-0">
+                    <StudentTable
+                      students={studentsWithoutEnrollments.filter(
+                        (s) =>
+                          !searchTerm ||
+                          s.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          s.user_id.toLowerCase().includes(searchTerm.toLowerCase())
+                      )}
+                      onEnroll={openEnrollModal}
+                      onRevoke={handleRevokeEnrollment}
+                      onReactivate={handleReactivateEnrollment}
+                      showPrograms
+                      emptyMessage="No hay usuarios sin programa asignado"
+                    />
+                  </TabsContent>
+                </>
+              )}
+            </Tabs>
           </div>
         </main>
 
@@ -440,6 +517,168 @@ const AdminStudentsPage: React.FC = () => {
         </Dialog>
       </div>
     </SidebarProvider>
+  );
+};
+
+// Student Table Component
+interface StudentTableProps {
+  students: Student[];
+  onEnroll: (student: Student) => void;
+  onRevoke: (enrollmentId: string) => void;
+  onReactivate: (enrollmentId: string) => void;
+  showPrograms?: boolean;
+  filterProgramId?: string;
+  emptyMessage?: string;
+}
+
+const StudentTable: React.FC<StudentTableProps> = ({
+  students,
+  onEnroll,
+  onRevoke,
+  onReactivate,
+  showPrograms = false,
+  filterProgramId,
+  emptyMessage = "No hay estudiantes en este programa",
+}) => {
+  if (students.length === 0) {
+    return (
+      <HolographicCard className="p-12 text-center">
+        <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+        <h3 className="text-lg font-semibold mb-2">{emptyMessage}</h3>
+        <p className="text-muted-foreground">
+          Los estudiantes aparecerán aquí cuando se inscriban
+        </p>
+      </HolographicCard>
+    );
+  }
+
+  return (
+    <HolographicCard className="overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Estudiante</TableHead>
+            {showPrograms && <TableHead>Programas</TableHead>}
+            <TableHead>Estado</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {students.map((student) => {
+            const relevantEnrollments = filterProgramId
+              ? student.enrollments.filter((e) => e.program_id === filterProgramId)
+              : student.enrollments;
+
+            const hasActiveEnrollment = relevantEnrollments.some((e) => e.status === "active");
+
+            return (
+              <TableRow key={student.id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold">
+                      {student.full_name?.[0]?.toUpperCase() || "?"}
+                    </div>
+                    <div>
+                      <div className="font-medium">{student.full_name || "Sin nombre"}</div>
+                      <div className="text-xs text-muted-foreground font-mono">
+                        {student.user_id.slice(0, 8)}...
+                      </div>
+                    </div>
+                  </div>
+                </TableCell>
+
+                {showPrograms && (
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {student.enrollments.length === 0 ? (
+                        <Badge variant="secondary">Sin inscripciones</Badge>
+                      ) : (
+                        student.enrollments.slice(0, 3).map((enrollment) => (
+                          <Badge
+                            key={enrollment.id}
+                            variant={enrollment.status === "active" ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {enrollment.program_title.length > 12
+                              ? `${enrollment.program_title.slice(0, 12)}...`
+                              : enrollment.program_title}
+                          </Badge>
+                        ))
+                      )}
+                      {student.enrollments.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{student.enrollments.length - 3} más
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
+                )}
+
+                <TableCell>
+                  {filterProgramId ? (
+                    relevantEnrollments.map((enrollment) => (
+                      <div key={enrollment.id} className="flex items-center gap-2">
+                        <Badge
+                          variant={enrollment.status === "active" ? "default" : "secondary"}
+                        >
+                          {enrollment.status === "active" ? "Activo" : "Inactivo"}
+                        </Badge>
+                        {enrollment.is_manual && (
+                          <Badge variant="outline" className="text-xs">
+                            Manual
+                          </Badge>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <Badge variant={hasActiveEnrollment ? "default" : "secondary"}>
+                      {hasActiveEnrollment ? "Activo" : student.enrollments.length > 0 ? "Inactivo" : "Sin acceso"}
+                    </Badge>
+                  )}
+                </TableCell>
+
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    {filterProgramId && relevantEnrollments.length > 0 ? (
+                      relevantEnrollments.map((enrollment) =>
+                        enrollment.status === "active" ? (
+                          <button
+                            key={enrollment.id}
+                            onClick={() => onRevoke(enrollment.id)}
+                            className="p-2 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
+                            title="Revocar acceso"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        ) : (
+                          <button
+                            key={enrollment.id}
+                            onClick={() => onReactivate(enrollment.id)}
+                            className="p-2 rounded-lg hover:bg-primary/20 text-primary transition-colors"
+                            title="Reactivar acceso"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
+                        )
+                      )
+                    ) : (
+                      <NeonButton
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEnroll(student)}
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        Inscribir
+                      </NeonButton>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </HolographicCard>
   );
 };
 
