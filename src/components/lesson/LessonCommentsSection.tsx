@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { MessageSquare, Send, Trash2, User } from "lucide-react";
+import { MessageSquare, Send, Trash2, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLessonComments, LessonComment } from "@/hooks/useLessonComments";
+import { useLessonRatings } from "@/hooks/useLessonRatings";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -23,8 +24,11 @@ export const LessonCommentsSection: React.FC<LessonCommentsSectionProps> = ({
 }) => {
   const { comments, isLoading, isSubmitting, addComment, deleteComment } =
     useLessonComments(lessonId);
+  const { summary, isSubmitting: isRatingSubmitting, rateLesson } =
+    useLessonRatings(lessonId);
   const { user, isAdmin } = useAuth();
   const [newComment, setNewComment] = useState("");
+  const [hoverRating, setHoverRating] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,23 +48,83 @@ export const LessonCommentsSection: React.FC<LessonCommentsSectionProps> = ({
       .slice(0, 2);
   };
 
+  const handleRating = (rating: number) => {
+    if (!isRatingSubmitting) {
+      rateLesson(rating);
+    }
+  };
+
   return (
     <HolographicCard className={cn("space-y-4", className)}>
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-primary/10">
-          <MessageSquare className="w-5 h-5 text-primary" />
+      {/* Header with Rating */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex items-center gap-3 flex-1">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <MessageSquare className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-heading font-bold">Comentarios y Calificación</h3>
+            <p className="text-xs text-muted-foreground">
+              Califica y comparte tu opinión sobre esta lección
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-heading font-bold">Comentarios</h3>
-          <p className="text-xs text-muted-foreground">
-            Comparte tus pensamientos sobre esta lección
-          </p>
+        
+        {/* Star Rating */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((star) => {
+              const isFilled = star <= (hoverRating || summary.userRating || 0);
+              const isAverage = !hoverRating && !summary.userRating && star <= Math.round(summary.averageRating);
+              
+              return (
+                <button
+                  key={star}
+                  onClick={() => handleRating(star)}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  disabled={isRatingSubmitting || !user}
+                  className={cn(
+                    "p-0.5 transition-all duration-150",
+                    user && "hover:scale-125",
+                    isRatingSubmitting && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  <Star
+                    className={cn(
+                      "w-5 h-5 transition-colors",
+                      isFilled
+                        ? "fill-yellow-400 text-yellow-400"
+                        : isAverage
+                        ? "fill-yellow-400/50 text-yellow-400/50"
+                        : "text-muted-foreground/40"
+                    )}
+                  />
+                </button>
+              );
+            })}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {summary.totalRatings > 0 ? (
+              <span>
+                <span className="font-medium text-foreground">{summary.averageRating}</span>
+                <span className="mx-1">·</span>
+                {summary.totalRatings} {summary.totalRatings === 1 ? "voto" : "votos"}
+              </span>
+            ) : (
+              <span>Sin calificaciones</span>
+            )}
+          </div>
         </div>
-        <span className="ml-auto text-sm text-muted-foreground">
-          {comments.length} {comments.length === 1 ? "comentario" : "comentarios"}
-        </span>
       </div>
+
+      {/* User's rating indicator */}
+      {summary.userRating && (
+        <div className="text-xs text-primary flex items-center gap-1">
+          <Star className="w-3 h-3 fill-primary" />
+          Tu calificación: {summary.userRating} {summary.userRating === 1 ? "estrella" : "estrellas"}
+        </div>
+      )}
 
       {/* Comment Form */}
       {user && (
