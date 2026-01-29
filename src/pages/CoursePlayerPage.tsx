@@ -23,6 +23,7 @@ import { useEnrollment } from "@/hooks/useEnrollment";
 import { useLessonResources } from "@/hooks/useLessonResources";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import lessonThumbnail from "@/assets/lesson-thumbnail-default.png";
 
 type ViewMode = "list" | "lesson";
 type ListDisplayMode = "list" | "cards";
@@ -586,17 +587,14 @@ function ModulesCardGrid({
           >
             {/* Thumbnail Area */}
             <div className="relative aspect-video overflow-hidden bg-muted">
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary/30 via-primary/20 to-muted/20">
-                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-secondary/20 blur-3xl" />
-                <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full bg-primary/20 blur-2xl" />
-              </div>
-
-              {/* Module Number in Center */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-5xl font-heading font-bold text-white/20">
-                  {String(moduleIndex + 1).padStart(2, '0')}
-                </span>
-              </div>
+              {/* Lesson Thumbnail Image */}
+              <img 
+                src={lessonThumbnail} 
+                alt={module.title}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              {/* Subtle overlay for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
 
               {/* Play indicator on hover */}
               {hasAccessibleLesson && lessonToOpen && (
