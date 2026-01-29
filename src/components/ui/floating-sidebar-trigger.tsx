@@ -1,22 +1,29 @@
 import React from "react";
 import { Menu } from "lucide-react";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 export function FloatingSidebarTrigger() {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const { isMobile, openMobile, toggleSidebar } = useSidebar();
 
-  // Only show on mobile when sidebar is collapsed
-  if (!isCollapsed) return null;
+  // Mobile-only global trigger (opens/closes the main sidebar sheet)
+  if (!isMobile) return null;
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 md:hidden">
+    <div className="fixed bottom-6 left-6 z-50">
       {/* Pulse ring effect */}
-      <div className="absolute inset-0 rounded-full bg-primary/40 animate-ping" />
+      <div
+        className={cn(
+          "absolute inset-0 rounded-full bg-primary/40",
+          openMobile ? "opacity-0" : "animate-ping"
+        )}
+      />
       <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-primary via-secondary to-primary opacity-60 blur-md animate-pulse" />
       
-      <SidebarTrigger 
+      <button
+        type="button"
+        aria-label={openMobile ? "Cerrar menú" : "Abrir menú"}
+        onClick={toggleSidebar}
         className={cn(
           "relative h-14 w-14 rounded-full",
           "bg-gradient-to-br from-primary to-secondary",
@@ -30,7 +37,7 @@ export function FloatingSidebarTrigger() {
         )}
       >
         <Menu className="h-6 w-6" />
-      </SidebarTrigger>
+      </button>
     </div>
   );
 }
