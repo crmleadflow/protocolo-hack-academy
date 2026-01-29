@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import { useLocation } from "react-router-dom";
 import { 
   DollarSign, TrendingUp, CreditCard, Receipt, 
   ArrowUpRight, ArrowDownRight, Calendar, Download,
@@ -8,7 +7,6 @@ import {
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
-import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { useProducerRevenue, Transaction } from "@/hooks/useProducerRevenue";
@@ -57,7 +55,6 @@ const chartConfig = {
 };
 
 const ProducerRevenuePage: React.FC = () => {
-  const location = useLocation();
   const { data: revenue, isLoading } = useProducerRevenue();
   const [searchTerm, setSearchTerm] = useState("");
   const [programFilter, setProgramFilter] = useState<string>("all");
@@ -166,18 +163,12 @@ const ProducerRevenuePage: React.FC = () => {
         
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
-            <ProducerCollapsibleNav
-              title="Ingresos"
-              subtitle="Gestión de pagos y transacciones"
-              icon={<DollarSign className="w-8 h-8 text-secondary" />}
-              currentPath={location.pathname}
-              stats={
-                <Button onClick={exportToCSV} variant="outline" className="gap-2">
-                  <Download className="w-4 h-4" />
-                  Exportar CSV
-                </Button>
-              }
-            />
+            <div className="flex justify-end mb-4">
+              <Button onClick={exportToCSV} variant="outline" className="gap-2">
+                <Download className="w-4 h-4" />
+                Exportar CSV
+              </Button>
+            </div>
 
             <div className="space-y-8">
             {/* Main Stats */}
