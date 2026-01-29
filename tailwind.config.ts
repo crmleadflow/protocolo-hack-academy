@@ -63,7 +63,7 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         // Custom holographic colors
-        electric: "hsl(var(--electric-blue))",
+        neonWhite: "hsl(var(--neon-white))",
         neon: "hsl(var(--neon-purple))",
         cyber: "hsl(var(--cyber-cyan))",
         "deep-space": "hsl(var(--deep-space))",
@@ -130,7 +130,7 @@ export default {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-holographic": "linear-gradient(135deg, hsl(var(--electric-blue)), hsl(var(--neon-purple)), hsl(var(--cyber-cyan)))",
+        "gradient-holographic": "linear-gradient(135deg, hsl(var(--neon-white)), hsl(var(--neon-purple)), hsl(var(--cyber-cyan)))",
       },
     },
   },
