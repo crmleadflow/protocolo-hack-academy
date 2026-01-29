@@ -14,11 +14,8 @@ const MentorPage: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="mb-6">
               <h1 className="text-3xl font-heading font-bold text-gradient mb-2">
-                Mi Mentor
+                Héctor Galensky AI: Tu Mentor 24/7
               </h1>
-              <p className="text-muted-foreground">
-                Tu asistente personal basado en las enseñanzas de los cursos
-              </p>
             </div>
 
             <MentorChatInterface />
