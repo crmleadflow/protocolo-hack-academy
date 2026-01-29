@@ -36,6 +36,7 @@ interface MentorDocument {
   lesson_id: string | null;
   video_timestamp_start: number | null;
   video_timestamp_end: number | null;
+  file_url: string | null;
   is_processed: boolean;
   created_at: string;
   programs?: { id: string; title: string } | null;
@@ -245,7 +246,7 @@ export function useMentorDocuments() {
     video_timestamp_start?: number;
     video_timestamp_end?: number;
     file_url?: string;
-  }) => {
+  }): Promise<MentorDocument> => {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) throw new Error("Not authenticated");
