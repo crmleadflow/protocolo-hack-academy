@@ -1,10 +1,7 @@
 import React, { useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, LayoutDashboard } from "lucide-react";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
-import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
-import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
+import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 
@@ -21,7 +18,6 @@ import { useRecentActivity } from "@/hooks/useRecentActivity";
 
 const ProducerDashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Fetch real data
   const { data: analytics, isLoading: analyticsLoading } = useProducerAnalytics();
@@ -37,106 +33,89 @@ const ProducerDashboardPage: React.FC = () => {
       return {
         ...program,
         enrollmentCount: programMetric?.enrollments || 0,
-        lessonCount: 0, // We'd need to fetch lessons separately for this
+        lessonCount: 0,
       };
     });
   }, [programs, analytics]);
 
-  const isLoading = analyticsLoading || programsLoading;
-
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <ProducerSidebar />
-        <FloatingSidebarTrigger />
+    <AppLayout 
+      title="Panel del Productor"
+      subtitle="Gestiona tus programas y métricas"
+      headerContent={
+        <NeonButton onClick={() => navigate("/producer/new-course")}>
+          <Plus className="w-4 h-4" />
+          Nuevo Programa
+        </NeonButton>
+      }
+    >
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Stats Overview */}
+        <ProducerDashboardStats
+          totalStudents={analytics?.totalStudents || 0}
+          totalEnrollments={analytics?.totalEnrollments || 0}
+          totalRevenue={analytics?.totalRevenue || 0}
+          averageCompletionRate={analytics?.averageCompletionRate || 0}
+          enrollmentGrowth={analytics?.enrollmentGrowth || 0}
+          revenueGrowth={analytics?.revenueGrowth || 0}
+          isLoading={analyticsLoading}
+        />
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
-          <div className="max-w-7xl mx-auto space-y-6">
-            {/* Collapsible Navigation Header */}
-            <ProducerCollapsibleNav
-              title="Panel del Productor"
-              subtitle="Gestiona tus programas y métricas"
-              icon={<LayoutDashboard className="w-8 h-8 text-secondary" />}
-              currentPath={location.pathname}
-              stats={
-                <NeonButton onClick={() => navigate("/producer/new-course")}>
-                  <Plus className="w-4 h-4" />
-                  Nuevo Programa
-                </NeonButton>
-              }
+        {/* Main Content Grid */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Programs Management */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-heading font-bold">Mis Programas</h2>
+              <NeonButton
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/producer/courses")}
+              >
+                Ver todos
+              </NeonButton>
+            </div>
+
+            <ProducerProgramsList
+              programs={programsWithStats || []}
+              isLoading={programsLoading}
+            />
+          </div>
+
+          {/* Recent Activity & Quick Stats */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-heading font-bold">Actividad Reciente</h2>
+            <ProducerRecentActivity
+              activities={activities}
+              isLoading={activitiesLoading}
+              onRefresh={refetchActivities}
             />
 
-            {/* Main Content */}
-            <div className="space-y-8">
-              {/* Stats Overview */}
-              <ProducerDashboardStats
-                totalStudents={analytics?.totalStudents || 0}
-                totalEnrollments={analytics?.totalEnrollments || 0}
-                totalRevenue={analytics?.totalRevenue || 0}
-                averageCompletionRate={analytics?.averageCompletionRate || 0}
-                enrollmentGrowth={analytics?.enrollmentGrowth || 0}
-                revenueGrowth={analytics?.revenueGrowth || 0}
-                isLoading={analyticsLoading}
-              />
-
-              {/* Main Content Grid */}
-              <div className="grid lg:grid-cols-3 gap-6">
-                {/* Programs Management */}
-                <div className="lg:col-span-2 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-heading font-bold">Mis Programas</h2>
-                    <NeonButton
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate("/producer/courses")}
-                    >
-                      Ver todos
-                    </NeonButton>
-                  </div>
-
-                  <ProducerProgramsList
-                    programs={programsWithStats || []}
-                    isLoading={programsLoading}
-                  />
-                </div>
-
-                {/* Recent Activity & Quick Stats */}
-                <div className="space-y-4">
-                  <h2 className="text-xl font-heading font-bold">Actividad Reciente</h2>
-                  <ProducerRecentActivity
-                    activities={activities}
-                    isLoading={activitiesLoading}
-                    onRefresh={refetchActivities}
-                  />
-
-                  {/* Quick Completion Rate Card */}
-                  <HolographicCard className="text-center">
-                    <div className="text-4xl font-heading font-bold text-primary mb-2">
-                      {analytics?.averageCompletionRate || 0}%
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Tasa de completación promedio
-                    </p>
-                    <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
-                        style={{ width: `${analytics?.averageCompletionRate || 0}%` }}
-                      />
-                    </div>
-                  </HolographicCard>
-                </div>
+            {/* Quick Completion Rate Card */}
+            <HolographicCard className="text-center">
+              <div className="text-4xl font-heading font-bold text-primary mb-2">
+                {analytics?.averageCompletionRate || 0}%
               </div>
-
-              {/* Analytics Chart */}
-              <ProducerAnalyticsChart
-                dailyMetrics={analytics?.dailyMetrics || []}
-                isLoading={analyticsLoading}
-              />
-            </div>
+              <p className="text-sm text-muted-foreground">
+                Tasa de completación promedio
+              </p>
+              <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
+                  style={{ width: `${analytics?.averageCompletionRate || 0}%` }}
+                />
+              </div>
+            </HolographicCard>
           </div>
-        </main>
+        </div>
+
+        {/* Analytics Chart */}
+        <ProducerAnalyticsChart
+          dailyMetrics={analytics?.dailyMetrics || []}
+          isLoading={analyticsLoading}
+        />
       </div>
-    </SidebarProvider>
+    </AppLayout>
   );
 };
 

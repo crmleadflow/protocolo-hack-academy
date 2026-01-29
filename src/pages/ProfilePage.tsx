@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { User, Camera, Save, Loader2, Mail, Calendar } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/dashboard/AppSidebar";
-import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -24,13 +22,11 @@ const ProfilePage: React.FC = () => {
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   
-  // Image cropper state
   const [cropperOpen, setCropperOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [selectedFileSize, setSelectedFileSize] = useState(0);
 
-  // Load profile data
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) return;
@@ -73,7 +69,6 @@ const ProfilePage: React.FC = () => {
 
       if (error) throw error;
 
-      // Notify sidebar to refresh profile data
       notifyProfileUpdate();
 
       toast({
@@ -97,7 +92,6 @@ const ProfilePage: React.FC = () => {
 
     const file = event.target.files[0];
     
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast({
         title: "Archivo no válido",
@@ -107,7 +101,6 @@ const ProfilePage: React.FC = () => {
       return;
     }
 
-    // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       toast({
@@ -118,14 +111,12 @@ const ProfilePage: React.FC = () => {
       return;
     }
 
-    // Create object URL for cropper
     const imageUrl = URL.createObjectURL(file);
     setSelectedImage(imageUrl);
     setSelectedFileName(file.name);
     setSelectedFileSize(file.size);
     setCropperOpen(true);
     
-    // Reset input
     event.target.value = "";
   };
 
@@ -138,7 +129,6 @@ const ProfilePage: React.FC = () => {
     try {
       const filePath = `${user.id}/avatar.jpg`;
 
-      // Upload cropped image to storage
       const { error: uploadError } = await supabase.storage
         .from("program-thumbnails")
         .upload(filePath, croppedBlob, { 
@@ -148,14 +138,12 @@ const ProfilePage: React.FC = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL with cache buster
       const { data: { publicUrl } } = supabase.storage
         .from("program-thumbnails")
         .getPublicUrl(filePath);
 
       const urlWithCacheBuster = `${publicUrl}?t=${Date.now()}`;
 
-      // Update profile
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ 
@@ -168,7 +156,6 @@ const ProfilePage: React.FC = () => {
 
       setAvatarUrl(urlWithCacheBuster);
       
-      // Notify sidebar to refresh profile data
       notifyProfileUpdate();
       
       toast({
@@ -184,7 +171,6 @@ const ProfilePage: React.FC = () => {
       });
     } finally {
       setIsUploadingAvatar(false);
-      // Cleanup object URL
       if (selectedImage) {
         URL.revokeObjectURL(selectedImage);
         setSelectedImage(null);
@@ -213,163 +199,139 @@ const ProfilePage: React.FC = () => {
     : "Desconocido";
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-xl font-heading font-bold">Mi Perfil</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Gestiona tu información personal
-                  </p>
+    <AppLayout
+      title="Mi Perfil"
+      subtitle="Gestiona tu información personal"
+    >
+      {isLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      ) : (
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Avatar Section */}
+          <HolographicCard className="p-6">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="relative group">
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-4xl font-heading font-bold text-primary-foreground">
+                      {initials}
+                    </span>
+                  )}
                 </div>
+                
+                <label className={cn(
+                  "absolute inset-0 rounded-full flex items-center justify-center",
+                  "bg-background/80 backdrop-blur-sm cursor-pointer",
+                  "opacity-0 group-hover:opacity-100 transition-opacity",
+                  isUploadingAvatar && "opacity-100"
+                )}>
+                  {isUploadingAvatar ? (
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  ) : (
+                    <Camera className="w-8 h-8 text-primary" />
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                    disabled={isUploadingAvatar}
+                  />
+                </label>
+              </div>
+
+              <div className="flex-1 text-center sm:text-left">
+                <h2 className="text-2xl font-heading font-bold mb-1">
+                  {fullName || "Sin nombre"}
+                </h2>
+                <p className="text-muted-foreground flex items-center justify-center sm:justify-start gap-2">
+                  <Mail className="w-4 h-4" />
+                  {user?.email}
+                </p>
+                <p className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-2 mt-1">
+                  <Calendar className="w-4 h-4" />
+                  Miembro desde {memberSince}
+                </p>
               </div>
             </div>
-          </header>
+          </HolographicCard>
 
-          {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          {/* Edit Profile Form */}
+          <HolographicCard className="p-6">
+            <h3 className="text-lg font-heading font-semibold mb-4 flex items-center gap-2">
+              <User className="w-5 h-5 text-primary" />
+              Información Personal
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Nombre completo
+                </label>
+                <GlassInput
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Tu nombre completo"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Correo electrónico
+                </label>
+                <GlassInput
+                  type="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="opacity-60"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  El correo electrónico no se puede cambiar
+                </p>
+              </div>
+
+              <NeonButton
+                onClick={handleSaveProfile}
+                disabled={isSaving}
+                className="w-full sm:w-auto"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Guardar Cambios
+                  </>
+                )}
+              </NeonButton>
             </div>
-          ) : (
-            <div className="p-6 max-w-2xl mx-auto space-y-6">
-              {/* Avatar Section */}
-              <HolographicCard className="p-6">
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                  {/* Avatar */}
-                  <div className="relative group">
-                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                      {avatarUrl ? (
-                        <img
-                          src={avatarUrl}
-                          alt="Avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-4xl font-heading font-bold text-primary-foreground">
-                          {initials}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* Upload overlay */}
-                    <label className={cn(
-                      "absolute inset-0 rounded-full flex items-center justify-center",
-                      "bg-background/80 backdrop-blur-sm cursor-pointer",
-                      "opacity-0 group-hover:opacity-100 transition-opacity",
-                      isUploadingAvatar && "opacity-100"
-                    )}>
-                      {isUploadingAvatar ? (
-                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                      ) : (
-                        <Camera className="w-8 h-8 text-primary" />
-                      )}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFileSelect}
-                        disabled={isUploadingAvatar}
-                      />
-                    </label>
-                  </div>
-
-                  {/* User Info */}
-                  <div className="flex-1 text-center sm:text-left">
-                    <h2 className="text-2xl font-heading font-bold mb-1">
-                      {fullName || "Sin nombre"}
-                    </h2>
-                    <p className="text-muted-foreground flex items-center justify-center sm:justify-start gap-2">
-                      <Mail className="w-4 h-4" />
-                      {user?.email}
-                    </p>
-                    <p className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-2 mt-1">
-                      <Calendar className="w-4 h-4" />
-                      Miembro desde {memberSince}
-                    </p>
-                  </div>
-                </div>
-              </HolographicCard>
-
-              {/* Edit Profile Form */}
-              <HolographicCard className="p-6">
-                <h3 className="text-lg font-heading font-semibold mb-4 flex items-center gap-2">
-                  <User className="w-5 h-5 text-primary" />
-                  Información Personal
-                </h3>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Nombre completo
-                    </label>
-                    <GlassInput
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Tu nombre completo"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Correo electrónico
-                    </label>
-                    <GlassInput
-                      type="email"
-                      value={user?.email || ""}
-                      disabled
-                      className="opacity-60"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      El correo electrónico no se puede cambiar
-                    </p>
-                  </div>
-
-                  <NeonButton
-                    onClick={handleSaveProfile}
-                    disabled={isSaving}
-                    className="w-full sm:w-auto"
-                  >
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Guardando...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        Guardar Cambios
-                      </>
-                    )}
-                  </NeonButton>
-                </div>
-              </HolographicCard>
-            </div>
-          )}
-        </main>
-        
-        <FloatingSidebarTrigger />
-        
-        {/* Image Cropper Dialog */}
-        {selectedImage && (
-          <ImageCropper
-            open={cropperOpen}
-            onClose={handleCropperClose}
-            imageSrc={selectedImage}
-            fileName={selectedFileName}
-            fileSize={selectedFileSize}
-            onCropComplete={handleCropComplete}
-          />
-        )}
-      </div>
-    </SidebarProvider>
+          </HolographicCard>
+        </div>
+      )}
+      
+      {selectedImage && (
+        <ImageCropper
+          open={cropperOpen}
+          onClose={handleCropperClose}
+          imageSrc={selectedImage}
+          fileName={selectedFileName}
+          fileSize={selectedFileSize}
+          onCropComplete={handleCropComplete}
+        />
+      )}
+    </AppLayout>
   );
 };
 
