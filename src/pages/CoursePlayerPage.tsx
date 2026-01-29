@@ -659,14 +659,6 @@ function LessonPlayerView({
         </button>
       )}
 
-      {/* Lesson Resources */}
-      <LessonResourceManager
-        lessonId={currentLesson.id}
-        resources={lessonResources}
-        onResourcesChange={refetchResources}
-        isAdmin={false}
-      />
-
       {/* Mentor Question Section */}
       {hasAccess && (
         <LessonMentorQuestion
@@ -674,6 +666,14 @@ function LessonPlayerView({
           programTitle={program.title}
         />
       )}
+
+      {/* Lesson Resources */}
+      <LessonResourceManager
+        lessonId={currentLesson.id}
+        resources={lessonResources}
+        onResourcesChange={refetchResources}
+        isAdmin={false}
+      />
 
       {/* Comments Section */}
       {hasAccess && (
