@@ -28,7 +28,8 @@ serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      console.error("No auth header");
+      return new Response(JSON.stringify({ error: "Debes iniciar sesión" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -40,20 +41,23 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    // Use getUser instead of getClaims for more reliability
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      console.error("Auth error:", userError?.message || "No user");
+      return new Response(JSON.stringify({ error: "Sesión inválida. Por favor, vuelve a iniciar sesión." }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const userId = claimsData.claims.sub;
+    const userId = user.id;
+    
     const { transcript, durationSeconds, title } = await req.json();
 
     if (!transcript || transcript.trim().length < 10) {
-      return new Response(JSON.stringify({ error: "Transcript too short" }), {
+      return new Response(JSON.stringify({ error: "El transcript debe tener al menos 10 caracteres" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
