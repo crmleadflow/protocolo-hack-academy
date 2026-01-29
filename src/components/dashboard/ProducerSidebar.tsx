@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, BookOpen, Users, BarChart3, Settings, LogOut,
-  Plus, FileVideo, DollarSign, MessageSquare
+  Plus, FileVideo, DollarSign, MessageSquare, Sparkles
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NavLink } from "@/components/NavLink";
@@ -33,6 +33,7 @@ const menuItems = [
 const secondaryItems = [
   { title: "Crear Programa", url: "/producer/new-course", icon: Plus },
   { title: "Subir Contenido", url: "/producer/courses", icon: FileVideo },
+  { title: "Mentor IA", url: "/producer/mentor", icon: Sparkles },
   { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
   { title: "Configuración", url: "/producer/settings", icon: Settings },
 ];

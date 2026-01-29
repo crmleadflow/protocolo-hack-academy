@@ -23,6 +23,8 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import AchievementsPage from "./pages/AchievementsPage";
 import CommunityPage from "./pages/CommunityPage";
+import MentorPage from "./pages/MentorPage";
+import ProducerMentorPage from "./pages/ProducerMentorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -104,6 +106,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/mentor"
+              element={
+                <ProtectedRoute>
+                  <MentorPage />
+                </ProtectedRoute>
+              }
+            />
             {/* Admin/Producer Routes */}
             <Route
               path="/producer"
@@ -151,6 +161,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <ProducerCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/mentor"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerMentorPage />
                 </ProtectedRoute>
               }
             />
