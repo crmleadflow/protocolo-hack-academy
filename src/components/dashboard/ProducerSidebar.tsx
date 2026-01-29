@@ -19,7 +19,6 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
-import logo from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -65,15 +64,14 @@ export function ProducerSidebar() {
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => navigate("/")}
         >
-          <img src={logo} alt="Protocolo Hack" className="h-8 w-8 object-contain" />
-          {!collapsed && (
-            <div>
-              <span className="font-heading font-bold text-lg text-gradient">
-                Protocolo Hack
-              </span>
+          <div>
+            <span className="font-heading font-bold text-lg text-gradient">
+              {collapsed ? "PH" : "PROTOCOLO HACK"}
+            </span>
+            {!collapsed && (
               <p className="text-xs text-muted-foreground">Panel Productor</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </SidebarHeader>
 
