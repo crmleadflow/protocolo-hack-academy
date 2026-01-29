@@ -189,8 +189,10 @@ const ProducerNewCoursePage: React.FC = () => {
       }
 
       toast({
-        title: "Programa creado",
-        description: "El programa se creó correctamente.",
+        title: "🎉 ¡Programa creado y publicado!",
+        description: formData.is_published 
+          ? "El programa ya está visible en el catálogo de estudiantes." 
+          : "El programa se creó como borrador.",
       });
 
       navigate(`/producer/course/${data.id}/edit`);
