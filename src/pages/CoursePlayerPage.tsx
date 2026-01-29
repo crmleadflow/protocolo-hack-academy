@@ -693,8 +693,8 @@ function ModuleLessonCards({
                         {/* Bottom: Title + Duration */}
                         <div className="mt-auto">
                           <h4 className={cn(
-                            "font-medium leading-snug",
-                            isCompact ? "text-xs line-clamp-2" : "text-sm line-clamp-2",
+                            "font-medium leading-tight",
+                            isCompact ? "text-[10px] line-clamp-2" : "text-xs line-clamp-2",
                             lesson.completed ? "text-muted-foreground" : "text-foreground"
                           )}>
                             {lesson.title}
@@ -702,10 +702,10 @@ function ModuleLessonCards({
 
                           {lesson.duration && (
                             <div className={cn(
-                              "mt-1.5 flex items-center gap-1 text-muted-foreground",
-                              isCompact ? "text-[10px]" : "text-xs"
+                              "mt-1 flex items-center gap-1 text-muted-foreground",
+                              isCompact ? "text-[9px]" : "text-[10px]"
                             )}>
-                              <Clock className={cn(isCompact ? "w-2.5 h-2.5" : "w-3 h-3")} />
+                              <Clock className={cn(isCompact ? "w-2 h-2" : "w-2.5 h-2.5")} />
                               <span>{lesson.duration}</span>
                             </div>
                           )}
