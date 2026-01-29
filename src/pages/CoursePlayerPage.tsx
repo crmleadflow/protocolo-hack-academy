@@ -361,8 +361,8 @@ function LessonListView({
         </div>
       </div>
 
-      {/* Modules and Lessons - List or Cards (narrow container) */}
-      <div className="w-full max-w-sm mx-auto space-y-4">
+      {/* Modules and Lessons - List or Cards */}
+      <div className="space-y-4">
         {program.modules.map((module: ModuleWithProgress, moduleIndex: number) => (
           displayMode === "list" ? (
             <ModuleLessonList
