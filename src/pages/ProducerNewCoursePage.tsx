@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Upload, DollarSign, X, Loader2 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
@@ -205,6 +206,7 @@ const ProducerNewCoursePage: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
 
         <main className="flex-1 overflow-auto">
           {/* Header */}
