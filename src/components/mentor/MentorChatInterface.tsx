@@ -115,12 +115,8 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
               <Sparkles className="w-10 h-10 text-primary" />
             </div>
-            <h3 className="font-heading font-semibold text-lg mb-2">
-              ¡Hola! Soy tu mentor virtual
-            </h3>
-            <p className="text-muted-foreground max-w-md">
-              {settings?.welcome_message ||
-                "Pregúntame lo que necesites sobre los cursos. Puedo citarte textualmente las enseñanzas y mostrarte el minuto exacto del video."}
+            <p className="text-muted-foreground max-w-md text-base leading-relaxed">
+              El conocimiento sin ejecución es solo ruido. Por eso, he volcado toda mi trayectoria en esta IA para que te acompañe en las trincheras. Desde pulir tu oratoria hasta estructurar tu oferta, ¿en qué te puedo ayudar?
             </p>
           </div>
         ) : (
