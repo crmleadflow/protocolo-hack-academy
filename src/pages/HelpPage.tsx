@@ -347,8 +347,8 @@ const HelpPage: React.FC = () => {
                     <h3 className="font-semibold">Pregúntale al Mentor IA</h3>
                   </div>
                   <p className="text-sm text-muted-foreground mb-4">
-                    ¿Tienes preguntas sobre producción musical? Nuestro Mentor
-                    IA está disponible 24/7.
+                    ¿Tienes alguna pregunta? Nuestro asistente de IA está
+                    disponible 24/7.
                   </p>
                   <NeonButton
                     className="w-full"
