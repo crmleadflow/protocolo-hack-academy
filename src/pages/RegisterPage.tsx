@@ -7,7 +7,7 @@ import { GlassInput } from "@/components/ui/glass-input";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@/assets/logo.png";
+
 
 const benefits = [
   "Acceso a 7+ programas de élite",
@@ -88,7 +88,7 @@ const RegisterPage: React.FC = () => {
         {/* Left side - Benefits */}
         <div className="hidden lg:block animate-fade-in">
           <Link to="/" className="inline-block mb-8">
-            <img src={logo} alt="Protocolo Hack" className="h-12" />
+            <span className="text-2xl font-heading font-bold text-gradient">PROTOCOLO HACK</span>
           </Link>
           <h1 className="text-4xl font-heading font-bold mb-4">
             Únete a la <span className="text-gradient">Hermandad Hack</span>
@@ -113,7 +113,7 @@ const RegisterPage: React.FC = () => {
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8 animate-fade-in">
             <Link to="/" className="inline-block">
-              <img src={logo} alt="Protocolo Hack" className="h-16 mx-auto mb-4" />
+              <span className="text-3xl font-heading font-bold text-gradient">PROTOCOLO HACK</span>
             </Link>
             <h1 className="text-2xl font-heading font-bold">
               Crea tu cuenta
