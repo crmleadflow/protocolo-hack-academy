@@ -82,12 +82,29 @@ export function useDirectMessages() {
     if (!isAdmin) return;
 
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, user_id, full_name");
+      // First get all user_ids with 'student' role
+      const { data: studentRoles, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "student");
 
-      if (error) throw error;
-      setStudents(data || []);
+      if (rolesError) throw rolesError;
+
+      const studentUserIds = studentRoles?.map((r) => r.user_id) || [];
+
+      if (studentUserIds.length === 0) {
+        setStudents([]);
+        return;
+      }
+
+      // Then get profiles for those students
+      const { data: studentProfiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, user_id, full_name")
+        .in("user_id", studentUserIds);
+
+      if (profilesError) throw profilesError;
+      setStudents(studentProfiles || []);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
