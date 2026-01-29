@@ -632,11 +632,12 @@ function LessonPlayerView({
       </HolographicCard>
 
       {/* Lesson Resources */}
+      {/* Always show student view for resources - no admin buttons in course player */}
       <LessonResourceManager
         lessonId={currentLesson.id}
         resources={lessonResources}
         onResourcesChange={refetchResources}
-        isAdmin={isAdmin}
+        isAdmin={false}
       />
 
       {/* Stats */}
