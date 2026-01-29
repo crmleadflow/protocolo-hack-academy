@@ -6,6 +6,7 @@ import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
+import { ImageCropper } from "@/components/profile/ImageCropper";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +22,12 @@ const ProfilePage: React.FC = () => {
   
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  
+  // Image cropper state
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [selectedFileSize, setSelectedFileSize] = useState(0);
 
   // Load profile data
   useEffect(() => {
@@ -81,39 +88,81 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!user || !event.target.files || event.target.files.length === 0) return;
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) return;
 
     const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
-    const filePath = `${user.id}/avatar.${fileExt}`;
+    
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Archivo no válido",
+        description: "Por favor selecciona una imagen.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: "Archivo muy grande",
+        description: "La imagen debe ser menor a 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create object URL for cropper
+    const imageUrl = URL.createObjectURL(file);
+    setSelectedImage(imageUrl);
+    setSelectedFileName(file.name);
+    setSelectedFileSize(file.size);
+    setCropperOpen(true);
+    
+    // Reset input
+    event.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!user) return;
+
+    setCropperOpen(false);
     setIsUploadingAvatar(true);
+
     try {
-      // Upload to storage
+      const filePath = `${user.id}/avatar.jpg`;
+
+      // Upload cropped image to storage
       const { error: uploadError } = await supabase.storage
         .from("program-thumbnails")
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, croppedBlob, { 
+          upsert: true,
+          contentType: "image/jpeg"
+        });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // Get public URL with cache buster
       const { data: { publicUrl } } = supabase.storage
         .from("program-thumbnails")
         .getPublicUrl(filePath);
+
+      const urlWithCacheBuster = `${publicUrl}?t=${Date.now()}`;
 
       // Update profile
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ 
-          avatar_url: publicUrl,
+          avatar_url: urlWithCacheBuster,
           updated_at: new Date().toISOString()
         })
         .eq("user_id", user.id);
 
       if (updateError) throw updateError;
 
-      setAvatarUrl(publicUrl);
+      setAvatarUrl(urlWithCacheBuster);
       toast({
         title: "Avatar actualizado",
         description: "Tu foto de perfil ha sido actualizada.",
@@ -127,6 +176,19 @@ const ProfilePage: React.FC = () => {
       });
     } finally {
       setIsUploadingAvatar(false);
+      // Cleanup object URL
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage);
+        setSelectedImage(null);
+      }
+    }
+  };
+
+  const handleCropperClose = () => {
+    setCropperOpen(false);
+    if (selectedImage) {
+      URL.revokeObjectURL(selectedImage);
+      setSelectedImage(null);
     }
   };
 
@@ -204,7 +266,7 @@ const ProfilePage: React.FC = () => {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={handleAvatarUpload}
+                        onChange={handleFileSelect}
                         disabled={isUploadingAvatar}
                       />
                     </label>
@@ -286,6 +348,18 @@ const ProfilePage: React.FC = () => {
         </main>
         
         <FloatingSidebarTrigger />
+        
+        {/* Image Cropper Dialog */}
+        {selectedImage && (
+          <ImageCropper
+            open={cropperOpen}
+            onClose={handleCropperClose}
+            imageSrc={selectedImage}
+            fileName={selectedFileName}
+            fileSize={selectedFileSize}
+            onCropComplete={handleCropComplete}
+          />
+        )}
       </div>
     </SidebarProvider>
   );
