@@ -25,6 +25,8 @@ import AchievementsPage from "./pages/AchievementsPage";
 import CommunityPage from "./pages/CommunityPage";
 import MentorPage from "./pages/MentorPage";
 import ProducerMentorPage from "./pages/ProducerMentorPage";
+import AdminMessagesPage from "./pages/AdminMessagesPage";
+import StudentMessagesPage from "./pages/StudentMessagesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -169,6 +171,22 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <ProducerMentorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/messages"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminMessagesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <StudentMessagesPage />
                 </ProtectedRoute>
               }
             />
