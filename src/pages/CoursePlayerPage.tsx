@@ -691,24 +691,30 @@ function ModuleLessonCards({
                         </div>
 
                         {/* Bottom: Title + Duration */}
-                        <div className="mt-auto">
+                        <div className="mt-auto w-full">
                           <h4 className={cn(
                             "font-medium leading-tight",
-                            isCompact ? "text-[10px] line-clamp-2" : "text-xs line-clamp-2",
+                            // Reserve 2 lines so titles align across cards even when some are 1-line
+                            isCompact
+                              ? "text-[10px] line-clamp-2 min-h-[2.6em]"
+                              : "text-xs line-clamp-2 min-h-[2.6em]",
                             lesson.completed ? "text-muted-foreground" : "text-foreground"
                           )}>
                             {lesson.title}
                           </h4>
 
-                          {lesson.duration && (
-                            <div className={cn(
+                          {/* Keep a fixed row for duration so title alignment doesn't jump */}
+                          <div
+                            className={cn(
                               "mt-1 flex items-center gap-1 text-muted-foreground",
-                              isCompact ? "text-[9px]" : "text-[10px]"
-                            )}>
-                              <Clock className={cn(isCompact ? "w-2 h-2" : "w-2.5 h-2.5")} />
-                              <span>{lesson.duration}</span>
-                            </div>
-                          )}
+                              isCompact ? "text-[9px]" : "text-[10px]",
+                              !lesson.duration && "opacity-0"
+                            )}
+                            aria-hidden={!lesson.duration}
+                          >
+                            <Clock className={cn(isCompact ? "w-2 h-2" : "w-2.5 h-2.5")} />
+                            <span>{lesson.duration ?? ""}</span>
+                          </div>
                         </div>
                       </div>
                     </button>
