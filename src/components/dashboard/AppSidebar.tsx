@@ -23,10 +23,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 
+import { Mail } from "lucide-react";
+
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Programas", url: "/catalog", icon: BookOpen },
   { title: "Mi Mentor", url: "/mentor", icon: Sparkles },
+  { title: "Mensajes", url: "/messages", icon: Mail },
   { title: "Logros", url: "/achievements", icon: Trophy },
   { title: "Comunidad", url: "/community", icon: MessageSquare },
 ];

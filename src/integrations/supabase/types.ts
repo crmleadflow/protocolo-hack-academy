@@ -272,6 +272,39 @@ export type Database = {
           },
         ]
       }
+      direct_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean
+          recipient_id: string
+          sender_id: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          recipient_id: string
+          sender_id: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          recipient_id?: string
+          sender_id?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
           created_at: string
