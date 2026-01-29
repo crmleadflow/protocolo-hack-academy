@@ -796,23 +796,26 @@ function LessonPlayerView({
         </div>
       </div>
 
-      {/* Lesson Title Above Video */}
-      <div className="mb-2">
-        <h2 className="text-2xl font-heading font-bold text-foreground">
-          {currentLesson.title}
-        </h2>
-        {currentLesson.description && (
-          <p className="text-muted-foreground mt-1 text-sm line-clamp-2">
-            {currentLesson.description}
-          </p>
-        )}
-      </div>
+      {/* Video Player with Title */}
+      <div className="w-full">
+        {/* Lesson Title - same width as video */}
+        <div className="mb-3">
+          <h2 className="text-2xl font-heading font-bold text-foreground">
+            {currentLesson.title}
+          </h2>
+          {currentLesson.description && (
+            <p className="text-muted-foreground mt-1 text-sm line-clamp-2">
+              {currentLesson.description}
+            </p>
+          )}
+        </div>
 
-      {/* Video Player */}
-      <VideoPlayer
-        videoUrl={currentLesson.video_url || ""}
-        title={currentLesson.title}
-      />
+        {/* Video Player */}
+        <VideoPlayer
+          videoUrl={currentLesson.video_url || ""}
+          title={currentLesson.title}
+        />
+      </div>
 
       {/* Navigation Buttons */}
       <div className="flex items-center justify-between gap-4">
