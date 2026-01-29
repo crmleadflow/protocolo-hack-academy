@@ -10,14 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   Brain, Mic, MicOff, Play, Square, Upload, Trash2, 
   TrendingUp, AlertTriangle, Sparkles, Clock, Zap,
-  ChevronRight, ChevronDown, BarChart3, Target, Volume2, Home, BookOpen, 
-  MessageSquare, Trophy, Settings, ArrowLeft, Menu
+  ChevronDown, ChevronRight, BarChart3, Target, Volume2, ArrowLeft
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useNeuroScanner, NeuroScan } from "@/hooks/useNeuroScanner";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -303,141 +301,54 @@ export default function NeuroScannerPage() {
         
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Collapsible Navigation Header */}
-            <Collapsible open={isNavOpen} onOpenChange={setIsNavOpen}>
-              <div className="glass-card rounded-xl p-4">
-                {/* Header with Toggle */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => navigate(-1)}
-                      className="p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors"
-                      title="Volver"
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                    </button>
-                    
-                    <CollapsibleTrigger asChild>
-                      <button 
-                        className={cn(
-                          "p-2 rounded-lg border border-border/50 transition-all",
-                          isNavOpen 
-                            ? "bg-primary/20 border-primary/50 text-primary" 
-                            : "hover:bg-muted/50"
-                        )}
-                        title={isNavOpen ? "Cerrar menú" : "Abrir menú"}
-                      >
-                        <Menu className="w-5 h-5" />
-                      </button>
-                    </CollapsibleTrigger>
-                    
-                    <div className="flex items-center gap-3">
-                      <Brain className="w-8 h-8 text-primary" />
-                      <div className="text-left">
-                        <h1 className="text-2xl md:text-3xl font-heading font-bold text-gradient">
-                          Neuro Scanner
-                        </h1>
-                        <p className="text-sm text-muted-foreground hidden md:block">
-                          Analiza tu discurso de venta
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+            {/* Page Header */}
+            <div className="glass-card rounded-xl p-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors"
+                    title="Volver"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
                   
-                  {/* Stats Cards */}
-                  <div className="flex gap-4">
-                    <Card className="glass-card border-primary/20 px-4 py-2">
-                      <div className="flex items-center gap-2">
-                        <Target className="w-5 h-5 text-primary" />
-                        <div>
-                          <p className="text-xs text-muted-foreground">Promedio</p>
-                          <p className={cn("font-bold", getScoreColor(averageScore))}>{averageScore}%</p>
-                        </div>
-                      </div>
-                    </Card>
-                    <Card className="glass-card border-secondary/20 px-4 py-2">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-secondary" />
-                        <div>
-                          <p className="text-xs text-muted-foreground">Mejor</p>
-                          <p className={cn("font-bold", getScoreColor(bestScore))}>{bestScore}%</p>
-                        </div>
-                      </div>
-                    </Card>
+                  <div className="flex items-center gap-3">
+                    <Brain className="w-8 h-8 text-primary" />
+                    <div className="text-left">
+                      <h1 className="text-2xl md:text-3xl font-heading font-bold text-gradient">
+                        Neuro Scanner
+                      </h1>
+                      <p className="text-sm text-muted-foreground hidden md:block">
+                        Analiza tu discurso de venta
+                      </p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Collapsible Navigation Content */}
-                <CollapsibleContent className="mt-4">
-                  <div className="border-t border-border/50 pt-4 space-y-4">
-                    {/* Breadcrumb */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <Link 
-                        to="/dashboard" 
-                        className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <Home className="w-4 h-4" />
-                        <span>Inicio</span>
-                      </Link>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-foreground font-medium flex items-center gap-1">
-                        <Brain className="w-4 h-4 text-primary" />
-                        Neuro Scanner
-                      </span>
+                
+                {/* Stats Cards */}
+                <div className="flex gap-4">
+                  <Card className="glass-card border-primary/20 px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <Target className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Promedio</p>
+                        <p className={cn("font-bold", getScoreColor(averageScore))}>{averageScore}%</p>
+                      </div>
                     </div>
-
-                    {/* Quick Navigation Links */}
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                      <Link
-                        to="/dashboard"
-                        onClick={handleProgramClick}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                      >
-                        <Home className="w-5 h-5 text-primary" />
-                        <span className="text-sm font-medium">Dashboard</span>
-                      </Link>
-                      <Link
-                        to="/catalog"
-                        onClick={handleProgramClick}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                      >
-                        <BookOpen className="w-5 h-5 text-primary" />
-                        <span className="text-sm font-medium">Cursos</span>
-                      </Link>
-                      <Link
-                        to="/mentor"
-                        onClick={handleProgramClick}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                      >
-                        <MessageSquare className="w-5 h-5 text-primary" />
-                        <span className="text-sm font-medium">Mentor IA</span>
-                      </Link>
-                      <Link
-                        to="/achievements"
-                        onClick={handleProgramClick}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                      >
-                        <Trophy className="w-5 h-5 text-primary" />
-                        <span className="text-sm font-medium">Logros</span>
-                      </Link>
-                      <Link
-                        to="/settings"
-                        onClick={handleProgramClick}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                      >
-                        <Settings className="w-5 h-5 text-primary" />
-                        <span className="text-sm font-medium">Ajustes</span>
-                      </Link>
+                  </Card>
+                  <Card className="glass-card border-secondary/20 px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-secondary" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Mejor</p>
+                        <p className={cn("font-bold", getScoreColor(bestScore))}>{bestScore}%</p>
+                      </div>
                     </div>
-
-                    {/* Description */}
-                    <p className="text-muted-foreground text-sm">
-                      Analiza tu discurso de venta y mejora tu capacidad de cierre con inteligencia artificial.
-                    </p>
-                  </div>
-                </CollapsibleContent>
+                  </Card>
+                </div>
               </div>
-            </Collapsible>
+            </div>
 
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
               <TabsList className="glass-card">
