@@ -117,7 +117,7 @@ const credentials = [
   },
   {
     icon: Bot,
-    title: "Lead Navigator CRM",
+    title: "Herramientas de automatización",
     description: "Creador de tecnología de prospección",
   },
 ];
@@ -264,7 +264,7 @@ const LandingPage: React.FC = () => {
 
             {/* Expertise badges */}
             <div className="mt-12 flex flex-wrap justify-center gap-4">
-              {["Neuro Oratoria", "Marketing Digital", "Network Marketing", "Automatización", "Lead Navigator CRM"].map((skill, i) => (
+              {["Neuro Ventas", "Marketing Digital", "Network Marketing", "Herramientas de automatización", "Inteligencia artificial"].map((skill, i) => (
                 <div
                   key={i}
                   className="px-4 py-2 rounded-full glass text-sm font-medium text-primary animate-fade-in"
