@@ -21,6 +21,7 @@ import AdminStudentsPage from "./pages/AdminStudentsPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
+import AchievementsPage from "./pages/AchievementsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/achievements"
+              element={
+                <ProtectedRoute>
+                  <AchievementsPage />
                 </ProtectedRoute>
               }
             />
