@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Plus, GripVertical, Play, Trash2, Edit, 
   Video, Clock, Save, Eye, Settings, Loader2,
-  ChevronDown, ChevronRight, Upload, X, Check, FileVideo
+  ChevronDown, ChevronRight, Upload, X, Check, FileVideo, Image
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -80,6 +80,11 @@ const ProducerCourseEditPage: React.FC = () => {
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Thumbnail editing state
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   // Delete dialogs
   const [deleteModuleId, setDeleteModuleId] = useState<string | null>(null);
@@ -270,6 +275,141 @@ const ProducerCourseEditPage: React.FC = () => {
     }
   };
 
+  // Thumbnail upload handler
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !program) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast({
+        variant: "destructive",
+        title: "Archivo inválido",
+        description: "Solo se permiten imágenes (JPG, PNG, WebP, etc.)",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "Archivo muy grande",
+        description: "La imagen no puede superar 5MB",
+      });
+      return;
+    }
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setThumbnailPreview(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to storage
+    setIsUploadingThumbnail(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `thumbnails/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("program-thumbnails")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        toast({
+          variant: "destructive",
+          title: "Error al subir",
+          description: "No se pudo subir la imagen. Intenta de nuevo.",
+        });
+        setThumbnailPreview(null);
+        return;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("program-thumbnails")
+        .getPublicUrl(filePath);
+
+      // Update program in database
+      const { error: updateError } = await supabase
+        .from("programs")
+        .update({ thumbnail_url: urlData.publicUrl })
+        .eq("id", program.id);
+
+      if (updateError) {
+        console.error("Update error:", updateError);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo actualizar la portada.",
+        });
+        return;
+      }
+
+      toast({
+        title: "Portada actualizada",
+        description: "La imagen se guardó correctamente.",
+      });
+
+      // Refresh program data
+      window.location.reload();
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Ocurrió un error al subir la imagen.",
+      });
+      setThumbnailPreview(null);
+    } finally {
+      setIsUploadingThumbnail(false);
+    }
+  };
+
+  const handleRemoveThumbnail = async () => {
+    if (!program) return;
+
+    setIsUploadingThumbnail(true);
+    try {
+      const { error } = await supabase
+        .from("programs")
+        .update({ thumbnail_url: null })
+        .eq("id", program.id);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo eliminar la portada.",
+        });
+        return;
+      }
+
+      setThumbnailPreview(null);
+      if (thumbnailInputRef.current) {
+        thumbnailInputRef.current.value = "";
+      }
+
+      toast({
+        title: "Portada eliminada",
+        description: "La imagen se eliminó correctamente.",
+      });
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Remove error:", error);
+    } finally {
+      setIsUploadingThumbnail(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <SidebarProvider>
@@ -398,6 +538,79 @@ const ProducerCourseEditPage: React.FC = () => {
                 </div>
               </HolographicCard>
             </div>
+
+            {/* Thumbnail Editor */}
+            <HolographicCard className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-heading font-bold text-lg flex items-center gap-2">
+                  <Image className="w-5 h-5 text-primary" />
+                  Imagen de Portada
+                </h2>
+              </div>
+
+              <input
+                ref={thumbnailInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleThumbnailUpload}
+                className="hidden"
+                id="thumbnail-edit-upload"
+              />
+
+              {!thumbnailPreview && !program.thumbnail_url ? (
+                <label
+                  htmlFor="thumbnail-edit-upload"
+                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                >
+                  {isUploadingThumbnail ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                      <span className="text-sm text-muted-foreground">
+                        Subiendo...
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <Upload className="w-8 h-8 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        Haz clic para subir una imagen
+                      </span>
+                      <span className="text-xs text-muted-foreground/70">
+                        JPG, PNG o WebP. Máximo 5MB. Recomendado: 1280x720px
+                      </span>
+                    </div>
+                  )}
+                </label>
+              ) : (
+                <div className="relative group">
+                  <img
+                    src={thumbnailPreview || program.thumbnail_url || ""}
+                    alt="Portada del programa"
+                    className="w-full max-h-64 object-cover rounded-lg border border-border"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-4">
+                    <label
+                      htmlFor="thumbnail-edit-upload"
+                      className="p-3 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors cursor-pointer"
+                    >
+                      <Edit className="w-5 h-5" />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleRemoveThumbnail}
+                      className="p-3 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                  {isUploadingThumbnail && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
+                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    </div>
+                  )}
+                </div>
+              )}
+            </HolographicCard>
 
             {/* Action Bar */}
             <div className="flex flex-wrap items-center gap-3">
