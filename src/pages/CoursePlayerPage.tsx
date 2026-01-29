@@ -10,6 +10,7 @@ import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
+import { Badge } from "@/components/ui/badge";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { PayPalCheckout } from "@/components/payment/PayPalCheckout";
 import { LessonResourceManager } from "@/components/lesson/LessonResourceManager";
@@ -333,108 +334,122 @@ function ModuleLessonList({
   onSelectLesson: (lesson: LessonWithProgress) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const completedLessons = module.lessons.filter((l) => l.completed).length;
+  const totalLessons = module.lessons.length;
 
   return (
-    <div className="relative">
-      {/* Module Card */}
-      <HolographicCard className="overflow-hidden p-0 transition-all duration-300">
-        {/* Module Header - Clickable */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between p-5 border-b border-border/50 bg-gradient-to-r from-white/5 to-transparent hover:from-white/10 transition-all group"
-        >
-          <div className="flex items-center gap-4">
-            {/* Module Number */}
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-xl font-bold text-primary">
-              {moduleIndex + 1}
-            </div>
-            
-            <div className="text-left">
-              <h3 className="font-heading font-bold text-lg group-hover:text-primary transition-colors">
-                {module.title}
-              </h3>
-              {module.description && (
-                <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
-                  {module.description}
-                </p>
-              )}
-              <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium mt-2 inline-block">
-                {module.lessons.length} lecciones
-              </span>
-            </div>
+    <div className="rounded-xl border border-border/50 bg-card/20 overflow-hidden">
+      {/* Module Header */}
+      <button
+        onClick={() => setIsExpanded((v) => !v)}
+        className="w-full flex items-start justify-between gap-4 px-4 py-3 hover:bg-muted/20 transition-colors"
+      >
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="mt-0.5 w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
+            {moduleIndex + 1}
           </div>
-          
-          {/* Expand/Collapse Icon */}
-          <div className={cn(
-            "w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center transition-all duration-300",
-            isExpanded ? "rotate-180" : ""
-          )}>
-            <ChevronDown className="w-5 h-5 text-muted-foreground" />
-          </div>
-        </button>
 
-        {/* Lessons - Animated expand/collapse */}
-        <div className={cn(
-          "overflow-hidden transition-all duration-500 ease-out",
-          isExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-        )}>
-          <div className="p-2">
-            {module.lessons.map((lesson, lessonIndex) => {
-              const isLocked = !hasAccess && !lesson.is_preview;
-
-              return (
-                <button
-                  key={lesson.id}
-                  onClick={() => !isLocked && onSelectLesson(lesson)}
-                  disabled={isLocked}
-                  className={cn(
-                    "w-full flex items-center gap-3 py-3 px-3 text-left transition-all group relative",
-                    isLocked
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-white/5 cursor-pointer"
-                  )}
-                >
-                  {/* Completion/Status indicator */}
-                  <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
-                    {lesson.completed ? (
-                      <CheckCircle2 className="w-5 h-5 text-accent" />
-                    ) : isLocked ? (
-                      <Lock className="w-4 h-4 text-muted-foreground" />
-                    ) : (
-                      <div className="w-2 h-2 rounded-full bg-muted-foreground/40 group-hover:bg-primary transition-colors" />
-                    )}
-                  </div>
-
-                  {/* Lesson Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className={cn(
-                        "text-sm transition-colors truncate",
-                        lesson.completed && "text-muted-foreground line-through",
-                        !lesson.completed && !isLocked && "group-hover:text-primary"
-                      )}>
-                        {lesson.title}
-                      </h4>
-                      {lesson.is_preview && (
-                        <span className="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-full bg-secondary/20 text-secondary font-semibold uppercase tracking-wider">
-                          Gratis
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Duration */}
-                  {lesson.duration && (
-                    <span className="text-xs text-muted-foreground flex-shrink-0">
-                      {lesson.duration}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+          <div className="min-w-0 text-left">
+            <h3 className="font-heading font-semibold leading-snug truncate">
+              {module.title}
+            </h3>
+            {module.description && (
+              <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
+                {module.description}
+              </p>
+            )}
+            <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+              <span>{completedLessons}/{totalLessons} completadas</span>
+              <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+              <span>{totalLessons} lecciones</span>
+            </div>
           </div>
         </div>
-      </HolographicCard>
+
+        <div
+          className={cn(
+            "mt-0.5 w-9 h-9 rounded-lg border border-border/50 bg-background/40 flex items-center justify-center transition-transform",
+            isExpanded && "rotate-180"
+          )}
+          aria-hidden="true"
+        >
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        </div>
+      </button>
+
+      {/* Lessons */}
+      <div
+        className={cn(
+          "grid transition-all duration-300",
+          isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="divide-y divide-border/50">
+            {module.lessons.length === 0 ? (
+              <div className="px-4 py-3 text-sm text-muted-foreground">Sin lecciones</div>
+            ) : (
+              module.lessons.map((lesson) => {
+                const isLocked = !hasAccess && !lesson.is_preview;
+
+                return (
+                  <button
+                    key={lesson.id}
+                    onClick={() => !isLocked && onSelectLesson(lesson)}
+                    disabled={isLocked}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors",
+                      isLocked
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-muted/20"
+                    )}
+                  >
+                    <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                      {lesson.completed ? (
+                        <CheckCircle2 className="w-5 h-5 text-accent" />
+                      ) : isLocked ? (
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                      ) : (
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className={cn(
+                            "text-sm truncate",
+                            lesson.completed && "text-muted-foreground"
+                          )}
+                        >
+                          {lesson.title}
+                        </span>
+                        {lesson.is_preview && (
+                          <Badge variant="secondary" className="text-[10px] h-5">
+                            Gratis
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    {lesson.completed && (
+                      <Badge variant="secondary" className="text-[10px] h-5 flex-shrink-0">
+                        Completada
+                      </Badge>
+                    )}
+
+                    {lesson.duration && (
+                      <span className="text-xs text-muted-foreground flex-shrink-0">
+                        {lesson.duration}
+                      </span>
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
