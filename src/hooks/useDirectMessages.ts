@@ -190,7 +190,7 @@ export function useDirectMessages() {
   };
 
   const deleteMessage = async (messageId: string) => {
-    if (!user || !isAdmin) return { error: new Error("Not authorized") };
+    if (!user) return { error: new Error("Not authenticated") };
 
     try {
       const { error } = await supabase
@@ -206,6 +206,11 @@ export function useDirectMessages() {
       });
 
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+      // Update unread count if the deleted message was unread
+      const deletedMessage = messages.find((m) => m.id === messageId);
+      if (deletedMessage && deletedMessage.recipient_id === user.id && !deletedMessage.is_read) {
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
       return { error: null };
     } catch (error) {
       console.error("Error deleting message:", error);
