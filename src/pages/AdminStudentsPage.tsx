@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { 
   Users, Search, UserPlus, Check, X,
   BookOpen, Loader2, CheckCircle2, GraduationCap
 } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -65,6 +68,7 @@ interface ProgramStats {
 }
 
 const AdminStudentsPage: React.FC = () => {
+  const location = useLocation();
   const { toast } = useToast();
   const [students, setStudents] = useState<Student[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
@@ -288,24 +292,18 @@ const AdminStudentsPage: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
 
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-4 py-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-2xl font-heading font-bold">Gestión de Estudiantes</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Administra inscripciones y accesos por programa
-                  </p>
-                </div>
-              </div>
-            </div>
-          </header>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+          <div className="max-w-7xl mx-auto space-y-6">
+            <ProducerCollapsibleNav
+              title="Gestión de Estudiantes"
+              subtitle="Administra inscripciones y accesos por programa"
+              icon={<Users className="w-8 h-8 text-secondary" />}
+              currentPath={location.pathname}
+            />
 
-          <div className="p-4 lg:p-6 space-y-6">
+            <div className="space-y-6">
             {/* Global Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <HolographicCard className="p-4">
@@ -464,6 +462,7 @@ const AdminStudentsPage: React.FC = () => {
                 </>
               )}
             </Tabs>
+            </div>
           </div>
         </main>
 

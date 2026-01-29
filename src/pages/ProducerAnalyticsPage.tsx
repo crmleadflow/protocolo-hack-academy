@@ -1,10 +1,13 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { 
   Users, TrendingUp, DollarSign, BookOpen, 
   BarChart3, Play, Calendar, ArrowUpRight, ArrowDownRight
 } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { useProducerAnalytics } from "@/hooks/useProducerAnalytics";
@@ -52,6 +55,7 @@ const chartConfig = {
 };
 
 const ProducerAnalyticsPage: React.FC = () => {
+  const location = useLocation();
   const { data: analytics, isLoading } = useProducerAnalytics();
 
   if (isLoading) {
@@ -59,16 +63,10 @@ const ProducerAnalyticsPage: React.FC = () => {
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-background">
           <ProducerSidebar />
-          <main className="flex-1 overflow-auto">
-            <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-              <div className="flex items-center justify-between px-6 py-4">
-                <div className="flex items-center gap-4">
-                  <SidebarTrigger />
-                  <Skeleton className="h-8 w-48" />
-                </div>
-              </div>
-            </header>
-            <div className="p-6 space-y-6">
+          <FloatingSidebarTrigger />
+          <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+            <div className="max-w-7xl mx-auto space-y-6">
+              <Skeleton className="h-24 rounded-xl" />
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map((i) => (
                   <Skeleton key={i} className="h-32" />
@@ -95,27 +93,19 @@ const ProducerAnalyticsPage: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
         
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-xl font-heading font-bold flex items-center gap-2">
-                    <BarChart3 className="w-6 h-6 text-primary" />
-                    Analytics
-                  </h1>
-                  <p className="text-sm text-muted-foreground">
-                    Métricas y estadísticas de tu plataforma
-                  </p>
-                </div>
-              </div>
-            </div>
-          </header>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+          <div className="max-w-7xl mx-auto space-y-6">
+            {/* Collapsible Navigation Header */}
+            <ProducerCollapsibleNav
+              title="Analytics"
+              subtitle="Métricas y estadísticas de tu plataforma"
+              icon={<BarChart3 className="w-8 h-8 text-secondary" />}
+              currentPath={location.pathname}
+            />
 
-          <div className="p-6 space-y-8">
+            <div className="space-y-8">
             {/* Main Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
@@ -484,6 +474,7 @@ const ProducerAnalyticsPage: React.FC = () => {
                   ${analytics?.revenueThisMonth?.toLocaleString() || 0} este mes vs ${analytics?.revenueLastMonth?.toLocaleString() || 0} mes anterior
                 </p>
               </HolographicCard>
+            </div>
             </div>
           </div>
         </main>

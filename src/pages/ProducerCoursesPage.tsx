@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Plus, Search, MoreVertical, Edit, Trash2, Eye, 
   Users, Play, Clock, BarChart3, Video, Settings,
-  Loader2
+  Loader2, BookOpen
 } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -31,6 +33,7 @@ import {
 
 const ProducerCoursesPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { programs, isLoading, deleteProgram, updateProgram } = usePrograms();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -70,28 +73,25 @@ const ProducerCoursesPage: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
 
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-xl font-heading font-bold">Mis Programas</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Gestiona y edita tus cursos
-                  </p>
-                </div>
-              </div>
-              <NeonButton onClick={() => navigate("/producer/new-course")}>
-                <Plus className="w-4 h-4" />
-                Nuevo Programa
-              </NeonButton>
-            </div>
-          </header>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+          <div className="max-w-7xl mx-auto space-y-6">
+            {/* Collapsible Navigation Header */}
+            <ProducerCollapsibleNav
+              title="Mis Programas"
+              subtitle="Gestiona y edita tus cursos"
+              icon={<BookOpen className="w-8 h-8 text-secondary" />}
+              currentPath={location.pathname}
+              stats={
+                <NeonButton onClick={() => navigate("/producer/new-course")}>
+                  <Plus className="w-4 h-4" />
+                  Nuevo Programa
+                </NeonButton>
+              }
+            />
 
-          <div className="p-6 space-y-6">
+            <div className="space-y-6">
             {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               <HolographicCard className="text-center p-4">
@@ -280,6 +280,7 @@ const ProducerCoursesPage: React.FC = () => {
                 ))}
               </div>
             )}
+            </div>
           </div>
         </main>
 
