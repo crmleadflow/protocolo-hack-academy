@@ -420,13 +420,13 @@ function ModuleLessonList({
         onClick={() => setIsExpanded((v) => !v)}
         className="w-full flex items-start justify-between gap-4 px-4 py-3 hover:bg-muted/20 transition-colors"
       >
-        <div className="flex items-start gap-3 min-w-0">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
           <div className="mt-0.5 w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
             {moduleIndex + 1}
           </div>
 
-          <div className="min-w-0 text-left">
-            <h3 className="font-heading font-semibold leading-snug truncate">
+          <div className="min-w-0 text-left flex-1">
+            <h3 className="font-heading font-semibold leading-snug line-clamp-2 break-words">
               {module.title}
             </h3>
             {module.description && (
@@ -448,6 +448,7 @@ function ModuleLessonList({
             isExpanded && "rotate-180"
           )}
           aria-hidden="true"
+          style={{ flexShrink: 0 }}
         >
           <ChevronDown className="w-4 h-4 text-muted-foreground" />
         </div>
@@ -564,13 +565,13 @@ function ModuleLessonCards({
         onClick={() => setIsExpanded((v) => !v)}
         className="w-full flex items-start justify-between gap-4 px-4 py-3 hover:bg-muted/20 transition-colors"
       >
-        <div className="flex items-start gap-3 min-w-0">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
           <div className="mt-0.5 w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
             {moduleIndex + 1}
           </div>
 
-          <div className="min-w-0 text-left">
-            <h3 className="font-heading font-semibold leading-snug truncate">
+          <div className="min-w-0 text-left flex-1">
+            <h3 className="font-heading font-semibold leading-snug line-clamp-2 break-words">
               {module.title}
             </h3>
             {module.description && (
@@ -592,6 +593,7 @@ function ModuleLessonCards({
             isExpanded && "rotate-180"
           )}
           aria-hidden="true"
+          style={{ flexShrink: 0 }}
         >
           <ChevronDown className="w-4 h-4 text-muted-foreground" />
         </div>
