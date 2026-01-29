@@ -916,29 +916,32 @@ function LessonPlayerView({
         </button>
       )}
 
-      {/* Mentor Question Section */}
-      {hasAccess && (
-        <LessonMentorQuestion
-          lessonTitle={currentLesson.title}
-          programTitle={program.title}
-        />
-      )}
+      {/* Three columns: Mentor | Resources | Comments */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Mentor Question Section */}
+        {hasAccess && (
+          <LessonMentorQuestion
+            lessonTitle={currentLesson.title}
+            programTitle={program.title}
+          />
+        )}
 
-      {/* Lesson Resources */}
-      <LessonResourceManager
-        lessonId={currentLesson.id}
-        resources={lessonResources}
-        onResourcesChange={refetchResources}
-        isAdmin={false}
-      />
-
-      {/* Comments Section */}
-      {hasAccess && (
-        <LessonCommentsSection
+        {/* Lesson Resources */}
+        <LessonResourceManager
           lessonId={currentLesson.id}
-          lessonTitle={currentLesson.title}
+          resources={lessonResources}
+          onResourcesChange={refetchResources}
+          isAdmin={false}
         />
-      )}
+
+        {/* Comments Section */}
+        {hasAccess && (
+          <LessonCommentsSection
+            lessonId={currentLesson.id}
+            lessonTitle={currentLesson.title}
+          />
+        )}
+      </div>
 
     </div>
   );
