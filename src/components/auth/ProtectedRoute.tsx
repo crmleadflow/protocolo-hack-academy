@@ -12,7 +12,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAdmin = false,
 }) => {
-  const { user, isLoading, isAdmin } = useAuth();
+  const { user, session, isLoading, isAdmin } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -26,7 +26,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  if (!user) {
+  // Require a real session (not just a cached user) so authenticated API calls work reliably.
+  if (!user || !session) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
