@@ -206,7 +206,6 @@ export function useDirectMessages() {
       });
 
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
-      // Update unread count if the deleted message was unread
       const deletedMessage = messages.find((m) => m.id === messageId);
       if (deletedMessage && deletedMessage.recipient_id === user.id && !deletedMessage.is_read) {
         setUnreadCount((prev) => Math.max(0, prev - 1));
@@ -218,6 +217,42 @@ export function useDirectMessages() {
         variant: "destructive",
         title: "Error",
         description: "No se pudo eliminar el mensaje",
+      });
+      return { error };
+    }
+  };
+
+  const deleteMessages = async (messageIds: string[]) => {
+    if (!user) return { error: new Error("Not authenticated") };
+    if (messageIds.length === 0) return { error: null };
+
+    try {
+      const { error } = await supabase
+        .from("direct_messages")
+        .delete()
+        .in("id", messageIds);
+
+      if (error) throw error;
+
+      toast({
+        title: "Mensajes eliminados",
+        description: `${messageIds.length} mensaje(s) eliminado(s) correctamente`,
+      });
+
+      const deletedMessages = messages.filter((m) => messageIds.includes(m.id));
+      const unreadDeleted = deletedMessages.filter(
+        (m) => m.recipient_id === user.id && !m.is_read
+      ).length;
+
+      setMessages((prev) => prev.filter((msg) => !messageIds.includes(msg.id)));
+      setUnreadCount((prev) => Math.max(0, prev - unreadDeleted));
+      return { error: null };
+    } catch (error) {
+      console.error("Error deleting messages:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudieron eliminar los mensajes",
       });
       return { error };
     }
@@ -268,6 +303,7 @@ export function useDirectMessages() {
     sendMessage,
     markAsRead,
     deleteMessage,
+    deleteMessages,
     refetch: fetchMessages,
   };
 }

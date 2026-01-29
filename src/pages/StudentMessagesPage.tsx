@@ -8,6 +8,8 @@ import {
   ArrowLeft,
   Shield,
   Trash2,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -45,10 +47,11 @@ import { useDirectMessages, DirectMessage } from "@/hooks/useDirectMessages";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const StudentMessagesPage: React.FC = () => {
   const { user } = useAuth();
-  const { messages, admins, isLoading, sendMessage, markAsRead, deleteMessage, unreadCount } =
+  const { messages, admins, isLoading, sendMessage, markAsRead, deleteMessage, deleteMessages, unreadCount } =
     useDirectMessages();
 
   const [showComposeModal, setShowComposeModal] = useState(false);
@@ -59,6 +62,8 @@ const StudentMessagesPage: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<DirectMessage | null>(null);
   const [messageToDelete, setMessageToDelete] = useState<DirectMessage | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
 
   const handleSendMessage = async () => {
     if (!selectedAdmin || !content.trim()) return;
@@ -97,6 +102,35 @@ const StudentMessagesPage: React.FC = () => {
     setIsDeleting(false);
     setMessageToDelete(null);
     setSelectedMessage(null);
+  };
+
+  const toggleSelect = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === messages.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(messages.map((m) => m.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    setIsDeleting(true);
+    await deleteMessages(Array.from(selectedIds));
+    setIsDeleting(false);
+    setShowBulkDeleteDialog(false);
+    setSelectedIds(new Set());
   };
 
   return (
@@ -152,6 +186,40 @@ const StudentMessagesPage: React.FC = () => {
               </HolographicCard>
             </div>
 
+            {/* Bulk Actions */}
+            {messages.length > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={toggleSelectAll}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {selectedIds.size === messages.length ? (
+                      <CheckSquare className="w-5 h-5 text-primary" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                    {selectedIds.size === messages.length ? "Deseleccionar todo" : "Seleccionar todo"}
+                  </button>
+                  {selectedIds.size > 0 && (
+                    <span className="text-sm text-muted-foreground">
+                      ({selectedIds.size} seleccionado{selectedIds.size > 1 ? "s" : ""})
+                    </span>
+                  )}
+                </div>
+                {selectedIds.size > 0 && (
+                  <NeonButton
+                    variant="ghost"
+                    onClick={() => setShowBulkDeleteDialog(true)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Eliminar ({selectedIds.size})
+                  </NeonButton>
+                )}
+              </div>
+            )}
+
             {/* Messages List */}
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
@@ -182,10 +250,19 @@ const StudentMessagesPage: React.FC = () => {
                       key={message.id}
                       className={`p-4 cursor-pointer transition-all hover:scale-[1.01] ${
                         !message.is_read && !isSent ? "border-l-4 border-l-primary" : ""
-                      }`}
+                      } ${selectedIds.has(message.id) ? "ring-2 ring-primary" : ""}`}
                       onClick={() => handleOpenMessage(message)}
                     >
                       <div className="flex items-start gap-4">
+                        <div
+                          className="flex-shrink-0 pt-1"
+                          onClick={(e) => toggleSelect(message.id, e)}
+                        >
+                          <Checkbox
+                            checked={selectedIds.has(message.id)}
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                          />
+                        </div>
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center flex-shrink-0">
                           <Shield className="w-5 h-5 text-secondary-foreground" />
                         </div>
@@ -383,6 +460,35 @@ const StudentMessagesPage: React.FC = () => {
                   </>
                 ) : (
                   "Eliminar"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Bulk Delete Confirmation Dialog */}
+        <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar {selectedIds.size} mensaje(s)?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta acción no se puede deshacer. Los mensajes seleccionados serán eliminados permanentemente de tu bandeja.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleBulkDelete} 
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Eliminando...
+                  </>
+                ) : (
+                  `Eliminar ${selectedIds.size} mensaje(s)`
                 )}
               </AlertDialogAction>
             </AlertDialogFooter>
