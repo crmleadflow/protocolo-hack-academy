@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 
 type ViewMode = "list" | "lesson";
 type ListDisplayMode = "list" | "cards";
+type CardColumns = 2 | 3 | 4 | 5;
 
 const CoursePlayerPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -259,6 +260,8 @@ function LessonListView({
   onSelectLesson: (lesson: LessonWithProgress) => void;
 }) {
   const [displayMode, setDisplayMode] = useState<ListDisplayMode>("list");
+  const [cardColumns, setCardColumns] = useState<CardColumns>(3);
+  
   return (
     <div className="p-4 lg:p-6 max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Program Header Card */}
@@ -299,33 +302,63 @@ function LessonListView({
         </div>
       </HolographicCard>
 
-      {/* View Toggle */}
-      <div className="flex items-center justify-end gap-2">
-        <span className="text-sm text-muted-foreground mr-2">Vista:</span>
-        <button
-          onClick={() => setDisplayMode("list")}
-          className={cn(
-            "p-2 rounded-lg transition-all",
-            displayMode === "list" 
-              ? "bg-primary text-primary-foreground" 
-              : "bg-muted/50 text-muted-foreground hover:bg-muted"
-          )}
-          title="Vista de lista"
-        >
-          <LayoutList className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setDisplayMode("cards")}
-          className={cn(
-            "p-2 rounded-lg transition-all",
-            displayMode === "cards" 
-              ? "bg-primary text-primary-foreground" 
-              : "bg-muted/50 text-muted-foreground hover:bg-muted"
-          )}
-          title="Vista de tarjetas"
-        >
-          <LayoutGrid className="w-4 h-4" />
-        </button>
+      {/* View Toggle & Column Selector */}
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        {/* Column Selector - Only visible in cards mode */}
+        {displayMode === "cards" && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Columnas:</span>
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/30">
+              {([2, 3, 4, 5] as CardColumns[]).map((cols) => (
+                <button
+                  key={cols}
+                  onClick={() => setCardColumns(cols)}
+                  className={cn(
+                    "w-7 h-7 rounded-md text-xs font-medium transition-all",
+                    cardColumns === cols
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  {cols}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {displayMode === "list" && <div />}
+
+        {/* View Mode Toggle */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Vista:</span>
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/30">
+            <button
+              onClick={() => setDisplayMode("list")}
+              className={cn(
+                "p-1.5 rounded-md transition-all",
+                displayMode === "list"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/50"
+              )}
+              title="Vista de lista"
+            >
+              <LayoutList className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setDisplayMode("cards")}
+              className={cn(
+                "p-1.5 rounded-md transition-all",
+                displayMode === "cards"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/50"
+              )}
+              title="Vista de tarjetas"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Modules and Lessons - List or Cards */}
@@ -346,6 +379,7 @@ function LessonListView({
               moduleIndex={moduleIndex}
               hasAccess={hasAccess}
               onSelectLesson={onSelectLesson}
+              columns={cardColumns}
             />
           )
         ))}
@@ -502,15 +536,25 @@ function ModuleLessonCards({
   moduleIndex,
   hasAccess,
   onSelectLesson,
+  columns,
 }: {
   module: ModuleWithProgress;
   moduleIndex: number;
   hasAccess: boolean;
   onSelectLesson: (lesson: LessonWithProgress) => void;
+  columns: CardColumns;
 }) {
   const [isExpanded, setIsExpanded] = useState(true);
   const completedLessons = module.lessons.filter((l) => l.completed).length;
   const totalLessons = module.lessons.length;
+
+  // Grid classes based on columns
+  const gridClasses = {
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+    5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+  };
 
   return (
     <div className="rounded-xl border border-border/50 bg-card/20 overflow-hidden">
@@ -564,9 +608,10 @@ function ModuleLessonCards({
             {module.lessons.length === 0 ? (
               <div className="text-sm text-muted-foreground text-center py-4">Sin lecciones</div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className={cn("grid gap-4", gridClasses[columns])}>
                 {module.lessons.map((lesson, lessonIndex) => {
                   const isLocked = !hasAccess && !lesson.is_preview;
+                  const isCompact = columns >= 4;
 
                   return (
                     <button
@@ -574,104 +619,103 @@ function ModuleLessonCards({
                       onClick={() => !isLocked && onSelectLesson(lesson)}
                       disabled={isLocked}
                       className={cn(
-                        "relative group rounded-2xl overflow-hidden text-left transition-all duration-300",
-                        "bg-gradient-to-br from-card/80 to-card/40 border border-border/30",
-                        "shadow-lg shadow-black/5",
+                        "relative group rounded-xl overflow-hidden text-left transition-all duration-300",
+                        "bg-card/60 backdrop-blur-sm border border-border/40",
                         isLocked
-                          ? "opacity-60 cursor-not-allowed grayscale"
-                          : "hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10 hover:border-primary/40"
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-0.5"
                       )}
                     >
-                      {/* Thumbnail/Visual Area */}
+                      {/* Visual Header */}
                       <div className={cn(
-                        "relative h-28 overflow-hidden",
-                        "bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20"
+                        "relative overflow-hidden",
+                        isCompact ? "h-20" : "h-24",
+                        lesson.completed 
+                          ? "bg-gradient-to-br from-accent/30 via-accent/10 to-transparent"
+                          : "bg-gradient-to-br from-primary/20 via-secondary/10 to-muted/20"
                       )}>
-                        {/* Decorative Pattern */}
-                        <div className="absolute inset-0 opacity-30">
-                          <div className="absolute top-2 right-2 w-20 h-20 rounded-full bg-primary/20 blur-2xl" />
-                          <div className="absolute bottom-2 left-2 w-16 h-16 rounded-full bg-secondary/20 blur-xl" />
+                        {/* Subtle pattern */}
+                        <div className="absolute inset-0">
+                          <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-primary/10 blur-xl" />
+                          <div className="absolute -bottom-4 -left-4 w-12 h-12 rounded-full bg-secondary/10 blur-lg" />
                         </div>
                         
                         {/* Lesson Number */}
-                        <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-background/90 backdrop-blur-sm text-foreground text-sm font-bold flex items-center justify-center shadow-lg">
+                        <div className={cn(
+                          "absolute top-2 left-2 rounded-lg bg-background/80 backdrop-blur-sm font-bold flex items-center justify-center shadow-sm border border-border/30",
+                          isCompact ? "w-6 h-6 text-xs" : "w-7 h-7 text-sm"
+                        )}>
                           {lessonIndex + 1}
                         </div>
 
-                        {/* Status Badge */}
-                        <div className="absolute top-3 right-3">
+                        {/* Status Icon */}
+                        <div className="absolute top-2 right-2">
                           {lesson.completed ? (
-                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/90 text-accent-foreground text-xs font-medium shadow-lg">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Completada</span>
+                            <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center shadow-sm">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-accent-foreground" />
                             </div>
                           ) : lesson.is_preview ? (
-                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/90 text-primary-foreground text-xs font-medium shadow-lg">
-                              <Play className="w-3 h-3" />
-                              <span>Gratis</span>
+                            <div className={cn(
+                              "rounded-full bg-primary/90 text-primary-foreground font-medium shadow-sm flex items-center justify-center",
+                              isCompact ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-0.5 text-[10px]"
+                            )}>
+                              Gratis
                             </div>
                           ) : isLocked ? (
-                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/90 text-muted-foreground text-xs font-medium shadow-lg backdrop-blur-sm">
-                              <Lock className="w-3 h-3" />
-                              <span>Bloqueada</span>
+                            <div className="w-6 h-6 rounded-full bg-muted/80 flex items-center justify-center">
+                              <Lock className="w-3 h-3 text-muted-foreground" />
                             </div>
                           ) : null}
                         </div>
 
-                        {/* Play Button Overlay */}
-                        <div className={cn(
-                          "absolute inset-0 flex items-center justify-center",
-                          "opacity-0 group-hover:opacity-100 transition-all duration-300",
-                          isLocked && "hidden"
-                        )}>
-                          <div className="w-14 h-14 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-xl transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                            <Play className="w-6 h-6 text-primary-foreground ml-1" fill="currentColor" />
+                        {/* Play overlay on hover */}
+                        {!isLocked && (
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                            <div className={cn(
+                              "rounded-full bg-primary flex items-center justify-center shadow-lg scale-90 group-hover:scale-100 transition-transform",
+                              isCompact ? "w-10 h-10" : "w-12 h-12"
+                            )}>
+                              <Play className={cn("text-primary-foreground ml-0.5", isCompact ? "w-4 h-4" : "w-5 h-5")} fill="currentColor" />
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
 
-                      {/* Content Area */}
-                      <div className="p-4">
+                      {/* Content */}
+                      <div className={cn("p-3", isCompact && "p-2.5")}>
                         <h4 className={cn(
-                          "font-heading font-semibold text-sm line-clamp-2 leading-snug",
+                          "font-medium leading-snug",
+                          isCompact ? "text-xs line-clamp-2" : "text-sm line-clamp-2",
                           lesson.completed ? "text-muted-foreground" : "text-foreground"
                         )}>
                           {lesson.title}
                         </h4>
-                        
-                        {lesson.description && (
-                          <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
-                            {lesson.description}
-                          </p>
+
+                        {/* Footer - hidden on compact */}
+                        {!isCompact && (
+                          <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                            {lesson.duration ? (
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                <span>{lesson.duration}</span>
+                              </div>
+                            ) : (
+                              <div />
+                            )}
+                            {lesson.completed && (
+                              <span className="text-accent text-[10px] font-medium">Completada</span>
+                            )}
+                          </div>
                         )}
 
-                        {/* Footer */}
-                        <div className="mt-3 pt-3 border-t border-border/30 flex items-center justify-between">
-                          {lesson.duration ? (
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                              <Clock className="w-3.5 h-3.5" />
-                              <span>{lesson.duration}</span>
-                            </div>
-                          ) : (
-                            <div />
-                          )}
-                          
-                          {!isLocked && !lesson.completed && (
-                            <div className="flex items-center gap-1 text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span>Ver lección</span>
-                              <ChevronRight className="w-3.5 h-3.5" />
-                            </div>
-                          )}
-                        </div>
+                        {/* Compact duration */}
+                        {isCompact && lesson.duration && (
+                          <div className="mt-1.5 flex items-center gap-1 text-[10px] text-muted-foreground">
+                            <Clock className="w-2.5 h-2.5" />
+                            <span>{lesson.duration}</span>
+                          </div>
+                        )}
                       </div>
-
-                      {/* Hover Glow Effect */}
-                      <div className={cn(
-                        "absolute inset-0 rounded-2xl pointer-events-none",
-                        "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                        "bg-gradient-to-t from-primary/5 via-transparent to-transparent",
-                        isLocked && "hidden"
-                      )} />
                     </button>
                   );
                 })}
