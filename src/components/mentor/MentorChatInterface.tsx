@@ -7,6 +7,7 @@ import { useMentorChat, useMentorSettings } from "@/hooks/useMentor";
 import { Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
+import mentorAvatar from "@/assets/hector-galensky-mentor-avatar.png";
 
 interface MentorChatInterfaceProps {
   className?: string;
@@ -75,16 +76,12 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
       {/* Header with mentor avatar */}
       <div className="glass-card rounded-t-xl p-4 border-b border-border/50">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden ring-2 ring-primary/30">
-            {settings?.avatar_url ? (
-              <img
-                src={settings.avatar_url}
-                alt={settings.mentor_name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <Sparkles className="w-6 h-6 text-primary-foreground" />
-            )}
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden ring-2 ring-primary/30 shadow-[0_0_15px_rgba(0,217,255,0.3)]">
+            <img
+              src={mentorAvatar}
+              alt="Héctor Galensky"
+              className="w-full h-full object-cover object-top"
+            />
           </div>
           <div className="flex-1">
             <h2 className="font-heading font-bold text-lg">
@@ -112,9 +109,37 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
       <div className="flex-1 overflow-y-auto p-4 space-y-4 glass-card">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
-              <Sparkles className="w-10 h-10 text-primary" />
+            {/* Holographic Avatar Container */}
+            <div className="relative mb-6">
+              {/* Outer glow rings */}
+              <div className="absolute inset-0 w-48 h-48 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 blur-2xl animate-pulse" />
+                <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 blur-xl animate-pulse" style={{ animationDelay: "0.5s" }} />
+                <div className="absolute inset-4 rounded-full border-2 border-primary/20 animate-spin" style={{ animationDuration: "20s" }} />
+                <div className="absolute inset-6 rounded-full border border-secondary/30 animate-spin" style={{ animationDuration: "15s", animationDirection: "reverse" }} />
+              </div>
+              
+              {/* Avatar with holographic effect */}
+              <div className="relative w-40 h-40 rounded-full overflow-hidden ring-4 ring-primary/40 shadow-[0_0_40px_rgba(0,217,255,0.4),0_0_80px_rgba(176,38,255,0.2)]">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80 z-10" />
+                <img
+                  src={mentorAvatar}
+                  alt="Héctor Galensky"
+                  className="w-full h-full object-cover object-top scale-110"
+                  style={{ mixBlendMode: "normal" }}
+                />
+                {/* Scanline effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent animate-pulse opacity-50" />
+              </div>
+              
+              {/* Floating particles effect */}
+              <div className="absolute -inset-4">
+                <div className="absolute top-0 left-1/4 w-1 h-1 rounded-full bg-primary animate-ping" style={{ animationDuration: "2s" }} />
+                <div className="absolute top-1/4 right-0 w-1.5 h-1.5 rounded-full bg-secondary animate-ping" style={{ animationDuration: "2.5s", animationDelay: "0.5s" }} />
+                <div className="absolute bottom-1/4 left-0 w-1 h-1 rounded-full bg-cyan-400 animate-ping" style={{ animationDuration: "3s", animationDelay: "1s" }} />
+              </div>
             </div>
+            
             <p className="text-muted-foreground max-w-md text-base leading-relaxed">
               El conocimiento sin ejecución es solo ruido. Por eso, he volcado toda mi trayectoria en esta IA para que te acompañe en las trincheras. Desde pulir tu oratoria hasta estructurar tu oferta, ¿en qué te puedo ayudar?
             </p>
@@ -133,20 +158,16 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden",
                   msg.role === "assistant"
-                    ? "bg-gradient-to-br from-primary to-secondary"
+                    ? "bg-gradient-to-br from-primary to-secondary shadow-[0_0_10px_rgba(0,217,255,0.3)]"
                     : "bg-muted"
                 )}
               >
                 {msg.role === "assistant" ? (
-                  settings?.avatar_url ? (
-                    <img
-                      src={settings.avatar_url}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Sparkles className="w-4 h-4 text-primary-foreground" />
-                  )
+                  <img
+                    src={mentorAvatar}
+                    alt=""
+                    className="w-full h-full object-cover object-top"
+                  />
                 ) : (
                   <span className="text-xs font-bold">Tú</span>
                 )}
@@ -205,16 +226,12 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
 
         {isLoading && (
           <div className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden">
-              {settings?.avatar_url ? (
-                <img
-                  src={settings.avatar_url}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <Sparkles className="w-4 h-4 text-primary-foreground" />
-              )}
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(0,217,255,0.3)]">
+              <img
+                src={mentorAvatar}
+                alt=""
+                className="w-full h-full object-cover object-top"
+              />
             </div>
             <div className="glass p-3 rounded-2xl rounded-tl-md">
               <div className="flex gap-1">
