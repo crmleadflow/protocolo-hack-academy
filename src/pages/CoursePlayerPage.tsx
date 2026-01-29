@@ -690,15 +690,21 @@ function ModulesCardGrid({
                       const isLocked = !hasAccess && !lesson.is_preview;
 
                       return (
-                        <button
+                        <div
                           key={lesson.id}
-                          onClick={(e) => {
-                            e.stopPropagation();
+                          role="button"
+                          tabIndex={isLocked ? -1 : 0}
+                          onClick={() => {
                             if (!isLocked) onSelectLesson(lesson);
                           }}
-                          disabled={isLocked}
+                          onKeyDown={(e) => {
+                            if ((e.key === 'Enter' || e.key === ' ') && !isLocked) {
+                              e.preventDefault();
+                              onSelectLesson(lesson);
+                            }
+                          }}
                           className={cn(
-                            "group/lesson text-left transition-all duration-300 rounded-xl overflow-hidden flex flex-col",
+                            "group/lesson text-left transition-all duration-300 rounded-xl overflow-hidden flex flex-col cursor-pointer",
                             "bg-card/60 backdrop-blur-sm border border-border/40",
                             isLocked
                               ? "opacity-70 cursor-not-allowed"
@@ -761,7 +767,7 @@ function ModulesCardGrid({
                               </div>
                             )}
                           </div>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
