@@ -24,6 +24,7 @@ import SettingsPage from "./pages/SettingsPage";
 import AchievementsPage from "./pages/AchievementsPage";
 import CommunityPage from "./pages/CommunityPage";
 import MentorPage from "./pages/MentorPage";
+import NeuroScannerPage from "./pages/NeuroScannerPage";
 import ProducerMentorPage from "./pages/ProducerMentorPage";
 import ProducerAnalyticsPage from "./pages/ProducerAnalyticsPage";
 import ProducerRevenuePage from "./pages/ProducerRevenuePage";
@@ -117,6 +118,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MentorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/neuro-scanner"
+              element={
+                <ProtectedRoute>
+                  <NeuroScannerPage />
                 </ProtectedRoute>
               }
             />

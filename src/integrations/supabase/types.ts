@@ -725,6 +725,66 @@ export type Database = {
           },
         ]
       }
+      neuro_scans: {
+        Row: {
+          ai_feedback: string | null
+          closing_score: number
+          created_at: string
+          duration_seconds: number | null
+          filler_words_count: number | null
+          filler_words_detected: Json | null
+          id: string
+          improvements: Json | null
+          persuasive_keywords_count: number | null
+          persuasive_keywords_detected: Json | null
+          strengths: Json | null
+          title: string
+          tone_analysis: string | null
+          transcript: string
+          updated_at: string
+          user_id: string
+          words_per_minute: number | null
+        }
+        Insert: {
+          ai_feedback?: string | null
+          closing_score?: number
+          created_at?: string
+          duration_seconds?: number | null
+          filler_words_count?: number | null
+          filler_words_detected?: Json | null
+          id?: string
+          improvements?: Json | null
+          persuasive_keywords_count?: number | null
+          persuasive_keywords_detected?: Json | null
+          strengths?: Json | null
+          title?: string
+          tone_analysis?: string | null
+          transcript: string
+          updated_at?: string
+          user_id: string
+          words_per_minute?: number | null
+        }
+        Update: {
+          ai_feedback?: string | null
+          closing_score?: number
+          created_at?: string
+          duration_seconds?: number | null
+          filler_words_count?: number | null
+          filler_words_detected?: Json | null
+          id?: string
+          improvements?: Json | null
+          persuasive_keywords_count?: number | null
+          persuasive_keywords_detected?: Json | null
+          strengths?: Json | null
+          title?: string
+          tone_analysis?: string | null
+          transcript?: string
+          updated_at?: string
+          user_id?: string
+          words_per_minute?: number | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number

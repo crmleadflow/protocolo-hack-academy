@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Home, BookOpen, Trophy, Settings, LogOut, User,
-  Zap, MessageSquare, HelpCircle, Shield, Sparkles
+  Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -29,6 +29,7 @@ const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Programas", url: "/catalog", icon: BookOpen },
   { title: "Mi Mentor", url: "/mentor", icon: Sparkles },
+  { title: "Neuro Scanner", url: "/neuro-scanner", icon: Brain },
   { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
   { title: "Logros", url: "/achievements", icon: Trophy },
   { title: "Comunidad", url: "/community", icon: MessageSquare },
