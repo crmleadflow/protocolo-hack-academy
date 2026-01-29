@@ -1,11 +1,14 @@
 import React, { useState, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { 
   DollarSign, TrendingUp, CreditCard, Receipt, 
   ArrowUpRight, ArrowDownRight, Calendar, Download,
   Search, Filter, ChevronDown
 } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { StatCard } from "@/components/ui/stat-card";
 import { useProducerRevenue, Transaction } from "@/hooks/useProducerRevenue";
@@ -54,6 +57,7 @@ const chartConfig = {
 };
 
 const ProducerRevenuePage: React.FC = () => {
+  const location = useLocation();
   const { data: revenue, isLoading } = useProducerRevenue();
   const [searchTerm, setSearchTerm] = useState("");
   const [programFilter, setProgramFilter] = useState<string>("all");
@@ -131,16 +135,10 @@ const ProducerRevenuePage: React.FC = () => {
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-background">
           <ProducerSidebar />
-          <main className="flex-1 overflow-auto">
-            <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-              <div className="flex items-center justify-between px-6 py-4">
-                <div className="flex items-center gap-4">
-                  <SidebarTrigger />
-                  <Skeleton className="h-8 w-48" />
-                </div>
-              </div>
-            </header>
-            <div className="p-6 space-y-6">
+          <FloatingSidebarTrigger />
+          <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+            <div className="max-w-7xl mx-auto space-y-6">
+              <Skeleton className="h-24 rounded-xl" />
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map((i) => (
                   <Skeleton key={i} className="h-32" />
@@ -164,31 +162,24 @@ const ProducerRevenuePage: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
         
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-xl font-heading font-bold flex items-center gap-2">
-                    <DollarSign className="w-6 h-6 text-accent" />
-                    Ingresos
-                  </h1>
-                  <p className="text-sm text-muted-foreground">
-                    Gestión de pagos y transacciones
-                  </p>
-                </div>
-              </div>
-              <Button onClick={exportToCSV} variant="outline" className="gap-2">
-                <Download className="w-4 h-4" />
-                Exportar CSV
-              </Button>
-            </div>
-          </header>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+          <div className="max-w-7xl mx-auto space-y-6">
+            <ProducerCollapsibleNav
+              title="Ingresos"
+              subtitle="Gestión de pagos y transacciones"
+              icon={<DollarSign className="w-8 h-8 text-secondary" />}
+              currentPath={location.pathname}
+              stats={
+                <Button onClick={exportToCSV} variant="outline" className="gap-2">
+                  <Download className="w-4 h-4" />
+                  Exportar CSV
+                </Button>
+              }
+            />
 
-          <div className="p-6 space-y-8">
+            <div className="space-y-8">
             {/* Main Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
@@ -590,6 +581,7 @@ const ProducerRevenuePage: React.FC = () => {
                 </table>
               </div>
             </HolographicCard>
+            </div>
           </div>
         </main>
       </div>

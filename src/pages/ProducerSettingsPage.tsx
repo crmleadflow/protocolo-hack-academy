@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { 
   Settings, Globe, Palette, CreditCard, Bell, Shield, 
   Save, Loader2, Upload, Image, CheckCircle, AlertTriangle,
   Mail, Link2, FileText, Lock, Eye, EyeOff
 } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -18,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const ProducerSettingsPage: React.FC = () => {
+  const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
   
@@ -151,42 +155,35 @@ const ProducerSettingsPage: React.FC = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
         
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-xl font-heading font-bold flex items-center gap-2">
-                    <Settings className="w-6 h-6 text-primary" />
-                    Configuración
-                  </h1>
-                  <p className="text-sm text-muted-foreground">
-                    Administra la configuración de la plataforma
-                  </p>
-                </div>
-              </div>
-              {hasChanges && (
-                <NeonButton onClick={handleSave} disabled={isSaving}>
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Guardar Cambios
-                    </>
-                  )}
-                </NeonButton>
-              )}
-            </div>
-          </header>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <ProducerCollapsibleNav
+              title="Configuración"
+              subtitle="Administra la configuración de la plataforma"
+              icon={<Settings className="w-8 h-8 text-secondary" />}
+              currentPath={location.pathname}
+              stats={
+                hasChanges ? (
+                  <NeonButton onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Guardando...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Guardar Cambios
+                      </>
+                    )}
+                  </NeonButton>
+                ) : null
+              }
+            />
 
-          <div className="p-6">
+          <div className="space-y-6">
             <Tabs defaultValue="general" className="space-y-6">
               <TabsList className="glass p-1 w-full justify-start overflow-x-auto">
                 <TabsTrigger value="general" className="gap-2">
@@ -737,6 +734,7 @@ const ProducerSettingsPage: React.FC = () => {
                 </HolographicCard>
               </TabsContent>
             </Tabs>
+          </div>
           </div>
         </main>
       </div>

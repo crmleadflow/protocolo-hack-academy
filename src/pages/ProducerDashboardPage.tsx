@@ -1,11 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Users, Play, TrendingUp, DollarSign, Eye, Clock,
-  Plus, Settings, BarChart3, FileVideo, ChevronRight
+  Plus, Settings, BarChart3, FileVideo, ChevronRight, LayoutDashboard
 } from "lucide-react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { StatCard } from "@/components/ui/stat-card";
@@ -30,36 +32,33 @@ const recentActivity = [
 
 const ProducerDashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const courses = demoCourses;
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <ProducerSidebar />
+        <FloatingSidebarTrigger />
         
-        <main className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
-            <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-xl font-heading font-bold">
-                    Panel del Productor
-                  </h1>
-                  <p className="text-sm text-muted-foreground">
-                    Gestiona tus programas y métricas
-                  </p>
-                </div>
-              </div>
-              <NeonButton onClick={() => navigate("/producer/new-course")}>
-                <Plus className="w-4 h-4" />
-                Nuevo Programa
-              </NeonButton>
-            </div>
-          </header>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+          <div className="max-w-7xl mx-auto space-y-6">
+            {/* Collapsible Navigation Header */}
+            <ProducerCollapsibleNav
+              title="Panel del Productor"
+              subtitle="Gestiona tus programas y métricas"
+              icon={<LayoutDashboard className="w-8 h-8 text-secondary" />}
+              currentPath={location.pathname}
+              stats={
+                <NeonButton onClick={() => navigate("/producer/new-course")}>
+                  <Plus className="w-4 h-4" />
+                  Nuevo Programa
+                </NeonButton>
+              }
+            />
 
-          <div className="p-6 space-y-8">
+            {/* Main Content */}
+            <div className="space-y-8">
             {/* Stats Overview */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
@@ -199,6 +198,7 @@ const ProducerDashboardPage: React.FC = () => {
                 </div>
               </div>
             </HolographicCard>
+          </div>
           </div>
         </main>
       </div>
