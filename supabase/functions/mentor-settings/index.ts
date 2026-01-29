@@ -16,6 +16,22 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // GET requests are public - anyone can view mentor settings
+    if (req.method === "GET") {
+      const { data: settings, error } = await supabaseClient
+        .from("mentor_settings")
+        .select("*")
+        .limit(1)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+
+      return new Response(JSON.stringify({ settings }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // All other methods require authentication
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -36,28 +52,13 @@ serve(async (req) => {
       });
     }
 
-    // Check if user is admin
+    // Check if user is admin for write operations
     const { data: roleData } = await supabaseClient
       .from("user_roles")
       .select("role")
       .eq("user_id", authData.user.id)
       .eq("role", "admin")
       .single();
-
-    if (req.method === "GET") {
-      // Anyone can get settings
-      const { data: settings, error } = await supabaseClient
-        .from("mentor_settings")
-        .select("*")
-        .limit(1)
-        .single();
-
-      if (error && error.code !== "PGRST116") throw error;
-
-      return new Response(JSON.stringify({ settings }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     if (req.method === "PUT" || req.method === "POST") {
       // Only admins can update
