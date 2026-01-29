@@ -2,7 +2,8 @@ import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, BookOpen, Clock, Users, Star, 
-  CheckCircle2, Lock, Loader2, Play, List
+  CheckCircle2, Lock, Loader2, Play, List,
+  ChevronLeft, ChevronRight, SkipForward
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -40,6 +41,21 @@ const CoursePlayerPage: React.FC = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
 
+  // Flatten all lessons for navigation
+  const allLessons = useMemo(() => {
+    if (!program) return [];
+    return program.modules.flatMap((module) => module.lessons);
+  }, [program]);
+
+  // Get current lesson index and navigation info
+  const currentLessonIndex = useMemo(() => {
+    if (!currentLesson) return -1;
+    return allLessons.findIndex((l) => l.id === currentLesson.id);
+  }, [currentLesson, allLessons]);
+
+  const previousLesson = currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1] : null;
+  const nextLesson = currentLessonIndex < allLessons.length - 1 ? allLessons[currentLessonIndex + 1] : null;
+
   const handleSelectLesson = (lesson: LessonWithProgress) => {
     if (!hasAccess && !lesson.is_preview) {
       setShowPaymentModal(true);
@@ -53,11 +69,33 @@ const CoursePlayerPage: React.FC = () => {
     setViewMode("list");
   };
 
+  const handlePreviousLesson = () => {
+    if (previousLesson) {
+      handleSelectLesson(previousLesson);
+    }
+  };
+
+  const handleNextLesson = () => {
+    if (nextLesson) {
+      handleSelectLesson(nextLesson);
+    }
+  };
+
   const handleMarkComplete = async () => {
     if (!currentLesson) return;
     setIsMarkingComplete(true);
     await markLessonCompleted(currentLesson.id);
     setIsMarkingComplete(false);
+  };
+
+  const handleMarkCompleteAndNext = async () => {
+    if (!currentLesson) return;
+    setIsMarkingComplete(true);
+    await markLessonCompleted(currentLesson.id);
+    setIsMarkingComplete(false);
+    if (nextLesson) {
+      handleSelectLesson(nextLesson);
+    }
   };
 
   if (isLoading) {
@@ -166,13 +204,21 @@ const CoursePlayerPage: React.FC = () => {
             <LessonPlayerView
               program={program}
               currentLesson={currentLesson}
+              currentLessonIndex={currentLessonIndex}
+              totalLessons={allLessons.length}
               lessonResources={lessonResources}
               refetchResources={refetchResources}
               hasAccess={hasAccess}
               isAdmin={isAdmin}
               isMarkingComplete={isMarkingComplete}
               onMarkComplete={handleMarkComplete}
+              onMarkCompleteAndNext={handleMarkCompleteAndNext}
               onBackToList={handleBackToList}
+              onPreviousLesson={handlePreviousLesson}
+              onNextLesson={handleNextLesson}
+              hasPrevious={!!previousLesson}
+              hasNext={!!nextLesson}
+              nextLessonTitle={nextLesson?.title}
             />
           )}
         </main>
@@ -181,7 +227,10 @@ const CoursePlayerPage: React.FC = () => {
         <PayPalCheckout
           programId={courseId || ""}
           programTitle={program.title}
+          programThumbnail={program.thumbnail_url}
           price={program.price}
+          totalLessons={program.totalLessons}
+          totalModules={program.modules.length}
           isOpen={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
         />
@@ -397,23 +446,39 @@ function ModuleLessonList({
 function LessonPlayerView({
   program,
   currentLesson,
+  currentLessonIndex,
+  totalLessons,
   lessonResources,
   refetchResources,
   hasAccess,
   isAdmin,
   isMarkingComplete,
   onMarkComplete,
+  onMarkCompleteAndNext,
   onBackToList,
+  onPreviousLesson,
+  onNextLesson,
+  hasPrevious,
+  hasNext,
+  nextLessonTitle,
 }: {
   program: any;
   currentLesson: LessonWithProgress | null;
+  currentLessonIndex: number;
+  totalLessons: number;
   lessonResources: any[];
   refetchResources: () => void;
   hasAccess: boolean;
   isAdmin: boolean;
   isMarkingComplete: boolean;
   onMarkComplete: () => void;
+  onMarkCompleteAndNext: () => void;
   onBackToList: () => void;
+  onPreviousLesson: () => void;
+  onNextLesson: () => void;
+  hasPrevious: boolean;
+  hasNext: boolean;
+  nextLessonTitle?: string;
 }) {
   if (!currentLesson) {
     return (
@@ -432,11 +497,110 @@ function LessonPlayerView({
 
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+      {/* Lesson Progress Indicator */}
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">
+          Lección {currentLessonIndex + 1} de {totalLessons}
+        </span>
+        <div className="flex items-center gap-2">
+          <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all"
+              style={{ width: `${((currentLessonIndex + 1) / totalLessons) * 100}%` }}
+            />
+          </div>
+          <span className="text-primary font-medium">
+            {Math.round(((currentLessonIndex + 1) / totalLessons) * 100)}%
+          </span>
+        </div>
+      </div>
+
       {/* Video Player */}
       <VideoPlayer
         videoUrl={currentLesson.video_url || ""}
         title={currentLesson.title}
       />
+
+      {/* Navigation Buttons */}
+      <div className="flex items-center justify-between gap-4">
+        <NeonButton
+          variant="ghost"
+          size="sm"
+          onClick={onPreviousLesson}
+          disabled={!hasPrevious}
+          className={cn(!hasPrevious && "opacity-50 cursor-not-allowed")}
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Anterior
+        </NeonButton>
+
+        <div className="flex-1 flex justify-center">
+          {hasAccess && !currentLesson.completed && hasNext && (
+            <NeonButton
+              onClick={onMarkCompleteAndNext}
+              disabled={isMarkingComplete}
+              className="gap-2"
+            >
+              {isMarkingComplete ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <SkipForward className="w-4 h-4" />
+              )}
+              Completar y Continuar
+            </NeonButton>
+          )}
+          {hasAccess && !currentLesson.completed && !hasNext && (
+            <NeonButton
+              onClick={onMarkComplete}
+              disabled={isMarkingComplete}
+            >
+              {isMarkingComplete ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4" />
+              )}
+              Marcar como completada
+            </NeonButton>
+          )}
+          {currentLesson.completed && (
+            <span className="flex items-center gap-2 text-sm text-primary font-medium">
+              <CheckCircle2 className="w-5 h-5" />
+              Lección Completada
+            </span>
+          )}
+        </div>
+
+        <NeonButton
+          variant="ghost"
+          size="sm"
+          onClick={onNextLesson}
+          disabled={!hasNext}
+          className={cn(!hasNext && "opacity-50 cursor-not-allowed")}
+        >
+          Siguiente
+          <ChevronRight className="w-4 h-4" />
+        </NeonButton>
+      </div>
+
+      {/* Next Lesson Preview */}
+      {hasNext && nextLessonTitle && (
+        <button
+          onClick={onNextLesson}
+          className="w-full p-4 rounded-xl glass hover:bg-white/5 transition-all group text-left"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs text-muted-foreground">Siguiente lección</span>
+              <h4 className="font-medium group-hover:text-primary transition-colors">
+                {nextLessonTitle}
+              </h4>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all">
+              <Play className="w-5 h-5 text-primary group-hover:text-primary-foreground ml-0.5" />
+            </div>
+          </div>
+        </button>
+      )}
 
       {/* Lesson Info */}
       <HolographicCard className="space-y-4">
@@ -458,26 +622,6 @@ function LessonPlayerView({
             Volver al listado
           </NeonButton>
           
-          {hasAccess && !currentLesson.completed && (
-            <NeonButton
-              size="sm"
-              onClick={onMarkComplete}
-              disabled={isMarkingComplete}
-            >
-              {isMarkingComplete ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <CheckCircle2 className="w-4 h-4" />
-              )}
-              Marcar como completada
-            </NeonButton>
-          )}
-          {currentLesson.completed && (
-            <span className="flex items-center gap-2 text-sm text-primary">
-              <CheckCircle2 className="w-4 h-4" />
-              Completada
-            </span>
-          )}
           {currentLesson.duration && (
             <div className="flex items-center gap-1 ml-auto text-sm text-muted-foreground">
               <Clock className="w-4 h-4" />
