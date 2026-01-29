@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, BookOpen, Clock, Users, Star, 
   CheckCircle2, Lock, Loader2, Play, List,
-  ChevronLeft, ChevronRight, SkipForward
+  ChevronLeft, ChevronRight, ChevronDown, SkipForward
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
@@ -337,112 +337,251 @@ function ModuleLessonList({
   hasAccess: boolean;
   onSelectLesson: (lesson: LessonWithProgress) => void;
 }) {
+  const [isExpanded, setIsExpanded] = useState(true);
   const completedInModule = module.lessons.filter((l) => l.completed).length;
   const moduleProgress = module.lessons.length > 0 
     ? Math.round((completedInModule / module.lessons.length) * 100) 
     : 0;
 
   return (
-    <HolographicCard className="overflow-hidden p-0">
-      {/* Module Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border/50 bg-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-lg font-bold text-primary">
-            {moduleIndex + 1}
-          </div>
-          <div>
-            <h3 className="font-heading font-semibold">{module.title}</h3>
-            {module.description && (
-              <p className="text-xs text-muted-foreground">{module.description}</p>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{completedInModule}/{module.lessons.length}</span>
-          <ProgressRing progress={moduleProgress} size={32} strokeWidth={3}>
-            <CheckCircle2 className={cn(
-              "w-3 h-3",
-              moduleProgress === 100 ? "text-primary" : "text-muted-foreground"
-            )} />
-          </ProgressRing>
-        </div>
-      </div>
-
-      {/* Lessons */}
-      <div className="divide-y divide-border/30">
-        {module.lessons.map((lesson, lessonIndex) => {
-          const isLocked = !hasAccess && !lesson.is_preview;
-
-          return (
-            <button
-              key={lesson.id}
-              onClick={() => onSelectLesson(lesson)}
-              className="w-full flex items-center gap-4 p-4 text-left hover:bg-white/5 transition-all group"
-            >
-              {/* Completion Circle */}
-              <div className="relative flex-shrink-0">
-                <div
-                  className={cn(
-                    "w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all",
-                    lesson.completed
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : "bg-transparent border-muted-foreground/30 text-muted-foreground group-hover:border-primary/50"
-                  )}
-                >
-                  {lesson.completed ? (
-                    <CheckCircle2 className="w-6 h-6" />
-                  ) : (
-                    <span className="text-lg font-semibold">{lessonIndex + 1}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Lesson Info */}
-              <div className="flex-1 min-w-0">
-                <h4 className={cn(
-                  "font-medium group-hover:text-primary transition-colors",
-                  lesson.completed && "text-primary"
-                )}>
-                  {lesson.title}
-                </h4>
-                {lesson.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
-                    {lesson.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                  {lesson.duration && (
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {lesson.duration}
-                    </span>
-                  )}
-                  {lesson.is_preview && (
-                    <span className="text-secondary font-medium">Vista previa</span>
-                  )}
-                  {lesson.completed && (
-                    <span className="text-primary font-medium">Completada</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Play Button */}
-              <div className="flex-shrink-0">
-                {isLocked ? (
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-muted-foreground" />
-                  </div>
+    <div className="relative">
+      {/* Module Card */}
+      <HolographicCard className="overflow-hidden p-0 transition-all duration-300">
+        {/* Module Header - Clickable */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between p-5 border-b border-border/50 bg-gradient-to-r from-white/5 to-transparent hover:from-white/10 transition-all group"
+        >
+          <div className="flex items-center gap-4">
+            {/* Animated Module Number */}
+            <div className="relative">
+              <div className={cn(
+                "w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold transition-all duration-500",
+                moduleProgress === 100 
+                  ? "bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-lg shadow-primary/30" 
+                  : "bg-gradient-to-br from-primary/20 to-primary/5 text-primary"
+              )}>
+                {moduleProgress === 100 ? (
+                  <CheckCircle2 className="w-7 h-7 animate-pulse" />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all">
-                    <Play className="w-5 h-5 text-primary group-hover:text-primary-foreground ml-0.5" />
-                  </div>
+                  moduleIndex + 1
                 )}
               </div>
-            </button>
-          );
-        })}
-      </div>
-    </HolographicCard>
+              {/* Progress ring around number */}
+              <svg className="absolute inset-0 w-14 h-14 -rotate-90">
+                <circle
+                  className="text-muted/30"
+                  strokeWidth="3"
+                  stroke="currentColor"
+                  fill="transparent"
+                  r="24"
+                  cx="28"
+                  cy="28"
+                />
+                <circle
+                  className="text-primary transition-all duration-700 ease-out"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="transparent"
+                  r="24"
+                  cx="28"
+                  cy="28"
+                  style={{
+                    strokeDasharray: `${2 * Math.PI * 24}`,
+                    strokeDashoffset: `${2 * Math.PI * 24 * (1 - moduleProgress / 100)}`,
+                  }}
+                />
+              </svg>
+            </div>
+            
+            <div className="text-left">
+              <h3 className="font-heading font-bold text-lg group-hover:text-primary transition-colors">
+                {module.title}
+              </h3>
+              {module.description && (
+                <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
+                  {module.description}
+                </p>
+              )}
+              <div className="flex items-center gap-3 mt-2">
+                <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                  {module.lessons.length} lecciones
+                </span>
+                <span className={cn(
+                  "text-xs px-2 py-1 rounded-full font-medium",
+                  moduleProgress === 100 
+                    ? "bg-accent/20 text-accent" 
+                    : "bg-muted/50 text-muted-foreground"
+                )}>
+                  {completedInModule}/{module.lessons.length} completadas
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {/* Progress percentage */}
+            <div className="hidden sm:flex flex-col items-end">
+              <span className={cn(
+                "text-2xl font-bold transition-colors",
+                moduleProgress === 100 ? "text-primary" : "text-muted-foreground"
+              )}>
+                {moduleProgress}%
+              </span>
+              <div className="w-24 h-2 bg-muted/30 rounded-full overflow-hidden mt-1">
+                <div 
+                  className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${moduleProgress}%` }}
+                />
+              </div>
+            </div>
+            
+            {/* Expand/Collapse Icon */}
+            <div className={cn(
+              "w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center transition-all duration-300",
+              isExpanded ? "rotate-180" : ""
+            )}>
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            </div>
+          </div>
+        </button>
+
+        {/* Lessons - Animated expand/collapse */}
+        <div className={cn(
+          "overflow-hidden transition-all duration-500 ease-out",
+          isExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+        )}>
+          <div className="p-2">
+            {module.lessons.map((lesson, lessonIndex) => {
+              const isLocked = !hasAccess && !lesson.is_preview;
+              const progressPercent = lesson.completed ? 100 : 0;
+
+              return (
+                <button
+                  key={lesson.id}
+                  onClick={() => onSelectLesson(lesson)}
+                  className={cn(
+                    "w-full flex items-center gap-4 p-4 text-left rounded-xl transition-all duration-300 group relative overflow-hidden",
+                    "hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent",
+                    lesson.completed && "bg-primary/5"
+                  )}
+                  style={{
+                    animationDelay: `${lessonIndex * 50}ms`
+                  }}
+                >
+                  {/* Subtle background progress indicator */}
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent transition-all duration-500 pointer-events-none"
+                    style={{ width: `${progressPercent}%`, opacity: lesson.completed ? 1 : 0 }}
+                  />
+                  
+                  {/* Lesson Number/Status */}
+                  <div className="relative z-10 flex-shrink-0">
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 relative",
+                        lesson.completed
+                          ? "bg-gradient-to-br from-accent to-accent/80 text-accent-foreground shadow-lg shadow-accent/20"
+                          : isLocked
+                          ? "bg-muted/50 text-muted-foreground"
+                          : "bg-gradient-to-br from-primary/20 to-primary/5 text-primary group-hover:from-primary group-hover:to-primary/80 group-hover:text-primary-foreground group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30"
+                      )}
+                    >
+                      {lesson.completed ? (
+                        <CheckCircle2 className="w-6 h-6" />
+                      ) : isLocked ? (
+                        <Lock className="w-5 h-5" />
+                      ) : (
+                        <>
+                          <span className="font-bold group-hover:hidden">{lessonIndex + 1}</span>
+                          <Play className="w-5 h-5 hidden group-hover:block ml-0.5" />
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* Connecting line to next lesson */}
+                    {lessonIndex < module.lessons.length - 1 && (
+                      <div className={cn(
+                        "absolute top-full left-1/2 w-0.5 h-4 -translate-x-1/2 transition-colors duration-300",
+                        lesson.completed ? "bg-accent/50" : "bg-muted/30"
+                      )} />
+                    )}
+                  </div>
+
+                  {/* Lesson Info */}
+                  <div className="flex-1 min-w-0 z-10">
+                    <div className="flex items-center gap-2">
+                      <h4 className={cn(
+                        "font-medium transition-colors line-clamp-1",
+                        lesson.completed ? "text-primary" : "group-hover:text-primary"
+                      )}>
+                        {lesson.title}
+                      </h4>
+                      {lesson.is_preview && (
+                        <span className="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-full bg-secondary/20 text-secondary font-semibold uppercase tracking-wider">
+                          Gratis
+                        </span>
+                      )}
+                    </div>
+                    
+                    {lesson.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
+                        {lesson.description}
+                      </p>
+                    )}
+                    
+                    <div className="flex items-center gap-3 mt-2">
+                      {lesson.duration && (
+                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Clock className="w-3.5 h-3.5" />
+                          {lesson.duration}
+                        </span>
+                      )}
+                      
+                      {/* Progress indicator for individual lesson */}
+                      {lesson.completed ? (
+                        <span className="flex items-center gap-1.5 text-xs text-accent font-medium">
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                          Completada
+                        </span>
+                      ) : !isLocked && (
+                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground group-hover:text-primary transition-colors">
+                          <Play className="w-3.5 h-3.5" />
+                          Reproducir
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action indicator */}
+                  <div className="flex-shrink-0 z-10">
+                    {isLocked ? (
+                      <div className="w-10 h-10 rounded-xl bg-muted/30 flex items-center justify-center">
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    ) : (
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
+                        lesson.completed 
+                          ? "bg-accent/20" 
+                          : "bg-primary/10 group-hover:bg-primary group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30"
+                      )}>
+                        {lesson.completed ? (
+                          <CheckCircle2 className="w-5 h-5 text-accent" />
+                        ) : (
+                          <ChevronRight className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </HolographicCard>
+    </div>
   );
 }
 
