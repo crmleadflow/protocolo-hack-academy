@@ -464,6 +464,196 @@ export type Database = {
           },
         ]
       }
+      mentor_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mentor_documents: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          document_type: Database["public"]["Enums"]["mentor_document_type"]
+          file_url: string | null
+          id: string
+          is_processed: boolean
+          lesson_id: string | null
+          metadata: Json | null
+          program_id: string | null
+          title: string
+          updated_at: string
+          video_timestamp_end: number | null
+          video_timestamp_start: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          document_type?: Database["public"]["Enums"]["mentor_document_type"]
+          file_url?: string | null
+          id?: string
+          is_processed?: boolean
+          lesson_id?: string | null
+          metadata?: Json | null
+          program_id?: string | null
+          title: string
+          updated_at?: string
+          video_timestamp_end?: number | null
+          video_timestamp_start?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          document_type?: Database["public"]["Enums"]["mentor_document_type"]
+          file_url?: string | null
+          id?: string
+          is_processed?: boolean
+          lesson_id?: string | null
+          metadata?: Json | null
+          program_id?: string | null
+          title?: string
+          updated_at?: string
+          video_timestamp_end?: number | null
+          video_timestamp_start?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_documents_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mentor_documents_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentor_embeddings: {
+        Row: {
+          chunk_index: number
+          chunk_text: string
+          created_at: string
+          document_id: string
+          embedding: Json | null
+          id: string
+          video_timestamp: number | null
+        }
+        Insert: {
+          chunk_index?: number
+          chunk_text: string
+          created_at?: string
+          document_id: string
+          embedding?: Json | null
+          id?: string
+          video_timestamp?: number | null
+        }
+        Update: {
+          chunk_index?: number
+          chunk_text?: string
+          created_at?: string
+          document_id?: string
+          embedding?: Json | null
+          id?: string
+          video_timestamp?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_embeddings_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "mentor_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentor_messages: {
+        Row: {
+          citations: Json | null
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          citations?: Json | null
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          citations?: Json | null
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "mentor_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentor_settings: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          mentor_name: string
+          updated_at: string
+          welcome_message: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          mentor_name?: string
+          updated_at?: string
+          welcome_message?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          mentor_name?: string
+          updated_at?: string
+          welcome_message?: string | null
+        }
+        Relationships: []
+      }
       modules: {
         Row: {
           created_at: string
@@ -768,6 +958,7 @@ export type Database = {
       app_role: "admin" | "student"
       community_content_type: "discussion" | "question" | "announcement"
       enrollment_status: "pending" | "active" | "expired" | "cancelled"
+      mentor_document_type: "transcript" | "pdf" | "text" | "notes"
       payment_status: "pending" | "completed" | "failed" | "refunded"
       vote_type: "up" | "down"
     }
@@ -901,6 +1092,7 @@ export const Constants = {
       app_role: ["admin", "student"],
       community_content_type: ["discussion", "question", "announcement"],
       enrollment_status: ["pending", "active", "expired", "cancelled"],
+      mentor_document_type: ["transcript", "pdf", "text", "notes"],
       payment_status: ["pending", "completed", "failed", "refunded"],
       vote_type: ["up", "down"],
     },
