@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Slider } from "@/components/ui/slider";
+import { VideoSlider } from "@/components/ui/video-slider";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -217,7 +217,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         >
           {/* Progress Bar */}
           <div className="absolute bottom-16 left-4 right-4">
-            <Slider
+            <VideoSlider
               value={[progress]}
               max={100}
               step={0.1}
@@ -269,7 +269,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     <Volume2 className="w-5 h-5 text-white" />
                   )}
                 </button>
-                <Slider
+                <VideoSlider
                   value={[isMuted ? 0 : volume]}
                   max={100}
                   step={1}
