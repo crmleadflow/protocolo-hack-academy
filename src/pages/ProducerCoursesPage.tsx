@@ -209,12 +209,11 @@ const ProducerCoursesPage: React.FC = () => {
                 {/* Actions */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <NeonButton
-                    variant="outline"
                     size="sm"
                     onClick={() => navigate(`/producer/course/${program.id}/edit`)}
                   >
-                    <Video className="w-4 h-4" />
-                    Contenido
+                    <Edit className="w-4 h-4" />
+                    Editar
                   </NeonButton>
 
                   <DropdownMenu>
