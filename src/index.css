@@ -12,63 +12,62 @@
 @layer base {
   :root {
     /* Core Holographic Colors (HSL) */
-    --neon-magenta: 320 100% 55%;
-    --neon-purple: 280 100% 60%;
-    --cyber-cyan: 185 100% 50%;
-    --deep-space: 240 20% 6%;
-    --dark-void: 240 15% 12%;
+    --electric-blue: 189 100% 50%;
+    --neon-purple: 276 100% 57%;
+    --cyber-cyan: 176 100% 50%;
+    --deep-space: 230 60% 10%;
+    --dark-void: 230 37% 16%;
     
     /* Semantic tokens */
-    --background: 240 20% 6%;
+    --background: 230 60% 10%;
     --foreground: 210 40% 98%;
 
-    --card: 240 15% 12%;
+    --card: 230 37% 16%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 240 15% 12%;
+    --popover: 230 37% 16%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 320 100% 55%;
-    --primary-foreground: 240 20% 6%;
+    --primary: 189 100% 50%;
+    --primary-foreground: 230 60% 10%;
 
-    --secondary: 185 100% 50%;
-    --secondary-foreground: 240 20% 6%;
+    --secondary: 276 100% 57%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 240 15% 18%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 230 30% 25%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 280 100% 60%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 176 100% 50%;
+    --accent-foreground: 230 60% 10%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 15% 20%;
-    --input: 240 15% 15%;
-    --ring: 320 100% 55%;
+    --border: 230 30% 25%;
+    --input: 230 30% 20%;
+    --ring: 189 100% 50%;
 
     --radius: 0.75rem;
 
     /* Sidebar */
-    --sidebar-background: 240 20% 5%;
+    --sidebar-background: 230 50% 8%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 320 100% 55%;
-    --sidebar-primary-foreground: 240 20% 6%;
-    --sidebar-accent: 240 15% 12%;
+    --sidebar-primary: 189 100% 50%;
+    --sidebar-primary-foreground: 230 60% 10%;
+    --sidebar-accent: 230 37% 16%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 240 15% 18%;
-    --sidebar-ring: 320 100% 55%;
+    --sidebar-border: 230 30% 20%;
+    --sidebar-ring: 189 100% 50%;
 
     /* Gradients */
-    --gradient-holographic: linear-gradient(135deg, hsl(320 100% 55%), hsl(280 100% 60%), hsl(185 100% 50%));
-    --gradient-glow: linear-gradient(180deg, hsl(320 100% 55% / 0.2), transparent);
-    --gradient-card: linear-gradient(135deg, hsl(240 15% 12% / 0.8), hsl(240 20% 8% / 0.9));
+    --gradient-holographic: linear-gradient(135deg, hsl(189 100% 50%), hsl(276 100% 57%), hsl(176 100% 50%));
+    --gradient-glow: linear-gradient(180deg, hsl(189 100% 50% / 0.2), transparent);
+    --gradient-card: linear-gradient(135deg, hsl(230 37% 16% / 0.8), hsl(230 50% 12% / 0.9));
     
     /* Shadows */
-    --shadow-neon: 0 0 20px hsl(320 100% 55% / 0.4), 0 0 40px hsl(320 100% 55% / 0.2);
-    --shadow-purple: 0 0 20px hsl(280 100% 60% / 0.4), 0 0 40px hsl(280 100% 60% / 0.2);
-    --shadow-cyan: 0 0 20px hsl(185 100% 50% / 0.4), 0 0 40px hsl(185 100% 50% / 0.2);
-    --shadow-card: 0 8px 32px hsl(240 20% 3% / 0.6);
+    --shadow-neon: 0 0 20px hsl(189 100% 50% / 0.4), 0 0 40px hsl(189 100% 50% / 0.2);
+    --shadow-purple: 0 0 20px hsl(276 100% 57% / 0.4), 0 0 40px hsl(276 100% 57% / 0.2);
+    --shadow-card: 0 8px 32px hsl(230 60% 5% / 0.5);
   }
 
   /* Force dark mode always */
@@ -82,7 +81,7 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
-    background: linear-gradient(180deg, hsl(var(--deep-space)), hsl(240 20% 4%));
+    background: linear-gradient(180deg, hsl(var(--deep-space)), hsl(230 60% 6%));
     min-height: 100vh;
   }
 
@@ -140,7 +139,7 @@
 
   /* Animated gradient background */
   .gradient-animated {
-    background: linear-gradient(-45deg, hsl(var(--deep-space)), hsl(var(--dark-void)), hsl(280 100% 12%), hsl(320 100% 12%));
+    background: linear-gradient(-45deg, hsl(var(--deep-space)), hsl(var(--dark-void)), hsl(276 100% 15%), hsl(189 100% 15%));
     background-size: 400% 400%;
     animation: gradient-shift 15s ease infinite;
   }
