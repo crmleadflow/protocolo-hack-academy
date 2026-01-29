@@ -13,8 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Brain, Mic, MicOff, Play, Square, Upload, Trash2, 
   TrendingUp, AlertTriangle, Sparkles, Clock, Zap,
-  ChevronRight, BarChart3, Target, Volume2
+  ChevronRight, BarChart3, Target, Volume2, Home, BookOpen, 
+  MessageSquare, Trophy, Settings, ArrowLeft
 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useNeuroScanner, NeuroScan } from "@/hooks/useNeuroScanner";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -63,6 +65,7 @@ declare global {
 }
 
 export default function NeuroScannerPage() {
+  const navigate = useNavigate();
   const { scans, isLoadingScans, isAnalyzing, averageScore, bestScore, analyze, deleteScan } = useNeuroScanner();
   
   const [isRecording, setIsRecording] = useState(false);
@@ -277,16 +280,83 @@ export default function NeuroScannerPage() {
         
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
+            {/* Navigation Bar */}
+            <nav className="flex items-center justify-between">
+              {/* Breadcrumb */}
+              <div className="flex items-center gap-2 text-sm">
+                <Link 
+                  to="/dashboard" 
+                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Home className="w-4 h-4" />
+                  <span className="hidden sm:inline">Inicio</span>
+                </Link>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground font-medium flex items-center gap-1">
+                  <Brain className="w-4 h-4 text-primary" />
+                  Neuro Scanner
+                </span>
+              </div>
+
+              {/* Quick Links */}
+              <div className="flex items-center gap-1">
+                <Link
+                  to="/dashboard"
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  title="Dashboard"
+                >
+                  <Home className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/catalog"
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  title="Cursos"
+                >
+                  <BookOpen className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/mentor"
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  title="Mentor IA"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/achievements"
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  title="Logros"
+                >
+                  <Trophy className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/settings"
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  title="Configuración"
+                >
+                  <Settings className="w-5 h-5" />
+                </Link>
+              </div>
+            </nav>
+
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-3xl font-heading font-bold text-gradient flex items-center gap-3">
-                  <Brain className="w-8 h-8 text-primary" />
-                  Neuro Scanner
-                </h1>
-                <p className="text-muted-foreground mt-1">
-                  Analiza tu discurso de venta y mejora tu capacidad de cierre
-                </p>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors"
+                  title="Volver"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div>
+                  <h1 className="text-3xl font-heading font-bold text-gradient flex items-center gap-3">
+                    <Brain className="w-8 h-8 text-primary" />
+                    Neuro Scanner
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    Analiza tu discurso de venta y mejora tu capacidad de cierre
+                  </p>
+                </div>
               </div>
               
               {/* Stats Cards */}
