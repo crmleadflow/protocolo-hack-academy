@@ -806,32 +806,34 @@ function LessonPlayerView({
         </div>
       </div>
 
-      {/* Video Player Card (Title + Video as one contained unit) */}
-      <HolographicCard
-        variant="gradient"
-        hover={false}
-        className="p-4 lg:p-5 overflow-hidden"
-      >
-        <div className="w-full space-y-3">
-          {/* Lesson Title */}
-          <div className="min-w-0">
-            <h2 className="text-2xl font-heading font-bold text-foreground break-words">
-              {currentLesson.title}
-            </h2>
-            {currentLesson.description && (
-              <p className="text-muted-foreground mt-1 text-sm line-clamp-2">
-                {currentLesson.description}
-              </p>
-            )}
-          </div>
+      {/* Video Player Card - sized to video aspect ratio */}
+      <div className="w-full max-w-4xl mx-auto">
+        <HolographicCard
+          variant="gradient"
+          hover={false}
+          className="p-3 lg:p-4 overflow-hidden"
+        >
+          <div className="space-y-2">
+            {/* Lesson Title */}
+            <div className="min-w-0">
+              <h2 className="text-lg lg:text-xl font-heading font-bold text-foreground break-words line-clamp-2">
+                {currentLesson.title}
+              </h2>
+              {currentLesson.description && (
+                <p className="text-muted-foreground mt-1 text-xs lg:text-sm line-clamp-1">
+                  {currentLesson.description}
+                </p>
+              )}
+            </div>
 
-          {/* Video Player */}
-          <VideoPlayer
-            videoUrl={currentLesson.video_url || ""}
-            title={currentLesson.title}
-          />
-        </div>
-      </HolographicCard>
+            {/* Video Player */}
+            <VideoPlayer
+              videoUrl={currentLesson.video_url || ""}
+              title={currentLesson.title}
+            />
+          </div>
+        </HolographicCard>
+      </div>
 
       {/* Navigation Buttons */}
       <div className="flex items-center justify-between gap-4">
