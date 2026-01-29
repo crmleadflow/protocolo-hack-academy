@@ -11,20 +11,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 
 interface HeaderProps {
-  user?: {
-    name: string;
-    avatar: string;
-    role: "student" | "producer";
-  };
   transparent?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, transparent = false }) => {
+const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, isAdmin, signOut } = useAuth();
+  const { profile, displayName, initials } = useProfile();
 
   const navLinks = [
     { label: "Explorar", href: "/catalog" },
@@ -103,22 +102,30 @@ const Header: React.FC<HeaderProps> = ({ user, transparent = false }) => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-primary/50 transition-all">
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="w-9 h-9 rounded-full border-2 border-primary"
-                      />
+                      <div className="w-9 h-9 rounded-full border-2 border-primary bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden">
+                        {profile.avatarUrl ? (
+                          <img
+                            src={profile.avatarUrl}
+                            alt={displayName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="font-heading font-bold text-primary-foreground text-sm">
+                            {initials}
+                          </span>
+                        )}
+                      </div>
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 glass-strong">
                     <div className="px-3 py-2">
-                      <p className="font-medium">{user.name}</p>
+                      <p className="font-medium">{displayName}</p>
                       <p className="text-xs text-muted-foreground capitalize">
-                        {user.role === "student" ? "Estudiante" : "Productor"}
+                        {isAdmin ? "Administrador" : "Estudiante"}
                       </p>
                     </div>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate(user.role === "student" ? "/student" : "/producer")}>
+                    <DropdownMenuItem onClick={() => navigate(isAdmin ? "/producer" : "/dashboard")}>
                       <BookOpen className="w-4 h-4 mr-2" />
                       Mi Dashboard
                     </DropdownMenuItem>
@@ -131,7 +138,7 @@ const Header: React.FC<HeaderProps> = ({ user, transparent = false }) => {
                       Configuración
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate("/login")} className="text-destructive">
+                    <DropdownMenuItem onClick={async () => { await signOut(); navigate("/"); }} className="text-destructive">
                       <LogOut className="w-4 h-4 mr-2" />
                       Cerrar Sesión
                     </DropdownMenuItem>
