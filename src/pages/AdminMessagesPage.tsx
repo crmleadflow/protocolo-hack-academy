@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   MessageSquare,
   Send,
@@ -8,6 +8,8 @@ import {
   User,
   Loader2,
   ArrowLeft,
+  Users,
+  Check,
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
@@ -25,16 +27,25 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
 import { useDirectMessages, DirectMessage } from "@/hooks/useDirectMessages";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 const AdminMessagesPage: React.FC = () => {
   const { user } = useAuth();
@@ -43,11 +54,22 @@ const AdminMessagesPage: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [showComposeModal, setShowComposeModal] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState("");
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [sendToAll, setSendToAll] = useState(false);
+  const [recipientSearchTerm, setRecipientSearchTerm] = useState("");
+  const [recipientPopoverOpen, setRecipientPopoverOpen] = useState(false);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<DirectMessage | null>(null);
+
+  // Filter students based on search term
+  const filteredStudents = useMemo(() => {
+    if (!recipientSearchTerm) return students;
+    return students.filter((student) =>
+      student.full_name?.toLowerCase().startsWith(recipientSearchTerm.toLowerCase())
+    );
+  }, [students, recipientSearchTerm]);
 
   const filteredMessages = messages.filter(
     (msg) =>
@@ -58,18 +80,26 @@ const AdminMessagesPage: React.FC = () => {
   );
 
   const handleSendMessage = async () => {
-    if (!selectedStudent || !content.trim()) return;
+    const recipients = sendToAll 
+      ? students.map(s => s.user_id) 
+      : selectedStudents;
+    
+    if (recipients.length === 0 || !content.trim()) return;
 
     setIsSending(true);
-    const { error } = await sendMessage(selectedStudent, subject, content);
-    setIsSending(false);
-
-    if (!error) {
-      setShowComposeModal(false);
-      setSelectedStudent("");
-      setSubject("");
-      setContent("");
+    
+    // Send message to each recipient
+    for (const recipientId of recipients) {
+      await sendMessage(recipientId, subject, content);
     }
+    
+    setIsSending(false);
+    setShowComposeModal(false);
+    setSelectedStudents([]);
+    setSendToAll(false);
+    setRecipientSearchTerm("");
+    setSubject("");
+    setContent("");
   };
 
   const handleOpenMessage = async (message: DirectMessage) => {
@@ -81,10 +111,36 @@ const AdminMessagesPage: React.FC = () => {
 
   const handleReply = (message: DirectMessage) => {
     const replyTo = message.sender_id === user?.id ? message.recipient_id : message.sender_id;
-    setSelectedStudent(replyTo);
+    setSelectedStudents([replyTo]);
+    setSendToAll(false);
     setSubject(`Re: ${message.subject || "Sin asunto"}`);
     setSelectedMessage(null);
     setShowComposeModal(true);
+  };
+
+  const toggleStudentSelection = (userId: string) => {
+    setSendToAll(false);
+    setSelectedStudents(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSendToAll(true);
+    setSelectedStudents([]);
+    setRecipientPopoverOpen(false);
+  };
+
+  const getRecipientLabel = () => {
+    if (sendToAll) return `Todos los estudiantes (${students.length})`;
+    if (selectedStudents.length === 0) return "Selecciona destinatarios";
+    if (selectedStudents.length === 1) {
+      const student = students.find(s => s.user_id === selectedStudents[0]);
+      return student?.full_name || "1 estudiante";
+    }
+    return `${selectedStudents.length} estudiantes seleccionados`;
   };
 
   return (
@@ -254,18 +310,66 @@ const AdminMessagesPage: React.FC = () => {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Destinatario</label>
-                <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un estudiante" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {students.map((student) => (
-                      <SelectItem key={student.user_id} value={student.user_id}>
-                        {student.full_name || `Usuario ${student.user_id.slice(0, 8)}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={recipientPopoverOpen} onOpenChange={setRecipientPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={recipientPopoverOpen}
+                      className="w-full justify-between bg-white/5 border-white/10 hover:bg-white/10"
+                    >
+                      {getRecipientLabel()}
+                      <Users className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput 
+                        placeholder="Buscar por nombre..." 
+                        value={recipientSearchTerm}
+                        onValueChange={setRecipientSearchTerm}
+                      />
+                      <CommandList>
+                        <CommandEmpty>No se encontraron estudiantes.</CommandEmpty>
+                        <CommandGroup heading="Opciones">
+                          <CommandItem
+                            onSelect={handleSelectAll}
+                            className="cursor-pointer"
+                          >
+                            <Users className="mr-2 h-4 w-4" />
+                            <span className="font-medium">Enviar a todos</span>
+                            <span className="ml-auto text-xs text-muted-foreground">
+                              ({students.length} estudiantes)
+                            </span>
+                            {sendToAll && <Check className="ml-2 h-4 w-4 text-primary" />}
+                          </CommandItem>
+                        </CommandGroup>
+                        <CommandSeparator />
+                        <CommandGroup heading="Estudiantes">
+                          {filteredStudents.map((student) => (
+                            <CommandItem
+                              key={student.user_id}
+                              onSelect={() => toggleStudentSelection(student.user_id)}
+                              className="cursor-pointer"
+                            >
+                              <div className={cn(
+                                "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                selectedStudents.includes(student.user_id)
+                                  ? "bg-primary text-primary-foreground"
+                                  : "opacity-50"
+                              )}>
+                                {selectedStudents.includes(student.user_id) && (
+                                  <Check className="h-3 w-3" />
+                                )}
+                              </div>
+                              <span>{student.full_name || `Usuario ${student.user_id.slice(0, 8)}`}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="space-y-2">
@@ -295,7 +399,7 @@ const AdminMessagesPage: React.FC = () => {
               </NeonButton>
               <NeonButton
                 onClick={handleSendMessage}
-                disabled={!selectedStudent || !content.trim() || isSending}
+                disabled={(!sendToAll && selectedStudents.length === 0) || !content.trim() || isSending}
               >
                 {isSending ? (
                   <>
