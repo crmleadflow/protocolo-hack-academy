@@ -1,15 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Download, ExternalLink, FileText, Link2 } from "lucide-react";
 
 import { HolographicCard } from "@/components/ui/holographic-card";
-import { NeonButton } from "@/components/ui/neon-button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 export interface StudentLessonResource {
   id: string;
@@ -31,9 +23,6 @@ export function StudentLessonResources({
 }: {
   resources: StudentLessonResource[];
 }) {
-  const [openFiles, setOpenFiles] = useState(false);
-  const [openLinks, setOpenLinks] = useState(false);
-
   const { files, links } = useMemo(() => {
     const files = resources.filter((r) => r.type === "file");
     const links = resources.filter((r) => r.type === "link");
@@ -42,137 +31,88 @@ export function StudentLessonResources({
 
   const total = resources.length;
 
+  // Don't show section if no resources
+  if (total === 0) {
+    return null;
+  }
+
   return (
-    <div className="space-y-3">
-      <HolographicCard className="p-4">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div className="min-w-0">
-            <h3 className="font-heading font-semibold text-lg">Recursos</h3>
-            <p className="text-xs text-muted-foreground">
-              {total > 0
-                ? `${files.length} archivo(s) • ${links.length} enlace(s)`
-                : "No hay recursos adjuntos en esta lección"}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <NeonButton
-              size="sm"
-              onClick={() => setOpenFiles(true)}
-              disabled={files.length === 0}
-            >
-              <Download className="w-4 h-4" />
-              {files.length <= 1 ? "Descargar archivo" : "Descargar archivos"}
-            </NeonButton>
-
-            <NeonButton
-              size="sm"
-              onClick={() => setOpenLinks(true)}
-              disabled={links.length === 0}
-            >
-              <ExternalLink className="w-4 h-4" />
-              {links.length <= 1 ? "Abrir enlace" : "Abrir enlaces"}
-            </NeonButton>
-          </div>
+    <HolographicCard className="p-4">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading font-semibold text-lg">Recursos de la lección</h3>
+          <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-white/10">
+            {total} recurso{total !== 1 ? "s" : ""}
+          </span>
         </div>
-      </HolographicCard>
 
-      {/* Files dialog */}
-      <Dialog open={openFiles} onOpenChange={setOpenFiles}>
-        <DialogContent className="glass-strong">
-          <DialogHeader>
-            <DialogTitle>Archivos de la lección</DialogTitle>
-            <DialogDescription>
-              Descarga los archivos compartidos por el administrador.
-            </DialogDescription>
-          </DialogHeader>
-
+        {/* Files section */}
+        {files.length > 0 && (
           <div className="space-y-2">
-            {files.map((file) => (
-              <HolographicCard key={file.id} className="p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <FileText className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-medium truncate">{file.title}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {file.file_size ? formatFileSize(file.file_size) : file.file_name}
-                      </p>
-                    </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <FileText className="w-4 h-4" />
+              <span>Archivos para descargar ({files.length})</span>
+            </div>
+            <div className="grid gap-2">
+              {files.map((file) => (
+                <a
+                  key={file.id}
+                  href={file.url}
+                  download={file.file_name ?? undefined}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <Download className="w-4 h-4 text-primary" />
                   </div>
-
-                  <a
-                    href={file.url}
-                    download={file.file_name ?? undefined}
-                    className="inline-flex"
-                  >
-                    <NeonButton size="sm" variant="ghost">
-                      <Download className="w-4 h-4" />
-                      Descargar
-                    </NeonButton>
-                  </a>
-                </div>
-              </HolographicCard>
-            ))}
-
-            {files.length === 0 && (
-              <div className="text-sm text-muted-foreground">
-                No hay archivos adjuntos.
-              </div>
-            )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                      {file.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {file.file_size ? formatFileSize(file.file_size) : file.file_name}
+                    </p>
+                  </div>
+                  <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </a>
+              ))}
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
 
-      {/* Links dialog */}
-      <Dialog open={openLinks} onOpenChange={setOpenLinks}>
-        <DialogContent className="glass-strong">
-          <DialogHeader>
-            <DialogTitle>Enlaces de la lección</DialogTitle>
-            <DialogDescription>
-              Abre los enlaces compartidos por el administrador.
-            </DialogDescription>
-          </DialogHeader>
-
+        {/* Links section */}
+        {links.length > 0 && (
           <div className="space-y-2">
-            {links.map((link) => (
-              <HolographicCard key={link.id} className="p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Link2 className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-medium truncate">{link.title}</p>
-                      <p className="text-xs text-muted-foreground truncate">{link.url}</p>
-                    </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Link2 className="w-4 h-4" />
+              <span>Enlaces externos ({links.length})</span>
+            </div>
+            <div className="grid gap-2">
+              {links.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center flex-shrink-0">
+                    <ExternalLink className="w-4 h-4 text-secondary" />
                   </div>
-
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex"
-                  >
-                    <NeonButton size="sm" variant="ghost">
-                      <ExternalLink className="w-4 h-4" />
-                      Abrir
-                    </NeonButton>
-                  </a>
-                </div>
-              </HolographicCard>
-            ))}
-
-            {links.length === 0 && (
-              <div className="text-sm text-muted-foreground">
-                No hay enlaces adjuntos.
-              </div>
-            )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate group-hover:text-secondary transition-colors">
+                      {link.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {link.url}
+                    </p>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-secondary transition-colors" />
+                </a>
+              ))}
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+        )}
+      </div>
+    </HolographicCard>
   );
 }
