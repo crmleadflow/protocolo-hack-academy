@@ -564,7 +564,7 @@ function ModuleLessonCards({
             {module.lessons.length === 0 ? (
               <div className="text-sm text-muted-foreground text-center py-4">Sin lecciones</div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {module.lessons.map((lesson, lessonIndex) => {
                   const isLocked = !hasAccess && !lesson.is_preview;
 
@@ -574,66 +574,104 @@ function ModuleLessonCards({
                       onClick={() => !isLocked && onSelectLesson(lesson)}
                       disabled={isLocked}
                       className={cn(
-                        "relative group rounded-xl border border-border/50 bg-card/40 p-4 text-left transition-all",
+                        "relative group rounded-2xl overflow-hidden text-left transition-all duration-300",
+                        "bg-gradient-to-br from-card/80 to-card/40 border border-border/30",
+                        "shadow-lg shadow-black/5",
                         isLocked
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:bg-card/80 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+                          ? "opacity-60 cursor-not-allowed grayscale"
+                          : "hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10 hover:border-primary/40"
                       )}
                     >
-                      {/* Lesson Number Badge */}
-                      <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold flex items-center justify-center border border-primary/30">
-                        {lessonIndex + 1}
+                      {/* Thumbnail/Visual Area */}
+                      <div className={cn(
+                        "relative h-28 overflow-hidden",
+                        "bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20"
+                      )}>
+                        {/* Decorative Pattern */}
+                        <div className="absolute inset-0 opacity-30">
+                          <div className="absolute top-2 right-2 w-20 h-20 rounded-full bg-primary/20 blur-2xl" />
+                          <div className="absolute bottom-2 left-2 w-16 h-16 rounded-full bg-secondary/20 blur-xl" />
+                        </div>
+                        
+                        {/* Lesson Number */}
+                        <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-background/90 backdrop-blur-sm text-foreground text-sm font-bold flex items-center justify-center shadow-lg">
+                          {lessonIndex + 1}
+                        </div>
+
+                        {/* Status Badge */}
+                        <div className="absolute top-3 right-3">
+                          {lesson.completed ? (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/90 text-accent-foreground text-xs font-medium shadow-lg">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Completada</span>
+                            </div>
+                          ) : lesson.is_preview ? (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/90 text-primary-foreground text-xs font-medium shadow-lg">
+                              <Play className="w-3 h-3" />
+                              <span>Gratis</span>
+                            </div>
+                          ) : isLocked ? (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/90 text-muted-foreground text-xs font-medium shadow-lg backdrop-blur-sm">
+                              <Lock className="w-3 h-3" />
+                              <span>Bloqueada</span>
+                            </div>
+                          ) : null}
+                        </div>
+
+                        {/* Play Button Overlay */}
+                        <div className={cn(
+                          "absolute inset-0 flex items-center justify-center",
+                          "opacity-0 group-hover:opacity-100 transition-all duration-300",
+                          isLocked && "hidden"
+                        )}>
+                          <div className="w-14 h-14 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-xl transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                            <Play className="w-6 h-6 text-primary-foreground ml-1" fill="currentColor" />
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Completion/Lock Status */}
-                      <div className="absolute top-3 right-3">
-                        {lesson.completed ? (
-                          <CheckCircle2 className="w-5 h-5 text-accent" />
-                        ) : isLocked ? (
-                          <Lock className="w-4 h-4 text-muted-foreground" />
-                        ) : (
-                          <Play className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="mt-2">
+                      {/* Content Area */}
+                      <div className="p-4">
                         <h4 className={cn(
-                          "font-medium text-sm line-clamp-2 pr-6",
-                          lesson.completed && "text-muted-foreground"
+                          "font-heading font-semibold text-sm line-clamp-2 leading-snug",
+                          lesson.completed ? "text-muted-foreground" : "text-foreground"
                         )}>
                           {lesson.title}
                         </h4>
                         
                         {lesson.description && (
-                          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                          <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
                             {lesson.description}
                           </p>
                         )}
 
                         {/* Footer */}
-                        <div className="mt-3 flex items-center justify-between">
-                          {lesson.duration && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Clock className="w-3 h-3" />
+                        <div className="mt-3 pt-3 border-t border-border/30 flex items-center justify-between">
+                          {lesson.duration ? (
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <Clock className="w-3.5 h-3.5" />
                               <span>{lesson.duration}</span>
                             </div>
+                          ) : (
+                            <div />
                           )}
                           
-                          <div className="flex items-center gap-2">
-                            {lesson.is_preview && (
-                              <Badge variant="secondary" className="text-[10px] h-5">
-                                Gratis
-                              </Badge>
-                            )}
-                            {lesson.completed && (
-                              <Badge variant="outline" className="text-[10px] h-5 border-accent/50 text-accent">
-                                Completada
-                              </Badge>
-                            )}
-                          </div>
+                          {!isLocked && !lesson.completed && (
+                            <div className="flex items-center gap-1 text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span>Ver lección</span>
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </div>
+                          )}
                         </div>
                       </div>
+
+                      {/* Hover Glow Effect */}
+                      <div className={cn(
+                        "absolute inset-0 rounded-2xl pointer-events-none",
+                        "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+                        "bg-gradient-to-t from-primary/5 via-transparent to-transparent",
+                        isLocked && "hidden"
+                      )} />
                     </button>
                   );
                 })}
