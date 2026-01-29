@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
-  ArrowLeft, BookOpen, Clock, Users, Star, 
+  ArrowLeft, BookOpen, Clock, Users, 
   CheckCircle2, Lock, Loader2, Play, List,
   ChevronLeft, ChevronRight, ChevronDown, SkipForward
 } from "lucide-react";
@@ -13,7 +13,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { PayPalCheckout } from "@/components/payment/PayPalCheckout";
 import { LessonResourceManager } from "@/components/lesson/LessonResourceManager";
-import { ProgressRing } from "@/components/ui/progress-ring";
+
 import { useStudentProgramDetail, LessonWithProgress, ModuleWithProgress } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
 import { useLessonResources } from "@/hooks/useLessonResources";
@@ -290,13 +290,6 @@ function LessonListView({
               </div>
             </div>
           </div>
-
-          {/* Progress Ring */}
-          <div className="flex-shrink-0">
-            <ProgressRing progress={program.progress} size={80} strokeWidth={6}>
-              <span className="text-lg font-bold">{program.progress}%</span>
-            </ProgressRing>
-          </div>
         </div>
       </HolographicCard>
 
@@ -338,10 +331,6 @@ function ModuleLessonList({
   onSelectLesson: (lesson: LessonWithProgress) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const completedInModule = module.lessons.filter((l) => l.completed).length;
-  const moduleProgress = module.lessons.length > 0 
-    ? Math.round((completedInModule / module.lessons.length) * 100) 
-    : 0;
 
   return (
     <div className="relative">
@@ -353,46 +342,9 @@ function ModuleLessonList({
           className="w-full flex items-center justify-between p-5 border-b border-border/50 bg-gradient-to-r from-white/5 to-transparent hover:from-white/10 transition-all group"
         >
           <div className="flex items-center gap-4">
-            {/* Animated Module Number */}
-            <div className="relative">
-              <div className={cn(
-                "w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold transition-all duration-500",
-                moduleProgress === 100 
-                  ? "bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-lg shadow-primary/30" 
-                  : "bg-gradient-to-br from-primary/20 to-primary/5 text-primary"
-              )}>
-                {moduleProgress === 100 ? (
-                  <CheckCircle2 className="w-7 h-7 animate-pulse" />
-                ) : (
-                  moduleIndex + 1
-                )}
-              </div>
-              {/* Progress ring around number */}
-              <svg className="absolute inset-0 w-14 h-14 -rotate-90">
-                <circle
-                  className="text-muted/30"
-                  strokeWidth="3"
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="24"
-                  cx="28"
-                  cy="28"
-                />
-                <circle
-                  className="text-primary transition-all duration-700 ease-out"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="24"
-                  cx="28"
-                  cy="28"
-                  style={{
-                    strokeDasharray: `${2 * Math.PI * 24}`,
-                    strokeDashoffset: `${2 * Math.PI * 24 * (1 - moduleProgress / 100)}`,
-                  }}
-                />
-              </svg>
+            {/* Module Number */}
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-xl font-bold text-primary">
+              {moduleIndex + 1}
             </div>
             
             <div className="text-left">
@@ -404,46 +356,18 @@ function ModuleLessonList({
                   {module.description}
                 </p>
               )}
-              <div className="flex items-center gap-3 mt-2">
-                <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
-                  {module.lessons.length} lecciones
-                </span>
-                <span className={cn(
-                  "text-xs px-2 py-1 rounded-full font-medium",
-                  moduleProgress === 100 
-                    ? "bg-accent/20 text-accent" 
-                    : "bg-muted/50 text-muted-foreground"
-                )}>
-                  {completedInModule}/{module.lessons.length} completadas
-                </span>
-              </div>
+              <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium mt-2 inline-block">
+                {module.lessons.length} lecciones
+              </span>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            {/* Progress percentage */}
-            <div className="hidden sm:flex flex-col items-end">
-              <span className={cn(
-                "text-2xl font-bold transition-colors",
-                moduleProgress === 100 ? "text-primary" : "text-muted-foreground"
-              )}>
-                {moduleProgress}%
-              </span>
-              <div className="w-24 h-2 bg-muted/30 rounded-full overflow-hidden mt-1">
-                <div 
-                  className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all duration-700 ease-out"
-                  style={{ width: `${moduleProgress}%` }}
-                />
-              </div>
-            </div>
-            
-            {/* Expand/Collapse Icon */}
-            <div className={cn(
-              "w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center transition-all duration-300",
-              isExpanded ? "rotate-180" : ""
-            )}>
-              <ChevronDown className="w-5 h-5 text-muted-foreground" />
-            </div>
+          {/* Expand/Collapse Icon */}
+          <div className={cn(
+            "w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center transition-all duration-300",
+            isExpanded ? "rotate-180" : ""
+          )}>
+            <ChevronDown className="w-5 h-5 text-muted-foreground" />
           </div>
         </button>
 
@@ -455,7 +379,6 @@ function ModuleLessonList({
           <div className="p-2">
             {module.lessons.map((lesson, lessonIndex) => {
               const isLocked = !hasAccess && !lesson.is_preview;
-              const progressPercent = lesson.completed ? 100 : 0;
 
               return (
                 <button
@@ -466,16 +389,7 @@ function ModuleLessonList({
                     "hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent",
                     lesson.completed && "bg-primary/5"
                   )}
-                  style={{
-                    animationDelay: `${lessonIndex * 50}ms`
-                  }}
                 >
-                  {/* Subtle background progress indicator */}
-                  <div 
-                    className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent transition-all duration-500 pointer-events-none"
-                    style={{ width: `${progressPercent}%`, opacity: lesson.completed ? 1 : 0 }}
-                  />
-                  
                   {/* Lesson Number/Status */}
                   <div className="relative z-10 flex-shrink-0">
                     <div
@@ -499,14 +413,6 @@ function ModuleLessonList({
                         </>
                       )}
                     </div>
-                    
-                    {/* Connecting line to next lesson */}
-                    {lessonIndex < module.lessons.length - 1 && (
-                      <div className={cn(
-                        "absolute top-full left-1/2 w-0.5 h-4 -translate-x-1/2 transition-colors duration-300",
-                        lesson.completed ? "bg-accent/50" : "bg-muted/30"
-                      )} />
-                    )}
                   </div>
 
                   {/* Lesson Info */}
@@ -539,13 +445,7 @@ function ModuleLessonList({
                         </span>
                       )}
                       
-                      {/* Progress indicator for individual lesson */}
-                      {lesson.completed ? (
-                        <span className="flex items-center gap-1.5 text-xs text-accent font-medium">
-                          <Star className="w-3.5 h-3.5 fill-current" />
-                          Completada
-                        </span>
-                      ) : !isLocked && (
+                      {!isLocked && !lesson.completed && (
                         <span className="flex items-center gap-1.5 text-xs text-muted-foreground group-hover:text-primary transition-colors">
                           <Play className="w-3.5 h-3.5" />
                           Reproducir
@@ -783,29 +683,6 @@ function LessonPlayerView({
         isAdmin={false}
       />
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <HolographicCard className="text-center p-4">
-          <BookOpen className="w-6 h-6 mx-auto mb-2 text-primary" />
-          <div className="text-lg font-bold">{program.totalLessons}</div>
-          <div className="text-xs text-muted-foreground">Lecciones</div>
-        </HolographicCard>
-        <HolographicCard className="text-center p-4">
-          <CheckCircle2 className="w-6 h-6 mx-auto mb-2 text-secondary" />
-          <div className="text-lg font-bold">{program.completedLessons}</div>
-          <div className="text-xs text-muted-foreground">Completadas</div>
-        </HolographicCard>
-        <HolographicCard className="text-center p-4">
-          <Star className="w-6 h-6 mx-auto mb-2 text-accent" />
-          <div className="text-lg font-bold">{program.progress}%</div>
-          <div className="text-xs text-muted-foreground">Progreso</div>
-        </HolographicCard>
-        <HolographicCard className="text-center p-4">
-          <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
-          <div className="text-lg font-bold">{program.modules.length}</div>
-          <div className="text-xs text-muted-foreground">Módulos</div>
-        </HolographicCard>
-      </div>
     </div>
   );
 }
