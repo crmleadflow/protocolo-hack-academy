@@ -796,10 +796,10 @@ function LessonPlayerView({
         </div>
       </div>
 
-      {/* Video Player with Title */}
-      <div className="w-full">
-        {/* Lesson Title - same width as video */}
-        <div className="mb-3">
+      {/* Video Player with Title - both aligned */}
+      <div className="w-full space-y-3">
+        {/* Lesson Title - exact same horizontal alignment as video */}
+        <div>
           <h2 className="text-2xl font-heading font-bold text-foreground">
             {currentLesson.title}
           </h2>
