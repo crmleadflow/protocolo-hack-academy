@@ -67,62 +67,138 @@ export default function NeuroScannerPage() {
   
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [interimTranscript, setInterimTranscript] = useState("");
   const [title, setTitle] = useState("");
   const [recordingTime, setRecordingTime] = useState(0);
   const [selectedScan, setSelectedScan] = useState<NeuroScan | null>(null);
   const [activeTab, setActiveTab] = useState("record");
+  const [micError, setMicError] = useState<string | null>(null);
+  const [isSupported, setIsSupported] = useState(true);
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isRecordingRef = useRef(false);
 
-  // Initialize speech recognition
+  // Initialize speech recognition once on mount
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
-      recognitionRef.current.lang = "es-ES";
-
-      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
-        let finalTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const result = event.results[i];
-          if (result.isFinal) {
-            finalTranscript += result[0].transcript + " ";
-          }
-        }
-        if (finalTranscript) {
-          setTranscript(prev => prev + finalTranscript);
-        }
-      };
-
-      recognitionRef.current.onerror = () => {
-        setIsRecording(false);
-      };
-
-      recognitionRef.current.onend = () => {
-        if (isRecording) {
-          recognitionRef.current?.start();
-        }
-      };
+    
+    if (!SpeechRecognition) {
+      setIsSupported(false);
+      console.warn("Web Speech API not supported");
+      return;
     }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "es-ES";
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let interim = "";
+      let final = "";
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          final += result[0].transcript + " ";
+        } else {
+          interim += result[0].transcript;
+        }
+      }
+      
+      if (final) {
+        setTranscript(prev => prev + final);
+      }
+      setInterimTranscript(interim);
+    };
+
+    recognition.onerror = (event: Event & { error?: string }) => {
+      console.error("Speech recognition error:", event);
+      const errorType = event.error || "unknown";
+      
+      let errorMessage = "Error de reconocimiento de voz";
+      
+      switch (errorType) {
+        case "not-allowed":
+          errorMessage = "Permiso de micrófono denegado. Por favor, permite el acceso al micrófono en tu navegador.";
+          break;
+        case "no-speech":
+          errorMessage = "No se detectó voz. Intenta hablar más cerca del micrófono.";
+          break;
+        case "audio-capture":
+          errorMessage = "No se encontró micrófono. Verifica que esté conectado.";
+          break;
+        case "network":
+          errorMessage = "Error de red. Verifica tu conexión a internet.";
+          break;
+        case "aborted":
+          // User aborted, not an error
+          return;
+        default:
+          errorMessage = `Error: ${errorType}`;
+      }
+      
+      setMicError(errorMessage);
+      setIsRecording(false);
+      isRecordingRef.current = false;
+    };
+
+    recognition.onend = () => {
+      // Restart if still recording
+      if (isRecordingRef.current) {
+        try {
+          recognition.start();
+        } catch (e) {
+          console.error("Failed to restart recognition:", e);
+        }
+      }
+    };
+
+    recognitionRef.current = recognition;
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      try {
+        recognition.stop();
+      } catch (e) {
+        // Ignore
+      }
     };
-  }, [isRecording]);
+  }, []);
 
-  const startRecording = () => {
-    if (!recognitionRef.current) {
-      alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
+  const startRecording = async () => {
+    if (!isSupported || !recognitionRef.current) {
+      setMicError("Tu navegador no soporta reconocimiento de voz. Usa Chrome, Edge o Safari.");
+      return;
+    }
+
+    // Request microphone permission first
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop()); // Stop immediately, we just needed permission
+    } catch (err) {
+      console.error("Microphone permission error:", err);
+      setMicError("No se pudo acceder al micrófono. Por favor, permite el acceso en tu navegador.");
       return;
     }
     
+    setMicError(null);
     setTranscript("");
+    setInterimTranscript("");
     setRecordingTime(0);
     setIsRecording(true);
-    recognitionRef.current.start();
+    isRecordingRef.current = true;
+    
+    try {
+      recognitionRef.current.start();
+    } catch (e) {
+      console.error("Failed to start recognition:", e);
+      setMicError("Error al iniciar la grabación. Intenta de nuevo.");
+      setIsRecording(false);
+      isRecordingRef.current = false;
+      return;
+    }
     
     timerRef.current = setInterval(() => {
       setRecordingTime(prev => prev + 1);
@@ -131,7 +207,15 @@ export default function NeuroScannerPage() {
 
   const stopRecording = () => {
     setIsRecording(false);
-    recognitionRef.current?.stop();
+    isRecordingRef.current = false;
+    setInterimTranscript("");
+    
+    try {
+      recognitionRef.current?.stop();
+    } catch (e) {
+      console.error("Failed to stop recognition:", e);
+    }
+    
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -320,13 +404,23 @@ export default function NeuroScannerPage() {
                             <span className="font-mono text-lg">{formatTime(recordingTime)}</span>
                           </div>
                         )}
-                        
+
+                        {/* Error Message */}
+                        {micError && (
+                          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 text-center max-w-[320px]">
+                            <p className="text-sm text-destructive">{micError}</p>
+                          </div>
+                        )}
+
+                        {/* Status Message */}
                         <p className="text-sm text-muted-foreground text-center max-w-[280px]">
-                          {isRecording 
-                            ? "Hablando... El texto aparece a la derecha" 
-                            : transcript.trim().length >= 20
-                              ? "¡Listo! Presiona Analizar para ver tu puntaje"
-                              : "Graba tu discurso o pega texto a la derecha"}
+                          {!isSupported 
+                            ? "Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge."
+                            : isRecording 
+                              ? "Hablando... El texto aparece a la derecha" 
+                              : transcript.trim().length >= 20
+                                ? "¡Listo! Presiona Analizar para ver tu puntaje"
+                                : "Graba tu discurso o pega texto a la derecha"}
                         </p>
                       </div>
                     </CardContent>
@@ -344,12 +438,21 @@ export default function NeuroScannerPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <Textarea
-                        placeholder="El transcript aparecerá aquí mientras hablas, o pega tu texto..."
-                        value={transcript}
-                        onChange={(e) => setTranscript(e.target.value)}
-                        className="glass-input min-h-[200px] resize-none"
-                      />
+                      {/* Show interim transcript while recording */}
+                      <div className="relative">
+                        <Textarea
+                          placeholder="El transcript aparecerá aquí mientras hablas, o pega tu texto..."
+                          value={transcript}
+                          onChange={(e) => setTranscript(e.target.value)}
+                          className="glass-input min-h-[200px] resize-none"
+                          disabled={isRecording}
+                        />
+                        {isRecording && interimTranscript && (
+                          <div className="absolute bottom-2 left-2 right-2 bg-primary/10 border border-primary/30 rounded p-2">
+                            <p className="text-sm text-primary/80 italic">{interimTranscript}...</p>
+                          </div>
+                        )}
+                      </div>
                       
                       <div className="flex items-center justify-between text-sm text-muted-foreground">
                         <span>{transcript.split(/\s+/).filter(Boolean).length} palabras</span>

@@ -62,8 +62,22 @@ export function useNeuroScanner() {
     }) => {
       setIsAnalyzing(true);
       
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("No session");
+      // Try multiple times to get the session
+      let session = null;
+      let attempts = 0;
+      
+      while (!session && attempts < 3) {
+        const { data } = await supabase.auth.getSession();
+        session = data.session;
+        if (!session) {
+          attempts++;
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+      
+      if (!session) {
+        throw new Error("Debes iniciar sesión para analizar");
+      }
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/neuro-scanner`,
@@ -78,8 +92,15 @@ export function useNeuroScanner() {
       );
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Analysis failed");
+        const errorText = await response.text();
+        let errorMessage = "Error al analizar";
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       return response.json();
@@ -91,6 +112,7 @@ export function useNeuroScanner() {
       return data.scan;
     },
     onError: (error: Error) => {
+      console.error("Analysis error:", error);
       toast.error(error.message || "Error al analizar");
       setIsAnalyzing(false);
     },
