@@ -15,6 +15,7 @@ import iaBusinessLabThumbnail from "@/assets/ia-business-lab-thumbnail.png";
 import videoMagnetThumbnail from "@/assets/video-magnet-thumbnail.png";
 import neuroTalkThumbnail from "@/assets/neuro-talk-thumbnail.jpg";
 import prospectMachineThumbnail from "@/assets/prospect-machine-thumbnail.jpg";
+import fastBrandThumbnail from "@/assets/fast-brand-accelerator-thumbnail.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -96,6 +97,7 @@ const programs = [
     description: "Pasa de ser un desconocido a ser una autoridad en tu nicho.",
     icon: Crown,
     color: "accent",
+    thumbnail: fastBrandThumbnail,
   },
   {
     id: "producto-digital",
