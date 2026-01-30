@@ -286,11 +286,12 @@ interface ProgramRowProps {
   onView: () => void;
   onTogglePublish: () => void;
   onDelete: () => void;
-  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
+  dragListeners?: React.HTMLAttributes<HTMLButtonElement>;
+  dragAttributes?: React.HTMLAttributes<HTMLButtonElement>;
 }
 
-function SortableProgramRow(props: Omit<ProgramRowProps, "dragHandleProps" | "isDragging">) {
+function SortableProgramRow(props: Omit<ProgramRowProps, "dragListeners" | "dragAttributes" | "isDragging">) {
   const {
     attributes,
     listeners,
@@ -314,7 +315,8 @@ function SortableProgramRow(props: Omit<ProgramRowProps, "dragHandleProps" | "is
     >
       <ProgramRow
         {...props}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        dragListeners={listeners}
+        dragAttributes={attributes}
         isDragging={isDragging}
       />
     </div>
@@ -327,8 +329,9 @@ function ProgramRow({
   onView,
   onTogglePublish,
   onDelete,
-  dragHandleProps,
   isDragging,
+  dragListeners,
+  dragAttributes,
 }: ProgramRowProps) {
   return (
     <HolographicCard
@@ -338,13 +341,15 @@ function ProgramRow({
       )}
     >
       {/* Drag Handle */}
-      {dragHandleProps && (
-        <div
-          {...dragHandleProps}
-          className="hidden lg:flex p-2 rounded-lg hover:bg-white/5 transition-colors cursor-grab active:cursor-grabbing"
+      {dragListeners && (
+        <button
+          type="button"
+          {...dragListeners}
+          {...dragAttributes}
+          className="hidden lg:flex p-2 rounded-lg hover:bg-white/5 transition-colors cursor-grab active:cursor-grabbing touch-none"
         >
           <GripVertical className="w-5 h-5 text-muted-foreground" />
-        </div>
+        </button>
       )}
 
       {/* Thumbnail */}
