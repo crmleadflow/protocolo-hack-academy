@@ -31,6 +31,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -58,6 +59,12 @@ const ProducerCoursesPage: React.FC = () => {
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -346,7 +353,7 @@ function ProgramRow({
           type="button"
           {...dragListeners}
           {...dragAttributes}
-          className="hidden lg:flex p-2 rounded-lg hover:bg-white/5 transition-colors cursor-grab active:cursor-grabbing touch-none"
+          className="flex p-2 rounded-lg hover:bg-white/5 transition-colors cursor-grab active:cursor-grabbing touch-none"
         >
           <GripVertical className="w-5 h-5 text-muted-foreground" />
         </button>
