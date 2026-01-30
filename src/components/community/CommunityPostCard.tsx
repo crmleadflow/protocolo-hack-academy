@@ -3,7 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { 
   Heart, MessageCircle, Eye, CheckCircle, 
-  Pin, HelpCircle, Megaphone, MessageSquare 
+  Pin, HelpCircle, Megaphone, MessageSquare, Trash2 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,8 @@ interface CommunityPostCardProps {
   post: CommunityPost;
   onClick: () => void;
   onLike: () => void;
+  onDelete?: () => void;
+  isAdmin?: boolean;
 }
 
 const contentTypeConfig = {
@@ -40,6 +42,8 @@ export const CommunityPostCard: React.FC<CommunityPostCardProps> = ({
   post,
   onClick,
   onLike,
+  onDelete,
+  isAdmin,
 }) => {
   const config = contentTypeConfig[post.content_type];
   const TypeIcon = config.icon;
@@ -112,30 +116,46 @@ export const CommunityPostCard: React.FC<CommunityPostCardProps> = ({
       </p>
 
       {/* Footer Stats */}
-      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onLike();
-          }}
-          className={cn(
-            "flex items-center gap-1.5 transition-colors hover:text-red-500",
-            post.user_liked && "text-red-500"
-          )}
-        >
-          <Heart className={cn("w-4 h-4", post.user_liked && "fill-current")} />
-          <span>{post.likes_count}</span>
-        </button>
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onLike();
+            }}
+            className={cn(
+              "flex items-center gap-1.5 transition-colors hover:text-red-500",
+              post.user_liked && "text-red-500"
+            )}
+          >
+            <Heart className={cn("w-4 h-4", post.user_liked && "fill-current")} />
+            <span>{post.likes_count}</span>
+          </button>
 
-        <div className="flex items-center gap-1.5">
-          <MessageCircle className="w-4 h-4" />
-          <span>{post.comments_count}</span>
+          <div className="flex items-center gap-1.5">
+            <MessageCircle className="w-4 h-4" />
+            <span>{post.comments_count}</span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <Eye className="w-4 h-4" />
+            <span>{post.views_count}</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          <Eye className="w-4 h-4" />
-          <span>{post.views_count}</span>
-        </div>
+        {/* Admin delete button */}
+        {isAdmin && onDelete && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className="flex items-center gap-1.5 p-2 rounded-lg transition-colors hover:bg-destructive/10 hover:text-destructive"
+            title="Eliminar publicación"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </div>
   );
