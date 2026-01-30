@@ -20,6 +20,8 @@ import { QuickPostInput } from "@/components/community/QuickPostInput";
 import { useCommunityPosts, CommunityPost, ContentType } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type TabType = "discussions" | "questions" | "chat";
@@ -79,6 +81,25 @@ const CommunityPage: React.FC = () => {
           ? selectedPost.likes_count - 1
           : selectedPost.likes_count + 1,
       });
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm("¿Estás seguro de eliminar esta publicación? También se eliminarán todos sus comentarios.")) return;
+    
+    try {
+      const { error } = await supabase
+        .from("community_posts")
+        .delete()
+        .eq("id", postId);
+      
+      if (error) throw error;
+      
+      toast.success("Publicación eliminada");
+      refetch();
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Error al eliminar la publicación");
     }
   };
 
@@ -232,6 +253,8 @@ const CommunityPage: React.FC = () => {
                           post={post}
                           onClick={() => handlePostClick(post)}
                           onLike={() => toggleLike(post.id)}
+                          onDelete={() => handleDeletePost(post.id)}
+                          isAdmin={isAdmin}
                         />
                       ))}
                     </div>
@@ -282,6 +305,8 @@ const CommunityPage: React.FC = () => {
                           post={post}
                           onClick={() => handlePostClick(post)}
                           onLike={() => toggleLike(post.id)}
+                          onDelete={() => handleDeletePost(post.id)}
+                          isAdmin={isAdmin}
                         />
                       ))}
                     </div>

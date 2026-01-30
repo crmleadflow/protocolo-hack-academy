@@ -13,7 +13,8 @@ import {
   Download,
   Loader2,
   MessagesSquare,
-  Smile
+  Smile,
+  Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,8 @@ import { useCommunityChat, ChatMessage } from "@/hooks/useCommunity";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface CommunityChatProps {
   programId: string;
@@ -54,8 +57,27 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
   programId,
   programTitle,
 }) => {
-  const { user } = useAuth();
-  const { messages, isLoading, isUploading, sendMessage, uploadFile } = useCommunityChat(programId);
+  const { user, isAdmin } = useAuth();
+  const { messages, isLoading, isUploading, sendMessage, uploadFile, refetch } = useCommunityChat(programId);
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!confirm("¿Estás seguro de eliminar este mensaje?")) return;
+    
+    try {
+      const { error } = await supabase
+        .from("community_messages")
+        .update({ is_deleted: true })
+        .eq("id", messageId);
+      
+      if (error) throw error;
+      
+      toast.success("Mensaje eliminado");
+      refetch();
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast.error("Error al eliminar el mensaje");
+    }
+  };
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -188,6 +210,8 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
               key={message.id}
               message={message}
               isOwn={message.user_id === user?.id}
+              isAdmin={isAdmin}
+              onDelete={() => handleDeleteMessage(message.id)}
             />
           ))
         )}
@@ -291,16 +315,18 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
 interface MessageBubbleProps {
   message: ChatMessage;
   isOwn: boolean;
+  isAdmin?: boolean;
+  onDelete?: () => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, isAdmin, onDelete }) => {
   const hasFile = !!message.file_url;
   const isImage = isImageFile(message.file_type);
   const isVideo = isVideoFile(message.file_type);
   const FileIcon = getFileIcon(message.file_type);
 
   return (
-    <div className={cn("flex gap-3", isOwn && "flex-row-reverse")}>
+    <div className={cn("flex gap-3 group", isOwn && "flex-row-reverse")}>
       {/* Avatar */}
       <Avatar className="w-10 h-10 flex-shrink-0 ring-2 ring-primary/20">
         <AvatarImage src={message.author?.avatar_url || undefined} />
@@ -321,6 +347,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
               locale: es,
             })}
           </span>
+          {/* Admin delete button */}
+          {isAdmin && onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-destructive/10 hover:text-destructive"
+              title="Eliminar mensaje"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
         
         <div
