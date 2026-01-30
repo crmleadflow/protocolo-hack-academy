@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import hectorImage from "@/assets/hector-galensky-hero-transparent-v2.png";
 import iaBusinessLabThumbnail from "@/assets/ia-business-lab-thumbnail.png";
 import videoMagnetThumbnail from "@/assets/video-magnet-thumbnail.png";
+import neuroTalkThumbnail from "@/assets/neuro-talk-thumbnail.jpg";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -62,6 +63,7 @@ const programs = [
     description: "Domina la neuro oratoria persuasiva para cerrar ventas con el poder de tu comunicación.",
     icon: Mic,
     color: "secondary",
+    thumbnail: neuroTalkThumbnail,
   },
   {
     id: "closer-project",
