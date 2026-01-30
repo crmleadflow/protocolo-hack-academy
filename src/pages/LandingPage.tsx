@@ -17,6 +17,7 @@ import neuroTalkThumbnail from "@/assets/neuro-talk-thumbnail.jpg";
 import prospectMachineThumbnail from "@/assets/prospect-machine-thumbnail.jpg";
 import fastBrandThumbnail from "@/assets/fast-brand-accelerator-thumbnail.png";
 import protocoloHackThumbnail from "@/assets/protocolo-hack-thumbnail.png";
+import productCreatorProThumbnail from "@/assets/product-creator-pro-thumbnail.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -107,6 +108,7 @@ const programs = [
     description: "Mi guía paso a paso para monetizar tu conocimiento desde cero.",
     icon: Package,
     color: "primary",
+    thumbnail: productCreatorProThumbnail,
   },
 ];
 
