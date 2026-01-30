@@ -22,7 +22,7 @@ export function usePrograms() {
       const { data, error } = await supabase
         .from("programs")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("sort_order", { ascending: true });
 
       if (error) throw error;
       setPrograms(data || []);
@@ -124,6 +124,38 @@ export function usePrograms() {
     }
   };
 
+  const updateProgramOrder = async (orderedIds: string[]) => {
+    try {
+      // Update each program's sort_order based on its position in the array
+      const updates = orderedIds.map((id, index) => 
+        supabase
+          .from("programs")
+          .update({ sort_order: index + 1 })
+          .eq("id", id)
+      );
+      
+      await Promise.all(updates);
+      
+      // Optimistically update local state
+      setPrograms(prev => {
+        const reordered = orderedIds
+          .map(id => prev.find(p => p.id === id))
+          .filter((p): p is Program => p !== undefined);
+        return reordered;
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Error updating program order:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo actualizar el orden de los programas",
+      });
+      return false;
+    }
+  };
+
   return {
     programs,
     isLoading,
@@ -131,6 +163,7 @@ export function usePrograms() {
     createProgram,
     updateProgram,
     deleteProgram,
+    updateProgramOrder,
   };
 }
 
