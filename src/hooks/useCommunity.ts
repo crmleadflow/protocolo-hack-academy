@@ -49,6 +49,10 @@ export interface ChatMessage {
   user_id: string;
   content: string;
   created_at: string;
+  file_url?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  file_type?: string | null;
   author?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -77,17 +81,14 @@ export function useCommunityPosts(programId: string | null) {
 
       if (error) throw error;
 
-      // Fetch author info and likes for each post
       const postsWithDetails = await Promise.all(
         (data || []).map(async (post) => {
-          // Get author profile
           const { data: profile } = await supabase
             .from("profiles")
             .select("full_name, avatar_url")
             .eq("user_id", post.user_id)
             .maybeSingle();
 
-          // Check if current user liked
           let userLiked = false;
           if (user) {
             const { data: like } = await supabase
@@ -173,7 +174,6 @@ export function useCommunityPosts(programId: string | null) {
         });
       }
 
-      // Optimistic update
       setPosts((prev) =>
         prev.map((p) =>
           p.id === postId
@@ -223,7 +223,6 @@ export function useCommunityComments(postId: string | null) {
 
       if (error) throw error;
 
-      // Fetch author info for each comment
       const commentsWithAuthors = await Promise.all(
         (data || []).map(async (comment) => {
           const { data: profile } = await supabase
@@ -239,7 +238,6 @@ export function useCommunityComments(postId: string | null) {
         })
       );
 
-      // Organize into tree structure
       const rootComments: CommunityComment[] = [];
       const childMap = new Map<string, CommunityComment[]>();
 
@@ -300,19 +298,16 @@ export function useCommunityComments(postId: string | null) {
     if (!user) return;
 
     try {
-      // First, unmark any existing accepted answer
       await supabase
         .from("community_comments")
         .update({ is_accepted_answer: false })
         .eq("post_id", postId);
 
-      // Mark the new answer
       await supabase
         .from("community_comments")
         .update({ is_accepted_answer: true })
         .eq("id", commentId);
 
-      // Mark post as resolved
       await supabase
         .from("community_posts")
         .update({ is_resolved: true })
@@ -338,6 +333,7 @@ export function useCommunityChat(programId: string | null) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
 
   const fetchMessages = useCallback(async () => {
     if (!programId) {
@@ -357,7 +353,6 @@ export function useCommunityChat(programId: string | null) {
 
       if (error) throw error;
 
-      // Fetch author info for each message
       const messagesWithAuthors = await Promise.all(
         (data || []).map(async (message) => {
           const { data: profile } = await supabase
@@ -402,7 +397,6 @@ export function useCommunityChat(programId: string | null) {
         async (payload) => {
           const newMessage = payload.new as ChatMessage;
           
-          // Fetch author info
           const { data: profile } = await supabase
             .from("profiles")
             .select("full_name, avatar_url")
@@ -422,8 +416,48 @@ export function useCommunityChat(programId: string | null) {
     };
   }, [programId]);
 
-  const sendMessage = async (content: string) => {
-    if (!user || !programId || !content.trim()) return null;
+  const uploadFile = async (file: File): Promise<{ url: string; name: string; size: number; type: string } | null> => {
+    if (!user || !programId) return null;
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("community-files")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("community-files")
+        .getPublicUrl(fileName);
+
+      return {
+        url: publicUrl,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      };
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast.error("Error al subir el archivo");
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const sendMessage = async (
+    content: string,
+    fileData?: { url: string; name: string; size: number; type: string }
+  ) => {
+    if (!user || !programId) return null;
+    if (!content.trim() && !fileData) return null;
 
     try {
       const { data, error } = await supabase
@@ -432,6 +466,10 @@ export function useCommunityChat(programId: string | null) {
           program_id: programId,
           user_id: user.id,
           content: content.trim(),
+          file_url: fileData?.url || null,
+          file_name: fileData?.name || null,
+          file_size: fileData?.size || null,
+          file_type: fileData?.type || null,
         })
         .select()
         .single();
@@ -448,7 +486,9 @@ export function useCommunityChat(programId: string | null) {
   return {
     messages,
     isLoading,
+    isUploading,
     sendMessage,
+    uploadFile,
     refetch: fetchMessages,
   };
 }
