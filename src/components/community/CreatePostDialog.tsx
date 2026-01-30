@@ -114,18 +114,16 @@ const PostFormContent: React.FC<{
   const isValid = title.trim() && content.trim();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-h-0">
+      {/* Scrollable content area */}
       <div className={cn(
-        "flex-1 space-y-4 overflow-y-auto",
-        isMobile ? "px-1 pb-4" : "py-4"
+        "flex-1 space-y-4 overflow-y-auto min-h-0 pr-1",
+        isMobile ? "px-1 pb-2" : "py-2"
       )}>
-        {/* Type Selection - Horizontal scroll on mobile */}
+        {/* Type Selection - Compact chips */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Tipo de publicación</Label>
-          <div className={cn(
-            "flex gap-2",
-            isMobile ? "overflow-x-auto pb-2 -mx-1 px-1 scrollbar-none" : "flex-wrap"
-          )}>
+          <div className="flex gap-2 flex-wrap">
             {availableTypes.map((type) => {
               const Icon = type.icon;
               const isSelected = selectedType === type.type;
@@ -135,8 +133,7 @@ const PostFormContent: React.FC<{
                   key={type.type}
                   onClick={() => setSelectedType(type.type)}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all",
-                    isMobile ? "flex-shrink-0 min-w-fit" : "flex-1 min-w-[140px]",
+                    "flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all",
                     type.bgColor,
                     isSelected 
                       ? cn(type.borderColor, type.activeGlow) 
@@ -144,14 +141,7 @@ const PostFormContent: React.FC<{
                   )}
                 >
                   <Icon className={cn("w-4 h-4", type.color)} />
-                  <div className="text-left">
-                    <p className="font-medium text-sm whitespace-nowrap">{type.label}</p>
-                    {!isMobile && (
-                      <p className="text-xs text-muted-foreground">
-                        {type.description}
-                      </p>
-                    )}
-                  </div>
+                  <span className="font-medium text-sm">{type.label}</span>
                 </button>
               );
             })}
@@ -172,7 +162,7 @@ const PostFormContent: React.FC<{
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Escribe un título descriptivo..."
             maxLength={100}
-            className="h-11"
+            className="h-10"
           />
         </div>
 
@@ -189,16 +179,13 @@ const PostFormContent: React.FC<{
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Describe tu publicación en detalle..."
-            className={cn(
-              "bg-background/50 border-border/50 resize-none",
-              isMobile ? "min-h-[100px]" : "min-h-[120px]"
-            )}
+            className="bg-background/50 border-border/50 resize-none min-h-[80px]"
             maxLength={2000}
           />
         </div>
 
-        {/* File Upload */}
-        <div className="space-y-2">
+        {/* File Upload - Compact */}
+        <div className="space-y-1.5">
           <Label className="text-sm font-medium">Archivo adjunto</Label>
           <input
             ref={fileInputRef}
@@ -209,9 +196,9 @@ const PostFormContent: React.FC<{
           />
           
           {selectedFile ? (
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border/50">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <FileIcon className="w-5 h-5 text-primary" />
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border/50">
+              <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <FileIcon className="w-4 h-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{selectedFile.name}</p>
@@ -223,35 +210,31 @@ const PostFormContent: React.FC<{
                 variant="ghost"
                 size="icon"
                 onClick={onRemoveFile}
-                className="shrink-0 h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                className="shrink-0 h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </Button>
             </div>
           ) : (
             <Button
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full justify-center gap-2 border-dashed h-11 hover:bg-muted/50"
+              className="w-full justify-center gap-2 border-dashed h-9 text-sm hover:bg-muted/50"
             >
               <Paperclip className="w-4 h-4" />
-              <span>Adjuntar archivo</span>
-              <span className="text-muted-foreground text-xs">(máx. 100MB)</span>
+              <span>Adjuntar archivo (máx. 100MB)</span>
             </Button>
           )}
         </div>
       </div>
 
-      {/* Actions - Always visible at bottom */}
-      <div className={cn(
-        "flex gap-3 pt-4 mt-auto border-t border-border/50 bg-background/95 backdrop-blur-sm",
-        isMobile ? "pb-4 -mx-4 px-4 sticky bottom-0" : ""
-      )}>
+      {/* Actions - Fixed at bottom, always visible */}
+      <div className="flex gap-3 pt-3 mt-2 border-t border-border/50 flex-shrink-0">
         <Button
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="flex-1 h-11"
+          className="flex-1 h-10"
         >
           Cancelar
         </Button>
@@ -259,10 +242,10 @@ const PostFormContent: React.FC<{
           onClick={onSubmit}
           disabled={!isValid || isSubmitting}
           className={cn(
-            "flex-1 h-11 gap-2 font-semibold transition-all",
+            "flex-1 h-10 gap-2 font-semibold transition-all",
             isValid 
-              ? "bg-primary hover:bg-primary/90 shadow-[0_0_20px_hsl(var(--primary)/0.3)]" 
-              : "bg-muted"
+              ? "bg-primary hover:bg-primary/90 shadow-[0_0_15px_hsl(var(--primary)/0.3)]" 
+              : "bg-muted text-muted-foreground"
           )}
         >
           {isSubmitting ? (
