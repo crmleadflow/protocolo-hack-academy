@@ -915,6 +915,11 @@ function LessonPlayerView({
     );
   }
 
+  // Find the module that contains the current lesson
+  const currentModule = program.modules.find((module: ModuleWithProgress) =>
+    module.lessons.some((lesson: LessonWithProgress) => lesson.id === currentLesson.id)
+  );
+
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
       {/* Lesson Progress Indicator */}
@@ -943,8 +948,13 @@ function LessonPlayerView({
           className="p-3 lg:p-4 overflow-hidden"
         >
           <div className="space-y-2">
-            {/* Lesson Title */}
+            {/* Module + Lesson Title */}
             <div className="min-w-0">
+              {currentModule && (
+                <p className="text-xs lg:text-sm text-primary font-medium mb-1">
+                  {currentModule.title}
+                </p>
+              )}
               <h2 className="text-lg lg:text-xl font-heading font-bold text-foreground break-words line-clamp-2">
                 {currentLesson.title}
               </h2>
