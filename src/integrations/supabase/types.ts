@@ -953,6 +953,7 @@ export type Database = {
           id: string
           is_published: boolean
           price: number
+          sort_order: number
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -965,6 +966,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           price?: number
+          sort_order?: number
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -977,6 +979,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           price?: number
+          sort_order?: number
           thumbnail_url?: string | null
           title?: string
           updated_at?: string

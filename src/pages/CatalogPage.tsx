@@ -1,29 +1,88 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Play, Clock, BookOpen, Search, Lock, Loader2, CheckCircle, Filter
+  Play, Clock, BookOpen, Search, Lock, Loader2, CheckCircle, Filter, GripVertical
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { GlassInput } from "@/components/ui/glass-input";
 import { ProgressRing } from "@/components/ui/progress-ring";
-import { useStudentPrograms } from "@/hooks/useStudentPrograms";
+import { useStudentPrograms, ProgramWithProgress } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@/lib/utils";
 
 type FilterType = "all" | "active" | "locked";
 
 const CatalogPage: React.FC = () => {
   const navigate = useNavigate();
-  const { programs, isLoading } = useStudentPrograms();
+  const { programs, isLoading, updateProgramOrder } = useStudentPrograms();
+  const { isAdmin } = useAuth();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = programs.findIndex((p) => p.id === active.id);
+      const newIndex = programs.findIndex((p) => p.id === over.id);
+      
+      const newOrder = arrayMove(programs, oldIndex, newIndex);
+      const orderedIds = newOrder.map((p) => p.id);
+      
+      const success = await updateProgramOrder(orderedIds);
+      if (success) {
+        toast({
+          title: "Orden actualizado",
+          description: "El orden de los programas se ha guardado correctamente",
+        });
+      }
+    }
+  };
+
+  const filteredPrograms = useMemo(() => {
+    return programs.filter((program) =>
+      program.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (program.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [programs, searchQuery]);
 
   return (
     <AppLayout 
       title="Arsenal de Entrenamiento"
-      subtitle={`${programs.length} programas disponibles`}
+      subtitle={`${programs.length} programas disponibles${isAdmin ? " • Arrastra para reordenar" : ""}`}
     >
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
@@ -63,79 +122,124 @@ const CatalogPage: React.FC = () => {
           </div>
 
           {/* Programs Grid */}
-          <ProgramsGrid
-            programs={programs}
-            searchQuery={searchQuery}
-            filter={filter}
-            onProgramClick={(id) => navigate(`/course/${id}`)}
-          />
+          {filteredPrograms.length === 0 ? (
+            <HolographicCard className="p-12 text-center">
+              <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-heading font-bold mb-2">
+                {programs.length === 0
+                  ? "No hay programas disponibles"
+                  : "No se encontraron programas"}
+              </h3>
+              <p className="text-muted-foreground">
+                {programs.length === 0
+                  ? "Los programas aparecerán aquí cuando estén publicados"
+                  : "Intenta con otros términos de búsqueda"}
+              </p>
+            </HolographicCard>
+          ) : isAdmin && filter === "all" && !searchQuery ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={filteredPrograms.map((p) => p.id)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredPrograms.map((program, index) => (
+                    <SortableProgramCard
+                      key={program.id}
+                      program={program}
+                      index={index}
+                      filter={filter}
+                      onClick={() => navigate(`/course/${program.id}`)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPrograms.map((program, index) => (
+                <ProgramCard
+                  key={program.id}
+                  program={program}
+                  index={index}
+                  filter={filter}
+                  onClick={() => navigate(`/course/${program.id}`)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </AppLayout>
   );
 };
 
-// Programs Grid with filtering
-function ProgramsGrid({
-  programs,
-  searchQuery,
-  filter,
-  onProgramClick,
-}: {
-  programs: any[];
-  searchQuery: string;
-  filter: FilterType;
-  onProgramClick: (id: string) => void;
-}) {
-  const filteredBySearch = programs.filter((program) =>
-    program.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (program.description || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (filteredBySearch.length === 0) {
-    return (
-      <HolographicCard className="p-12 text-center">
-        <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-xl font-heading font-bold mb-2">
-          {programs.length === 0
-            ? "No hay programas disponibles"
-            : "No se encontraron programas"}
-        </h3>
-        <p className="text-muted-foreground">
-          {programs.length === 0
-            ? "Los programas aparecerán aquí cuando estén publicados"
-            : "Intenta con otros términos de búsqueda"}
-        </p>
-      </HolographicCard>
-    );
-  }
-
-  return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {filteredBySearch.map((program, index) => (
-        <ProgramCard
-          key={program.id}
-          program={program}
-          index={index}
-          filter={filter}
-          onClick={() => onProgramClick(program.id)}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Separate component to handle enrollment check for each program
-function ProgramCard({
+// Sortable wrapper for admin drag and drop
+function SortableProgramCard({
   program,
   index,
   filter,
   onClick,
 }: {
-  program: any;
+  program: ProgramWithProgress;
   index: number;
   filter: FilterType;
   onClick: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: program.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        isDragging && "opacity-90 scale-105"
+      )}
+    >
+      <ProgramCard
+        program={program}
+        index={index}
+        filter={filter}
+        onClick={onClick}
+        dragHandleProps={{ ...attributes, ...listeners }}
+        isDragging={isDragging}
+      />
+    </div>
+  );
+}
+
+// Program Card component
+function ProgramCard({
+  program,
+  index,
+  filter,
+  onClick,
+  dragHandleProps,
+  isDragging,
+}: {
+  program: ProgramWithProgress;
+  index: number;
+  filter: FilterType;
+  onClick: () => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
+  isDragging?: boolean;
 }) {
   const { isAdmin } = useAuth();
   const { hasActiveEnrollment } = useEnrollment(program.id);
@@ -149,10 +253,24 @@ function ProgramCard({
   return (
     <HolographicCard
       variant={program.progress > 0 ? "gradient" : "default"}
-      className="group cursor-pointer animate-fade-in flex flex-col relative overflow-hidden"
+      className={cn(
+        "group cursor-pointer animate-fade-in flex flex-col relative overflow-hidden",
+        isDragging && "shadow-2xl shadow-primary/20 ring-2 ring-primary/50"
+      )}
       style={{ animationDelay: `${index * 0.05}s` }}
       onClick={onClick}
     >
+      {/* Drag Handle for Admin */}
+      {dragHandleProps && (
+        <div
+          {...dragHandleProps}
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-2 left-2 z-20 p-2 rounded-lg bg-background/80 backdrop-blur-sm border border-border/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing hover:bg-primary/20"
+        >
+          <GripVertical className="w-4 h-4 text-muted-foreground" />
+        </div>
+      )}
+
       {/* Program Thumbnail with Hover Lock */}
       <div className="relative aspect-video -mx-4 -mt-4 mb-4 overflow-hidden bg-muted">
         {program.thumbnail_url ? (
