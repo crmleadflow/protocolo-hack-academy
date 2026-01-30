@@ -102,8 +102,8 @@ const programs = [
     thumbnail: fastBrandThumbnail,
   },
   {
-    id: "producto-digital",
-    title: "Producto Digital",
+    id: "product-creator-pro",
+    title: "Product Creator Pro",
     description: "Mi guía paso a paso para monetizar tu conocimiento desde cero.",
     icon: Package,
     color: "primary",
