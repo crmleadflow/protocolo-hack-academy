@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Send, MessageSquare, HelpCircle, Loader2 } from "lucide-react";
+import { Send, MessageSquare, HelpCircle, Loader2, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,17 +29,19 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
       titlePlaceholder: "Título de tu discusión",
       buttonText: "Publicar Discusión",
       color: "primary" as const,
+      mentorEnabled: false,
     },
     question: {
       icon: HelpCircle,
-      placeholder: "¿Tienes alguna pregunta?",
+      placeholder: "¿Tienes alguna pregunta? El mentor IA responderá automáticamente",
       titlePlaceholder: "Resume tu pregunta en una línea",
       buttonText: "Publicar Pregunta",
       color: "secondary" as const,
+      mentorEnabled: true,
     },
   };
 
-  const { icon: Icon, placeholder, titlePlaceholder, buttonText, color } = config[type];
+  const { icon: Icon, placeholder, titlePlaceholder, buttonText, color, mentorEnabled } = config[type];
 
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim()) return;
@@ -82,9 +84,17 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
               color === "primary" ? "text-primary" : "text-secondary"
             )} />
           </div>
-          <span className="text-muted-foreground group-hover:text-foreground transition-colors">
-            {placeholder}
-          </span>
+          <div className="flex-1">
+            <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+              {placeholder}
+            </span>
+            {mentorEnabled && (
+              <div className="flex items-center gap-1.5 mt-1">
+                <Bot className="w-3.5 h-3.5 text-primary" />
+                <span className="text-xs text-primary">Mentor IA responderá</span>
+              </div>
+            )}
+          </div>
         </button>
       ) : (
         <div className="space-y-4" onKeyDown={handleKeyDown}>
@@ -98,9 +108,17 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
                 color === "primary" ? "text-primary" : "text-secondary"
               )} />
             </div>
-            <span className="font-heading font-semibold">
-              {type === "discussion" ? "Nueva Discusión" : "Nueva Pregunta"}
-            </span>
+            <div>
+              <span className="font-heading font-semibold">
+                {type === "discussion" ? "Nueva Discusión" : "Nueva Pregunta"}
+              </span>
+              {mentorEnabled && (
+                <div className="flex items-center gap-1.5">
+                  <Bot className="w-3 h-3 text-primary" />
+                  <span className="text-xs text-muted-foreground">El mentor IA responderá automáticamente</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <GlassInput
