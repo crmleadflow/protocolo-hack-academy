@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MessageSquare, HelpCircle, MessagesSquare, Plus,
-  BookOpen, Users, Filter, TrendingUp
+  BookOpen, Users, TrendingUp, Sparkles
 } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -16,6 +16,7 @@ import { CommunityPostCard } from "@/components/community/CommunityPostCard";
 import { CommunityChat } from "@/components/community/CommunityChat";
 import { CreatePostDialog } from "@/components/community/CreatePostDialog";
 import { PostDetailDialog } from "@/components/community/PostDetailDialog";
+import { QuickPostInput } from "@/components/community/QuickPostInput";
 import { useCommunityPosts, CommunityPost, ContentType } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useAuth } from "@/contexts/AuthContext";
@@ -159,17 +160,17 @@ const CommunityPage: React.FC = () => {
                 onValueChange={(v) => setActiveTab(v as TabType)}
                 className="space-y-6"
               >
-                <div className="flex items-center justify-between">
-                  <TabsList className="glass">
-                    <TabsTrigger value="discussions" className="gap-2">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <TabsList className="glass h-12">
+                    <TabsTrigger value="discussions" className="gap-2 h-10 px-4">
                       <MessageSquare className="w-4 h-4" />
                       <span className="hidden sm:inline">Discusiones</span>
                     </TabsTrigger>
-                    <TabsTrigger value="questions" className="gap-2">
+                    <TabsTrigger value="questions" className="gap-2 h-10 px-4">
                       <HelpCircle className="w-4 h-4" />
                       <span className="hidden sm:inline">Preguntas</span>
                     </TabsTrigger>
-                    <TabsTrigger value="chat" className="gap-2">
+                    <TabsTrigger value="chat" className="gap-2 h-10 px-4">
                       <MessagesSquare className="w-4 h-4" />
                       <span className="hidden sm:inline">Chat</span>
                     </TabsTrigger>
@@ -178,16 +179,24 @@ const CommunityPage: React.FC = () => {
                   {activeTab !== "chat" && (
                     <Button
                       onClick={() => setCreateDialogOpen(true)}
-                      className="bg-primary hover:bg-primary/90"
+                      variant="outline"
+                      className="gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50"
                     >
-                      <Plus className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">Nueva Publicación</span>
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span className="hidden sm:inline">Publicación Avanzada</span>
                     </Button>
                   )}
                 </div>
 
                 {/* Discussions Tab */}
                 <TabsContent value="discussions" className="space-y-4">
+                  {/* Quick Post Input */}
+                  <QuickPostInput
+                    type="discussion"
+                    onSubmit={handleCreatePost}
+                    onOpenFullDialog={() => setCreateDialogOpen(true)}
+                  />
+
                   {postsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
@@ -205,17 +214,15 @@ const CommunityPage: React.FC = () => {
                     </div>
                   ) : filteredPosts.length === 0 ? (
                     <div className="glass-card p-8 rounded-xl text-center">
-                      <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                        <MessageSquare className="w-8 h-8 text-primary" />
+                      </div>
                       <h3 className="font-heading font-semibold mb-2">
                         No hay discusiones aún
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Sé el primero en iniciar una conversación
+                      <p className="text-sm text-muted-foreground">
+                        Usa el campo de arriba para iniciar una conversación
                       </p>
-                      <Button onClick={() => setCreateDialogOpen(true)}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Nueva Discusión
-                      </Button>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -233,6 +240,13 @@ const CommunityPage: React.FC = () => {
 
                 {/* Questions Tab */}
                 <TabsContent value="questions" className="space-y-4">
+                  {/* Quick Post Input */}
+                  <QuickPostInput
+                    type="question"
+                    onSubmit={handleCreatePost}
+                    onOpenFullDialog={() => setCreateDialogOpen(true)}
+                  />
+
                   {postsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
@@ -250,17 +264,15 @@ const CommunityPage: React.FC = () => {
                     </div>
                   ) : filteredPosts.length === 0 ? (
                     <div className="glass-card p-8 rounded-xl text-center">
-                      <HelpCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                      <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
+                        <HelpCircle className="w-8 h-8 text-secondary" />
+                      </div>
                       <h3 className="font-heading font-semibold mb-2">
                         No hay preguntas aún
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        ¿Tienes una duda? ¡Pregunta a la comunidad!
+                      <p className="text-sm text-muted-foreground">
+                        Usa el campo de arriba para hacer tu pregunta
                       </p>
-                      <Button onClick={() => setCreateDialogOpen(true)}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Nueva Pregunta
-                      </Button>
                     </div>
                   ) : (
                     <div className="space-y-4">

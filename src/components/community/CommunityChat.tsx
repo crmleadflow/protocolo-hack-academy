@@ -12,11 +12,11 @@ import {
   FileArchive,
   Download,
   Loader2,
-  MessagesSquare
+  MessagesSquare,
+  Smile
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useCommunityChat, ChatMessage } from "@/hooks/useCommunity";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -62,6 +62,7 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -75,6 +76,14 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
     }
     setPreviewUrl(null);
   }, [selectedFile]);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px";
+    }
+  }, [newMessage]);
 
   const handleSend = async () => {
     if ((!newMessage.trim() && !selectedFile) || isSending) return;
@@ -104,7 +113,6 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check file size (100MB max)
       if (file.size > 100 * 1024 * 1024) {
         alert("El archivo es demasiado grande. Máximo 100MB.");
         return;
@@ -147,13 +155,17 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
           <div className="p-2 rounded-xl bg-primary/10">
             <MessagesSquare className="w-5 h-5 text-primary" />
           </div>
-          <div>
+          <div className="flex-1">
             <h3 className="font-heading font-semibold">
               Chat de {programTitle}
             </h3>
             <p className="text-xs text-muted-foreground">
               {messages.length} mensajes • Comparte archivos y videos
             </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs text-muted-foreground">En vivo</span>
           </div>
         </div>
       </div>
@@ -184,12 +196,12 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
 
       {/* File Preview */}
       {selectedFile && (
-        <div className="px-4 py-2 border-t border-border/50 bg-background/50">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
+        <div className="px-4 py-3 border-t border-border/50 bg-muted/20">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-background/60 border border-border/50">
             {previewUrl ? (
-              <img src={previewUrl} alt="Preview" className="w-12 h-12 rounded-lg object-cover" />
+              <img src={previewUrl} alt="Preview" className="w-14 h-14 rounded-lg object-cover" />
             ) : (
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center">
                 {React.createElement(getFileIcon(selectedFile.type), { className: "w-6 h-6 text-primary" })}
               </div>
             )}
@@ -201,7 +213,7 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
               variant="ghost"
               size="icon"
               onClick={removeSelectedFile}
-              className="flex-shrink-0"
+              className="flex-shrink-0 hover:bg-destructive/10 hover:text-destructive"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -219,23 +231,33 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
             className="hidden"
             accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
           />
+          
           <Button
             variant="ghost"
             size="icon"
             onClick={() => fileInputRef.current?.click()}
             disabled={isSending || isUploading}
-            className="flex-shrink-0"
+            className="flex-shrink-0 hover:bg-primary/10 hover:text-primary"
           >
             <Paperclip className="w-5 h-5" />
           </Button>
           
           <div className="flex-1 relative">
-            <Textarea
+            <textarea
+              ref={textareaRef}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Escribe un mensaje..."
-              className="min-h-[44px] max-h-[120px] resize-none pr-12 bg-background/50"
+              rows={1}
+              className={cn(
+                "w-full min-h-[44px] max-h-[120px] resize-none rounded-xl",
+                "bg-background/60 border border-border/50 px-4 py-3 pr-12",
+                "text-sm placeholder:text-muted-foreground",
+                "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
+                "transition-all duration-200",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
+              )}
               disabled={isSending || isUploading}
             />
           </div>
@@ -245,17 +267,22 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
             disabled={(!newMessage.trim() && !selectedFile) || isSending || isUploading}
             size="icon"
             className={cn(
-              "flex-shrink-0 transition-all",
-              (newMessage.trim() || selectedFile) && "shadow-[0_0_15px_rgba(var(--primary)/0.3)]"
+              "flex-shrink-0 rounded-xl h-11 w-11 transition-all duration-200",
+              (newMessage.trim() || selectedFile) 
+                ? "bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25" 
+                : "bg-muted hover:bg-muted/80"
             )}
           >
             {isSending || isUploading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5" />
             )}
           </Button>
         </div>
+        <p className="text-xs text-muted-foreground mt-2 text-center">
+          Presiona Enter para enviar • Shift + Enter para nueva línea
+        </p>
       </div>
     </div>
   );
