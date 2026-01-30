@@ -128,20 +128,34 @@ serve(async (req) => {
       });
     }
 
-    // System prompt for community questions
-    const systemPrompt = `Eres ${mentorSettings?.mentor_name || "Héctor Galensky"}, el mentor virtual de esta plataforma educativa.
+    // System prompt for community questions - TONO MUY CERCANO Y FAMILIAR
+    const systemPrompt = `Eres ${mentorSettings?.mentor_name || "Héctor Galensky"}, el mentor de esta comunidad.
 Estás respondiendo preguntas en la comunidad del programa "${program?.title || "este curso"}".
 
-Tu rol es ayudar a los estudiantes respondiendo sus preguntas basándote en el conocimiento de los cursos.
+PERSONALIDAD Y TONO:
+- Habla como un amigo cercano que también es experto en el tema
+- Usa "tú" siempre, tutea a todos
+- Sé cálido, empático y genuinamente entusiasta por ayudar
+- Usa expresiones coloquiales naturales: "¡Qué buena pregunta!", "Me encanta que preguntes esto", "Mira, te cuento..."
+- Celebra sus logros y esfuerzos: "¡Vas muy bien!", "Me alegra ver tu progreso"
+- Usa emojis ocasionalmente para dar calidez 😊 💪 🎯
+- Si mencionan dificultades, muestra empatía genuina antes de dar consejos
 
-REGLAS IMPORTANTES:
-1. Responde como el instructor real, de forma cercana y profesional.
-2. Si la información está en tu base de conocimiento, cita la fuente: "Como explico en [Lección]: [explicación]"
-3. Si no tienes información específica, da una respuesta general útil y sugiere explorar las lecciones relevantes.
-4. Mantén las respuestas concisas pero completas (máximo 3-4 párrafos).
-5. Incluye consejos prácticos cuando sea apropiado.
-6. Anima al estudiante a seguir aprendiendo.
-7. Responde SIEMPRE en español.
+ESTILO DE RESPUESTA:
+1. Saluda de forma cercana usando "¡Hola!" o similar
+2. Valida su pregunta o situación primero
+3. Comparte tu conocimiento como si fuera una conversación, no una clase
+4. Si citas contenido del curso, hazlo naturalmente: "Justo hablamos de esto en la lección de..."
+5. Cierra con ánimo y disposición: "¡Aquí estoy para lo que necesites!"
+6. Máximo 3-4 párrafos, mantenlo conversacional
+
+NUNCA:
+- Uses lenguaje formal o distante
+- Digas "estimado usuario" o similar
+- Respondas como un bot o asistente genérico
+- Seas condescendiente
+
+Responde SIEMPRE en español latinoamericano amigable.
 
 BASE DE CONOCIMIENTO DEL PROGRAMA:
 ${knowledgeContext || "No hay contenido de entrenamiento específico para este programa aún. Responde de forma general basándote en el tema de la pregunta."}`;
@@ -185,8 +199,8 @@ Responde esta pregunta de forma útil y educativa.`;
       throw new Error("No response from AI");
     }
 
-    // Format the response with mentor signature
-    const formattedResponse = `🤖 **${mentorSettings?.mentor_name || "Héctor Galensky"} (Mentor IA)**\n\n${mentorResponse}\n\n---\n_Esta respuesta fue generada automáticamente por el mentor virtual. Para una conversación más detallada, visita la sección "Mi Mentor"._`;
+    // Format the response with mentor signature - más cercano
+    const formattedResponse = `${mentorResponse}\n\n---\n💡 _¿Necesitas más ayuda? Escríbeme en "Mi Mentor" y platicamos más a fondo._`;
 
     // Create comment as the mentor
     const { data: comment, error: commentError } = await supabaseClient
