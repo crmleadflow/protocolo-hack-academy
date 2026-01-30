@@ -169,22 +169,24 @@ export function useStudentPrograms() {
   const updateProgramOrder = async (orderedIds: string[]) => {
     try {
       // Update each program's sort_order based on its position in the array
-      const updates = orderedIds.map((id, index) => 
-        supabase
+      // Use Promise.all but await each update to ensure they complete
+      const updatePromises = orderedIds.map(async (id, index) => {
+        const { error } = await supabase
           .from("programs")
           .update({ sort_order: index + 1 })
-          .eq("id", id)
-      );
-      
-      await Promise.all(updates);
-      
-      // Optimistically update local state
-      setPrograms(prev => {
-        const reordered = orderedIds
-          .map(id => prev.find(p => p.id === id))
-          .filter((p): p is ProgramWithProgress => p !== undefined);
-        return reordered;
+          .eq("id", id);
+        
+        if (error) {
+          console.error(`Error updating sort_order for program ${id}:`, error);
+          throw error;
+        }
+        return { id, sort_order: index + 1 };
       });
+      
+      await Promise.all(updatePromises);
+      
+      // Refetch from database to ensure consistency across all views
+      await fetchPrograms();
       
       return true;
     } catch (error) {
@@ -194,6 +196,8 @@ export function useStudentPrograms() {
         title: "Error",
         description: "No se pudo actualizar el orden de los programas",
       });
+      // Refetch to restore correct order on error
+      await fetchPrograms();
       return false;
     }
   };
