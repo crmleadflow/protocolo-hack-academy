@@ -11,6 +11,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import hectorImage from "@/assets/hector-galensky-hero-transparent-v2.png";
+import iaBusinessLabThumbnail from "@/assets/ia-business-lab-thumbnail.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -74,6 +75,7 @@ const programs = [
     description: "Aprende a automatizar procesos y delegar tareas operativas a la inteligencia artificial.",
     icon: Bot,
     color: "primary",
+    thumbnail: iaBusinessLabThumbnail,
   },
   {
     id: "video-magnet",
@@ -273,24 +275,35 @@ const LandingPage: React.FC = () => {
               <HolographicCard
                 key={program.id}
                 className={cn(
-                  "group cursor-pointer animate-fade-in",
+                  "group cursor-pointer animate-fade-in overflow-hidden",
                   index === 0 && "md:col-span-2 lg:col-span-1"
                 )}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className={cn(
-                  "w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                  program.color === "primary" && "bg-primary/20",
-                  program.color === "secondary" && "bg-secondary/20",
-                  program.color === "accent" && "bg-accent/20"
-                )}>
-                  <program.icon className={cn(
-                    "w-6 h-6",
-                    program.color === "primary" && "text-primary",
-                    program.color === "secondary" && "text-secondary",
-                    program.color === "accent" && "text-accent"
-                  )} />
-                </div>
+                {program.thumbnail ? (
+                  <div className="relative -mx-6 -mt-6 mb-4">
+                    <img 
+                      src={program.thumbnail} 
+                      alt={program.title}
+                      className="w-full h-32 object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+                  </div>
+                ) : (
+                  <div className={cn(
+                    "w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+                    program.color === "primary" && "bg-primary/20",
+                    program.color === "secondary" && "bg-secondary/20",
+                    program.color === "accent" && "bg-accent/20"
+                  )}>
+                    <program.icon className={cn(
+                      "w-6 h-6",
+                      program.color === "primary" && "text-primary",
+                      program.color === "secondary" && "text-secondary",
+                      program.color === "accent" && "text-accent"
+                    )} />
+                  </div>
+                )}
                 <h3 className="font-heading font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
                   {program.title}
                 </h3>
