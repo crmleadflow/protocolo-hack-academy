@@ -70,7 +70,7 @@ const programs = [
   },
   {
     id: "ia-negocio",
-    title: "IA para tu Negocio",
+    title: "IA Business Lab",
     description: "Aprende a automatizar procesos y delegar tareas operativas a la inteligencia artificial.",
     icon: Bot,
     color: "primary",
