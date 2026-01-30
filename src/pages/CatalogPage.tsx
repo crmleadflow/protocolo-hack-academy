@@ -218,7 +218,8 @@ function SortableProgramCard({
         index={index}
         filter={filter}
         onClick={onClick}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        dragListeners={listeners}
+        dragAttributes={attributes}
         isDragging={isDragging}
       />
     </div>
@@ -231,14 +232,16 @@ function ProgramCard({
   index,
   filter,
   onClick,
-  dragHandleProps,
+  dragListeners,
+  dragAttributes,
   isDragging,
 }: {
   program: ProgramWithProgress;
   index: number;
   filter: FilterType;
   onClick: () => void;
-  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
+  dragListeners?: React.HTMLAttributes<HTMLButtonElement>;
+  dragAttributes?: React.HTMLAttributes<HTMLButtonElement>;
   isDragging?: boolean;
 }) {
   const { isAdmin } = useAuth();
@@ -261,14 +264,16 @@ function ProgramCard({
       onClick={onClick}
     >
       {/* Drag Handle for Admin */}
-      {dragHandleProps && (
-        <div
-          {...dragHandleProps}
+      {dragListeners && (
+        <button
+          type="button"
+          {...dragListeners}
+          {...dragAttributes}
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-2 left-2 z-20 p-2 rounded-lg bg-background/80 backdrop-blur-sm border border-border/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing hover:bg-primary/20"
+          className="absolute top-2 left-2 z-20 p-2 rounded-lg bg-background/80 backdrop-blur-sm border border-border/50 transition-opacity cursor-grab active:cursor-grabbing hover:bg-primary/20 touch-none"
         >
           <GripVertical className="w-4 h-4 text-muted-foreground" />
-        </div>
+        </button>
       )}
 
       {/* Program Thumbnail with Hover Lock */}
