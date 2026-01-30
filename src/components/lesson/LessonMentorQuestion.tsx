@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Sparkles, Send, X, Loader2 } from "lucide-react";
+import { Sparkles, Send, X, Loader2, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
   const { messages, isLoading, sendMessage, clearConversation } = useMentorChat();
   const [question, setQuestion] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,10 +33,8 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
   const handleAskQuestion = async () => {
     if (!question.trim() || isLoading) return;
 
-    // Prepend context about the lesson
     const contextualQuestion = `[Pregunta sobre la lección "${lessonTitle}" del programa "${programTitle}"]\n\n${question}`;
     
-    const q = question;
     setQuestion("");
     setIsExpanded(true);
     await sendMessage(contextualQuestion);
@@ -49,23 +48,26 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
   };
 
   return (
-    <HolographicCard variant="gradient" className={cn("space-y-4", className)}>
+    <HolographicCard variant="gradient" className={cn("flex flex-col h-full", className)}>
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden ring-2 ring-primary/30 shadow-[0_0_15px_rgba(0,217,255,0.3)]">
-          <img
-            src={mentorAvatar}
-            alt={settings?.mentor_name || "Mentor"}
-            className="w-full h-full object-cover object-top"
-          />
+      <div className="flex items-center gap-3 pb-4">
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden ring-2 ring-primary/30 shadow-lg">
+            <img
+              src={mentorAvatar}
+              alt={settings?.mentor_name || "Mentor"}
+              className="w-full h-full object-cover object-top"
+            />
+          </div>
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background animate-pulse" />
         </div>
-        <div className="flex-1">
-          <h3 className="font-heading font-bold flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary" />
-            Pregunta al Mentor
+        <div className="flex-1 min-w-0">
+          <h3 className="font-heading font-bold flex items-center gap-2 text-foreground">
+            <Sparkles className="w-4 h-4 text-primary flex-shrink-0" />
+            <span className="truncate">Pregunta al Mentor</span>
           </h3>
-          <p className="text-xs text-muted-foreground">
-            Pregúntale a {settings?.mentor_name || "tu mentor"} sobre este video
+          <p className="text-xs text-muted-foreground truncate">
+            {settings?.mentor_name || "Tu mentor"} • En línea
           </p>
         </div>
         {messages.length > 0 && (
@@ -76,16 +78,16 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
               clearConversation();
               setIsExpanded(false);
             }}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground flex-shrink-0"
           >
             <X className="w-4 h-4" />
           </Button>
         )}
       </div>
 
-      {/* Messages (if any) */}
+      {/* Messages */}
       {isExpanded && messages.length > 0 && (
-        <div className="max-h-[300px] overflow-y-auto space-y-3 p-3 rounded-lg bg-background/30">
+        <div className="flex-1 min-h-0 max-h-[280px] overflow-y-auto space-y-3 p-3 rounded-xl bg-background/30 mb-4 scrollbar-thin scrollbar-thumb-primary/20">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -96,10 +98,10 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
             >
               <div
                 className={cn(
-                  "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden",
+                  "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden",
                   msg.role === "assistant"
-                    ? "bg-gradient-to-br from-primary to-secondary"
-                    : "bg-muted"
+                    ? "bg-gradient-to-br from-primary to-secondary ring-1 ring-primary/30"
+                    : "bg-muted ring-1 ring-border"
                 )}
               >
                 {msg.role === "assistant" ? (
@@ -109,23 +111,22 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
                     className="w-full h-full object-cover object-top"
                   />
                 ) : (
-                  <span className="text-[10px] font-bold">Tú</span>
+                  <User className="w-4 h-4 text-muted-foreground" />
                 )}
               </div>
               <div
                 className={cn(
-                  "max-w-[85%] p-2 rounded-xl text-sm",
+                  "max-w-[85%] p-3 rounded-2xl text-sm",
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground rounded-tr-sm"
-                    : "bg-background/50 rounded-tl-sm"
+                    ? "bg-primary text-primary-foreground rounded-tr-md"
+                    : "bg-background/60 border border-border/50 rounded-tl-md"
                 )}
               >
                 {msg.role === "assistant" ? (
-                  <div className="prose prose-sm prose-invert max-w-none">
+                  <div className="prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
                 ) : (
-                  // Remove the context prefix from displayed message
                   <p>{msg.content.replace(/\[Pregunta sobre la lección.*?\]\n\n/, "")}</p>
                 )}
               </div>
@@ -134,15 +135,15 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
 
           {isLoading && (
             <div className="flex gap-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden ring-1 ring-primary/30">
                 <img
                   src={mentorAvatar}
                   alt=""
                   className="w-full h-full object-cover object-top"
                 />
               </div>
-              <div className="bg-background/50 p-2 rounded-xl rounded-tl-sm">
-                <div className="flex gap-1">
+              <div className="bg-background/60 border border-border/50 p-3 rounded-2xl rounded-tl-md">
+                <div className="flex gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
                   <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
                   <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
@@ -156,47 +157,61 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
       )}
 
       {/* Question Input */}
-      <div className="flex gap-2">
-        <Textarea
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={`¿Tienes alguna duda sobre "${lessonTitle}"?`}
-          className="min-h-[60px] bg-background/50 resize-none flex-1"
-          disabled={isLoading}
-        />
-        <Button
-          onClick={handleAskQuestion}
-          disabled={!question.trim() || isLoading}
-          size="icon"
-          className="h-auto aspect-square bg-primary hover:bg-primary/90"
-        >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
+      <div className="mt-auto">
+        <div
+          className={cn(
+            "flex gap-2 p-1 rounded-xl transition-all duration-300",
+            isFocused
+              ? "ring-2 ring-primary/50 bg-background/50"
+              : "bg-background/30"
           )}
-        </Button>
-      </div>
-
-      {/* Quick suggestions */}
-      {messages.length === 0 && (
-        <div className="flex flex-wrap gap-2">
-          {[
-            "¿Cuál es el punto clave de esta lección?",
-            "¿Puedes darme un ejemplo práctico?",
-            "¿Cómo aplico esto en mi negocio?",
-          ].map((suggestion) => (
-            <button
-              key={suggestion}
-              onClick={() => setQuestion(suggestion)}
-              className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-            >
-              {suggestion}
-            </button>
-          ))}
+        >
+          <Textarea
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder={`¿Dudas sobre "${lessonTitle.slice(0, 30)}${lessonTitle.length > 30 ? '...' : ''}"?`}
+            className="min-h-[50px] max-h-[100px] bg-transparent border-0 resize-none flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+            disabled={isLoading}
+          />
+          <Button
+            onClick={handleAskQuestion}
+            disabled={!question.trim() || isLoading}
+            size="icon"
+            className={cn(
+              "h-10 w-10 self-end flex-shrink-0 transition-all",
+              question.trim() && "shadow-[0_0_15px_rgba(var(--primary)/0.4)]"
+            )}
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+          </Button>
         </div>
-      )}
+
+        {/* Quick suggestions */}
+        {messages.length === 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {[
+              "¿Punto clave?",
+              "Ejemplo práctico",
+              "¿Cómo aplico esto?",
+            ].map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setQuestion(suggestion)}
+                className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors border border-primary/20"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </HolographicCard>
   );
 };
