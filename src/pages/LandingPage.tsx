@@ -12,6 +12,7 @@ import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import hectorImage from "@/assets/hector-galensky-hero-transparent-v2.png";
 import iaBusinessLabThumbnail from "@/assets/ia-business-lab-thumbnail.png";
+import videoMagnetThumbnail from "@/assets/video-magnet-thumbnail.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -83,6 +84,7 @@ const programs = [
     description: "Estrategias de contenido en video que atraen prospectos calificados en automático.",
     icon: Video,
     color: "secondary",
+    thumbnail: videoMagnetThumbnail,
   },
   {
     id: "marca-personal",
