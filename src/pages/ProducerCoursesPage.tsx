@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Plus, Search, MoreVertical, Edit, Trash2, Eye, 
-  Play, Video, Loader2, BookOpen
+  Play, Video, Loader2, BookOpen, GripVertical
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
-import { usePrograms } from "@/hooks/usePrograms";
+import { usePrograms, type Program } from "@/hooks/usePrograms";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -26,14 +26,64 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { useToast } from "@/hooks/use-toast";
 
 const ProducerCoursesPage: React.FC = () => {
   const navigate = useNavigate();
-  const { programs, isLoading, deleteProgram, updateProgram } = usePrograms();
+  const { programs, isLoading, deleteProgram, updateProgram, updateProgramOrder } = usePrograms();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = programs.findIndex((p) => p.id === active.id);
+      const newIndex = programs.findIndex((p) => p.id === over.id);
+      
+      const newOrder = arrayMove(programs, oldIndex, newIndex);
+      const orderedIds = newOrder.map((p) => p.id);
+      
+      const success = await updateProgramOrder(orderedIds);
+      if (success) {
+        toast({
+          title: "Orden actualizado",
+          description: "El orden de los programas se ha guardado correctamente",
+        });
+      }
+    }
+  };
 
   const filteredPrograms = programs.filter((program) => {
     const matchesSearch = program.title
@@ -64,10 +114,12 @@ const ProducerCoursesPage: React.FC = () => {
     await updateProgram(id, { is_published: !currentStatus });
   };
 
+  const canDragAndDrop = selectedStatus === "all" && !searchQuery;
+
   return (
     <AppLayout
       title="Mis Programas"
-      subtitle="Gestiona y edita tus cursos"
+      subtitle={`Gestiona y edita tus cursos${canDragAndDrop ? " • Arrastra para reordenar" : ""}`}
       headerContent={
         <NeonButton onClick={() => navigate("/producer/new-course")}>
           <Plus className="w-4 h-4" />
@@ -156,110 +208,47 @@ const ProducerCoursesPage: React.FC = () => {
               </NeonButton>
             )}
           </HolographicCard>
+        ) : canDragAndDrop ? (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={filteredPrograms.map((p) => p.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="grid gap-4">
+                {filteredPrograms.map((program) => (
+                  <SortableProgramRow
+                    key={program.id}
+                    program={program}
+                    onEdit={() => navigate(`/producer/course/${program.id}/edit`)}
+                    onView={() => navigate(`/course/${program.id}`)}
+                    onTogglePublish={() => handleTogglePublish(program.id, program.is_published)}
+                    onDelete={() => {
+                      setProgramToDelete(program.id);
+                      setDeleteDialogOpen(true);
+                    }}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         ) : (
           <div className="grid gap-4">
             {filteredPrograms.map((program) => (
-              <HolographicCard
+              <ProgramRow
                 key={program.id}
-                className="flex flex-col lg:flex-row lg:items-center gap-4"
-              >
-                {/* Thumbnail */}
-                <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                  {program.thumbnail_url ? (
-                    <img
-                      src={program.thumbnail_url}
-                      alt={program.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Video className="w-8 h-8 text-primary" />
-                  )}
-                </div>
-
-                {/* Program Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-heading font-bold text-lg truncate">
-                      {program.title}
-                    </h3>
-                    <span
-                      className={cn(
-                        "px-2 py-0.5 rounded-full text-xs font-medium",
-                        program.is_published
-                          ? "bg-green-500/20 text-green-500"
-                          : "bg-yellow-500/20 text-yellow-500"
-                      )}
-                    >
-                      {program.is_published ? "Publicado" : "Borrador"}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-1 mb-2">
-                    {program.description || "Sin descripción"}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                    <span className="text-green-500 font-medium">
-                      ${program.price} {program.currency}
-                    </span>
-                    <span className="text-xs">
-                      Creado: {new Date(program.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <NeonButton
-                    size="sm"
-                    onClick={() => navigate(`/producer/course/${program.id}/edit`)}
-                  >
-                    <Edit className="w-4 h-4" />
-                    Editar
-                  </NeonButton>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-2 rounded-lg hover:bg-white/5 transition-colors">
-                        <MoreVertical className="w-5 h-5" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="glass-strong">
-                      <DropdownMenuItem
-                        onClick={() => navigate(`/course/${program.id}`)}
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        Ver como alumno
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handleTogglePublish(program.id, program.is_published)
-                        }
-                      >
-                        {program.is_published ? (
-                          <>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Despublicar
-                          </>
-                        ) : (
-                          <>
-                            <Play className="w-4 h-4 mr-2" />
-                            Publicar
-                          </>
-                        )}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => {
-                          setProgramToDelete(program.id);
-                          setDeleteDialogOpen(true);
-                        }}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Eliminar
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </HolographicCard>
+                program={program}
+                onEdit={() => navigate(`/producer/course/${program.id}/edit`)}
+                onView={() => navigate(`/course/${program.id}`)}
+                onTogglePublish={() => handleTogglePublish(program.id, program.is_published)}
+                onDelete={() => {
+                  setProgramToDelete(program.id);
+                  setDeleteDialogOpen(true);
+                }}
+              />
             ))}
           </div>
         )}
@@ -289,5 +278,158 @@ const ProducerCoursesPage: React.FC = () => {
     </AppLayout>
   );
 };
+
+// Sortable wrapper for drag and drop
+interface ProgramRowProps {
+  program: Program;
+  onEdit: () => void;
+  onView: () => void;
+  onTogglePublish: () => void;
+  onDelete: () => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
+  isDragging?: boolean;
+}
+
+function SortableProgramRow(props: Omit<ProgramRowProps, "dragHandleProps" | "isDragging">) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: props.program.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(isDragging && "opacity-90")}
+    >
+      <ProgramRow
+        {...props}
+        dragHandleProps={{ ...attributes, ...listeners }}
+        isDragging={isDragging}
+      />
+    </div>
+  );
+}
+
+function ProgramRow({
+  program,
+  onEdit,
+  onView,
+  onTogglePublish,
+  onDelete,
+  dragHandleProps,
+  isDragging,
+}: ProgramRowProps) {
+  return (
+    <HolographicCard
+      className={cn(
+        "flex flex-col lg:flex-row lg:items-center gap-4",
+        isDragging && "shadow-2xl shadow-primary/20 ring-2 ring-primary/50"
+      )}
+    >
+      {/* Drag Handle */}
+      {dragHandleProps && (
+        <div
+          {...dragHandleProps}
+          className="hidden lg:flex p-2 rounded-lg hover:bg-white/5 transition-colors cursor-grab active:cursor-grabbing"
+        >
+          <GripVertical className="w-5 h-5 text-muted-foreground" />
+        </div>
+      )}
+
+      {/* Thumbnail */}
+      <div className="w-16 h-16 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        {program.thumbnail_url ? (
+          <img
+            src={program.thumbnail_url}
+            alt={program.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Video className="w-8 h-8 text-primary" />
+        )}
+      </div>
+
+      {/* Program Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-heading font-bold text-lg truncate">
+            {program.title}
+          </h3>
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded-full text-xs font-medium",
+              program.is_published
+                ? "bg-green-500/20 text-green-500"
+                : "bg-yellow-500/20 text-yellow-500"
+            )}
+          >
+            {program.is_published ? "Publicado" : "Borrador"}
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground line-clamp-1 mb-2">
+          {program.description || "Sin descripción"}
+        </p>
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <span className="text-green-500 font-medium">
+            ${program.price} {program.currency}
+          </span>
+          <span className="text-xs">
+            Creado: {new Date(program.created_at).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <NeonButton size="sm" onClick={onEdit}>
+          <Edit className="w-4 h-4" />
+          Editar
+        </NeonButton>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-2 rounded-lg hover:bg-white/5 transition-colors">
+              <MoreVertical className="w-5 h-5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="glass-strong">
+            <DropdownMenuItem onClick={onView}>
+              <Eye className="w-4 h-4 mr-2" />
+              Ver como alumno
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onTogglePublish}>
+              {program.is_published ? (
+                <>
+                  <Edit className="w-4 h-4 mr-2" />
+                  Despublicar
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 mr-2" />
+                  Publicar
+                </>
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+              <Trash2 className="w-4 h-4 mr-2" />
+              Eliminar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </HolographicCard>
+  );
+}
 
 export default ProducerCoursesPage;
