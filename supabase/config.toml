@@ -2,3 +2,9 @@ project_id = "mvyroxrmhqxtzljoryzi"
 
 [functions.neuro-scanner]
 verify_jwt = false
+
+[functions.community-mentor-answer]
+verify_jwt = true
+
+[functions.community-scheduled-content]
+verify_jwt = false
