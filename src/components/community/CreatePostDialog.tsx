@@ -242,23 +242,28 @@ const PostFormContent: React.FC<{
         </div>
       </div>
 
-      {/* Actions - Fixed at bottom */}
+      {/* Actions - Always visible at bottom */}
       <div className={cn(
-        "flex gap-3 pt-4 border-t border-border/50",
-        isMobile ? "pb-2" : ""
+        "flex gap-3 pt-4 mt-auto border-t border-border/50 bg-background/95 backdrop-blur-sm",
+        isMobile ? "pb-4 -mx-4 px-4 sticky bottom-0" : ""
       )}>
         <Button
-          variant="ghost"
+          variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="flex-1"
+          className="flex-1 h-11"
         >
           Cancelar
         </Button>
         <Button
           onClick={onSubmit}
           disabled={!isValid || isSubmitting}
-          className="flex-1 bg-primary hover:bg-primary/90 gap-2"
+          className={cn(
+            "flex-1 h-11 gap-2 font-semibold transition-all",
+            isValid 
+              ? "bg-primary hover:bg-primary/90 shadow-[0_0_20px_hsl(var(--primary)/0.3)]" 
+              : "bg-muted"
+          )}
         >
           {isSubmitting ? (
             <>
