@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Play, ChevronRight, Star, Sparkles, ArrowRight, Quote,
-  Zap, Target, Mic, Bot, Video, Crown, Package, UserCheck, Rocket, Globe, TrendingUp, Users
+  Play, ChevronRight, Sparkles, ArrowRight, Quote, Star,
+  Zap, Target, Mic, Bot, Video, Crown, Package, UserCheck, Rocket, Globe, TrendingUp, Users, BookOpen, Loader2
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -10,14 +10,8 @@ import { ParticleBackground } from "@/components/ui/particle-background";
 import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 import hectorImage from "@/assets/hector-galensky-hero-transparent-v2.png";
-import iaBusinessLabThumbnail from "@/assets/ia-business-lab-thumbnail.png";
-import videoMagnetThumbnail from "@/assets/video-magnet-thumbnail.png";
-import neuroTalkThumbnail from "@/assets/neuro-talk-thumbnail.jpg";
-import prospectMachineThumbnail from "@/assets/prospect-machine-thumbnail.jpg";
-import fastBrandThumbnail from "@/assets/fast-brand-accelerator-thumbnail.png";
-import protocoloHackThumbnail from "@/assets/protocolo-hack-thumbnail.png";
-import productCreatorProThumbnail from "@/assets/product-creator-pro-thumbnail.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -52,65 +46,30 @@ const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: strin
   );
 };
 
-// Programs data
-const programs = [
-  {
-    id: "protocolo-hack",
-    title: "Protocolo Hack",
-    description: "Mi programa insignia para hackear tu potencial financiero.",
-    icon: Zap,
-    color: "primary",
-    thumbnail: protocoloHackThumbnail,
-  },
-  {
-    id: "neuro-talk",
-    title: "Neuro Talk",
-    description: "Domina la neuro oratoria persuasiva para cerrar ventas con el poder de tu comunicación.",
-    icon: Mic,
-    color: "secondary",
-    thumbnail: neuroTalkThumbnail,
-  },
-  {
-    id: "prospect-machine",
-    title: "Prospect Machine",
-    description: "Conviértete en un cerrador de élite capaz de manejar cualquier objeción.",
-    icon: Target,
-    color: "accent",
-    thumbnail: prospectMachineThumbnail,
-  },
-  {
-    id: "ia-negocio",
-    title: "IA Business Lab",
-    description: "Aprende a automatizar procesos y delegar tareas operativas a la inteligencia artificial.",
-    icon: Bot,
-    color: "primary",
-    thumbnail: iaBusinessLabThumbnail,
-  },
-  {
-    id: "video-magnet",
-    title: "Video Magnet",
-    description: "Estrategias de contenido en video que atraen prospectos calificados en automático.",
-    icon: Video,
-    color: "secondary",
-    thumbnail: videoMagnetThumbnail,
-  },
-  {
-    id: "fast-brand",
-    title: "Fast Brand Accelerator",
-    description: "Pasa de ser un desconocido a ser una autoridad en tu nicho.",
-    icon: Crown,
-    color: "accent",
-    thumbnail: fastBrandThumbnail,
-  },
-  {
-    id: "product-creator-pro",
-    title: "Product Creator Pro",
-    description: "Mi guía paso a paso para monetizar tu conocimiento desde cero.",
-    icon: Package,
-    color: "primary",
-    thumbnail: productCreatorProThumbnail,
-  },
-];
+// Icon mapping for programs (fallback icons based on program title keywords)
+const getIconForProgram = (title: string): React.ElementType => {
+  const titleLower = title.toLowerCase();
+  if (titleLower.includes("protocolo") || titleLower.includes("hack")) return Zap;
+  if (titleLower.includes("neuro") || titleLower.includes("talk")) return Mic;
+  if (titleLower.includes("prospect") || titleLower.includes("machine")) return Target;
+  if (titleLower.includes("ia") || titleLower.includes("business") || titleLower.includes("lab")) return Bot;
+  if (titleLower.includes("video") || titleLower.includes("magnet")) return Video;
+  if (titleLower.includes("brand") || titleLower.includes("accelerator")) return Crown;
+  if (titleLower.includes("product") || titleLower.includes("creator")) return Package;
+  return BookOpen;
+};
+
+// Color cycling for programs
+const programColors = ["primary", "secondary", "accent"] as const;
+
+// Program type from database
+interface Program {
+  id: string;
+  title: string;
+  description: string | null;
+  thumbnail_url: string | null;
+  sort_order: number;
+}
 
 // Mentor credentials
 const credentials = [
@@ -138,6 +97,29 @@ const credentials = [
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
+
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("programs")
+          .select("id, title, description, thumbnail_url, sort_order")
+          .eq("is_published", true)
+          .order("sort_order", { ascending: true });
+
+        if (error) throw error;
+        setPrograms(data || []);
+      } catch (error) {
+        console.error("Error fetching programs:", error);
+      } finally {
+        setIsLoadingPrograms(false);
+      }
+    };
+
+    fetchPrograms();
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -283,45 +265,60 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {programs.map((program, index) => (
-              <HolographicCard
-                key={program.id}
-                className={cn(
-                  "group cursor-pointer animate-fade-in overflow-hidden",
-                  index === 0 && "md:col-span-2 lg:col-span-1"
-                )}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {program.thumbnail ? (
-                  <div className="relative -mx-6 -mt-6 mb-4">
-                    <img 
-                      src={program.thumbnail} 
-                      alt={program.title}
-                      className="w-full h-32 object-cover transition-transform group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-                  </div>
-                ) : (
-                  <div className={cn(
-                    "w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                    program.color === "primary" && "bg-primary/20",
-                    program.color === "secondary" && "bg-secondary/20",
-                    program.color === "accent" && "bg-accent/20"
-                  )}>
-                    <program.icon className={cn(
-                      "w-6 h-6",
-                      program.color === "primary" && "text-primary",
-                      program.color === "secondary" && "text-secondary",
-                      program.color === "accent" && "text-accent"
-                    )} />
-                  </div>
-                )}
-                <h3 className="font-heading font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                  {program.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">{program.description}</p>
-              </HolographicCard>
-            ))}
+            {isLoadingPrograms ? (
+              <div className="col-span-full flex justify-center py-8">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : programs.length === 0 ? (
+              <div className="col-span-full text-center py-8 text-muted-foreground">
+                No hay programas disponibles
+              </div>
+            ) : (
+              programs.map((program, index) => {
+                const Icon = getIconForProgram(program.title);
+                const color = programColors[index % programColors.length];
+                
+                return (
+                  <HolographicCard
+                    key={program.id}
+                    className={cn(
+                      "group cursor-pointer animate-fade-in overflow-hidden",
+                      index === 0 && "md:col-span-2 lg:col-span-1"
+                    )}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    {program.thumbnail_url ? (
+                      <div className="relative -mx-6 -mt-6 mb-4">
+                        <img 
+                          src={program.thumbnail_url} 
+                          alt={program.title}
+                          className="w-full h-32 object-cover transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+                      </div>
+                    ) : (
+                      <div className={cn(
+                        "w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+                        color === "primary" && "bg-primary/20",
+                        color === "secondary" && "bg-secondary/20",
+                        color === "accent" && "bg-accent/20"
+                      )}>
+                        <Icon className={cn(
+                          "w-6 h-6",
+                          color === "primary" && "text-primary",
+                          color === "secondary" && "text-secondary",
+                          color === "accent" && "text-accent"
+                        )} />
+                      </div>
+                    )}
+                    <h3 className="font-heading font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                      {program.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">{program.description || "Sin descripción"}</p>
+                  </HolographicCard>
+                );
+              })
+            )}
           </div>
         </div>
       </section>
