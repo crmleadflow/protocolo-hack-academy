@@ -91,8 +91,8 @@ const programs = [
     thumbnail: videoMagnetThumbnail,
   },
   {
-    id: "marca-personal",
-    title: "Escalar tu Marca Personal",
+    id: "fast-brand",
+    title: "Fast Brand Accelerator",
     description: "Pasa de ser un desconocido a ser una autoridad en tu nicho.",
     icon: Crown,
     color: "accent",
