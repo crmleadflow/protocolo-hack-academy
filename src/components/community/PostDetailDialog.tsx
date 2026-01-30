@@ -3,7 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Heart, MessageCircle, CheckCircle, Send,
-  HelpCircle, MessageSquare, Megaphone, Pin
+  HelpCircle, MessageSquare, Megaphone, Pin, Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -29,7 +29,7 @@ interface PostDetailDialogProps {
 
 const contentTypeConfig = {
   discussion: { icon: MessageSquare, label: "Discusión", color: "text-primary" },
-  question: { icon: HelpCircle, label: "Pregunta", color: "text-secondary" },
+  question: { icon: HelpCircle, label: "Pregunta", color: "text-secondary", hasMentor: true },
   announcement: { icon: Megaphone, label: "Anuncio", color: "text-yellow-500" },
 };
 
@@ -225,16 +225,26 @@ const CommentItem: React.FC<CommentItemProps> = ({
   canMarkAccepted,
   onMarkAccepted,
 }) => {
+  const isMentorResponse = comment.content.includes("🤖 **") && comment.content.includes("(Mentor IA)**");
+
   return (
     <div
       className={cn(
-        "flex gap-3 p-3 rounded-lg",
-        comment.is_accepted_answer && "bg-green-500/10 border border-green-500/30"
+        "flex gap-3 p-3 rounded-lg transition-all",
+        comment.is_accepted_answer && "bg-green-500/10 border border-green-500/30",
+        isMentorResponse && "bg-primary/5 border border-primary/20"
       )}
     >
       {/* Avatar */}
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 overflow-hidden">
-        {comment.author?.avatar_url ? (
+      <div className={cn(
+        "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden",
+        isMentorResponse 
+          ? "bg-gradient-to-br from-primary to-primary/60" 
+          : "bg-gradient-to-br from-primary to-secondary"
+      )}>
+        {isMentorResponse ? (
+          <Bot className="w-4 h-4 text-primary-foreground" />
+        ) : comment.author?.avatar_url ? (
           <img
             src={comment.author.avatar_url}
             alt=""
@@ -249,10 +259,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-medium">
-            {comment.author?.full_name || "Usuario"}
-          </span>
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          {isMentorResponse ? (
+            <Badge variant="outline" className="text-xs text-primary bg-primary/10">
+              <Bot className="w-3 h-3 mr-1" />
+              Mentor IA
+            </Badge>
+          ) : (
+            <span className="text-sm font-medium">
+              {comment.author?.full_name || "Usuario"}
+            </span>
+          )}
           <span className="text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(comment.created_at), {
               addSuffix: true,

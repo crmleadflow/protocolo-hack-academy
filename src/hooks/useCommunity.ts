@@ -146,11 +146,39 @@ export function useCommunityPosts(programId: string | null) {
 
       toast.success("Publicación creada");
       fetchPosts();
+
+      // If it's a question, trigger mentor response
+      if (contentType === "question" && data) {
+        requestMentorAnswer(data.id, programId);
+      }
+
       return data;
     } catch (error) {
       console.error("Error creating post:", error);
       toast.error("Error al crear la publicación");
       return null;
+    }
+  };
+
+  const requestMentorAnswer = async (postId: string, progId: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) return;
+
+      const response = await supabase.functions.invoke("community-mentor-answer", {
+        body: { postId, programId: progId },
+      });
+
+      if (response.error) {
+        console.error("Mentor answer error:", response.error);
+      } else {
+        toast.success("El mentor ha respondido tu pregunta", {
+          description: "Revisa los comentarios",
+          icon: "🤖",
+        });
+      }
+    } catch (error) {
+      console.error("Error requesting mentor answer:", error);
     }
   };
 
