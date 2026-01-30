@@ -920,6 +920,11 @@ function LessonPlayerView({
     module.lessons.some((lesson: LessonWithProgress) => lesson.id === currentLesson.id)
   );
 
+  // Get the lesson index within its module (1-based)
+  const lessonIndexInModule = currentModule 
+    ? currentModule.lessons.findIndex((l: LessonWithProgress) => l.id === currentLesson.id) + 1
+    : 1;
+
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
       {/* Lesson Progress Indicator */}
@@ -951,13 +956,13 @@ function LessonPlayerView({
             {/* Module + Lesson Title */}
             <div className="min-w-0">
               {currentModule && (
-                <p className="text-xs lg:text-sm text-primary font-medium mb-1">
+                <h2 className="text-xl lg:text-2xl font-heading font-bold text-primary break-words line-clamp-2 mb-1">
                   {currentModule.title}
-                </p>
+                </h2>
               )}
-              <h2 className="text-lg lg:text-xl font-heading font-bold text-foreground break-words line-clamp-2">
-                {currentLesson.title}
-              </h2>
+              <p className="text-sm lg:text-base text-foreground/80 font-medium">
+                {currentLesson.title} {lessonIndexInModule}
+              </p>
               {currentLesson.description && (
                 <p className="text-muted-foreground mt-1 text-xs lg:text-sm line-clamp-1">
                   {currentLesson.description}
