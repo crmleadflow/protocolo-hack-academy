@@ -152,11 +152,19 @@ export function useStudentPrograms() {
     } finally {
       setIsLoading(false);
     }
-  }, [user, toast]);
+  }, [toast]); // Remove user from deps to avoid unnecessary refetches
 
+  // Refetch on mount to always get fresh data
   useEffect(() => {
     fetchPrograms();
   }, [fetchPrograms]);
+
+  // Also refetch when user changes (login/logout)
+  useEffect(() => {
+    if (user !== undefined) {
+      fetchPrograms();
+    }
+  }, [user?.id]);
 
   const updateProgramOrder = async (orderedIds: string[]) => {
     try {
