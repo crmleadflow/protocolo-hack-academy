@@ -13,7 +13,7 @@ import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { Badge } from "@/components/ui/badge";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
-import { PayPalCheckout } from "@/components/payment/PayPalCheckout";
+
 import { LessonResourceManager } from "@/components/lesson/LessonResourceManager";
 import { LessonCommentsSection } from "@/components/lesson/LessonCommentsSection";
 import { LessonMentorQuestion } from "@/components/lesson/LessonMentorQuestion";
@@ -46,7 +46,7 @@ const CoursePlayerPage: React.FC = () => {
   // Fetch resources for current lesson
   const { resources: lessonResources, refetch: refetchResources } = useLessonResources(currentLesson?.id);
 
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
 
   // Flatten all lessons for navigation
@@ -66,7 +66,7 @@ const CoursePlayerPage: React.FC = () => {
 
   const handleSelectLesson = (lesson: LessonWithProgress) => {
     if (!hasAccess && !lesson.is_preview) {
-      setShowPaymentModal(true);
+      navigate(`/checkout/${courseId}`);
       return;
     }
     setCurrentLesson(lesson);
@@ -177,7 +177,7 @@ const CoursePlayerPage: React.FC = () => {
 
               <div className="flex items-center gap-2">
                 {!hasAccess && !enrollmentLoading && (
-                  <NeonButton size="sm" onClick={() => setShowPaymentModal(true)}>
+                  <NeonButton size="sm" onClick={() => navigate(`/checkout/${courseId}`)}>
                     <Lock className="w-4 h-4" />
                     Desbloquear ${program.price}
                   </NeonButton>
@@ -194,7 +194,7 @@ const CoursePlayerPage: React.FC = () => {
                 <span className="text-sm">
                   Este programa está bloqueado. Completa el pago para acceder a todo el contenido.
                 </span>
-                <NeonButton size="sm" onClick={() => setShowPaymentModal(true)}>
+                <NeonButton size="sm" onClick={() => navigate(`/checkout/${courseId}`)}>
                   Desbloquear Ahora
                 </NeonButton>
               </div>
@@ -230,18 +230,6 @@ const CoursePlayerPage: React.FC = () => {
             />
           )}
         </main>
-
-        {/* PayPal Checkout */}
-        <PayPalCheckout
-          programId={courseId || ""}
-          programTitle={program.title}
-          programThumbnail={program.thumbnail_url}
-          price={program.price}
-          totalLessons={program.totalLessons}
-          totalModules={program.modules.length}
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-        />
         
         {/* Floating button for mobile */}
         <FloatingSidebarTrigger />
