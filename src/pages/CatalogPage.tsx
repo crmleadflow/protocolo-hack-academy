@@ -244,6 +244,7 @@ function ProgramCard({
   dragAttributes?: React.HTMLAttributes<HTMLButtonElement>;
   isDragging?: boolean;
 }) {
+  const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const { hasActiveEnrollment } = useEnrollment(program.id);
   
@@ -253,6 +254,16 @@ function ProgramCard({
   if (filter === "active" && !isActive) return null;
   if (filter === "locked" && isActive) return null;
 
+  const handleClick = () => {
+    if (isLocked) {
+      // Redirect to checkout for locked programs
+      navigate(`/checkout/${program.id}`);
+    } else {
+      // Navigate to course for active/free programs
+      onClick();
+    }
+  };
+
   return (
     <HolographicCard
       variant={program.progress > 0 ? "gradient" : "default"}
@@ -261,7 +272,7 @@ function ProgramCard({
         isDragging && "shadow-2xl shadow-primary/20 ring-2 ring-primary/50"
       )}
       style={{ animationDelay: `${index * 0.05}s` }}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {/* Drag Handle for Admin */}
       {dragListeners && (

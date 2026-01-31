@@ -18,7 +18,9 @@ import ProducerCoursesPage from "./pages/ProducerCoursesPage";
 import ProducerNewCoursePage from "./pages/ProducerNewCoursePage";
 import ProducerCourseEditPage from "./pages/ProducerCourseEditPage";
 import AdminStudentsPage from "./pages/AdminStudentsPage";
+import CheckoutPage from "./pages/CheckoutPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import PaymentCancelPage from "./pages/PaymentCancelPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import AchievementsPage from "./pages/AchievementsPage";
@@ -74,10 +76,26 @@ const App = () => (
               }
             />
             <Route
+              path="/checkout/:programId"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/payment/success"
               element={
                 <ProtectedRoute>
                   <PaymentSuccessPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment/cancel"
+              element={
+                <ProtectedRoute>
+                  <PaymentCancelPage />
                 </ProtectedRoute>
               }
             />
