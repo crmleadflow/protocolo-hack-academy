@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Play, ChevronRight, Sparkles, ArrowRight, Quote, Star,
@@ -11,7 +11,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import hectorImage from "@/assets/hector-galensky-hero-transparent-v3.png";
+import ciborgAvatar from "@/assets/ciborg-avatar.mp4";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -99,6 +99,19 @@ const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleVideo = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsVideoPlaying(!isVideoPlaying);
+    }
+  };
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -182,15 +195,34 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8 items-center mb-12">
-              {/* Mentor Image */}
+              {/* Avatar Video */}
               <div className="flex justify-center order-2 md:order-1">
-                <div className="relative">
+                <div 
+                  className="relative cursor-pointer group"
+                  onClick={toggleVideo}
+                >
+                  {/* Glow effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-transparent rounded-full blur-3xl" />
-                  <img 
-                    src={hectorImage} 
-                    alt="Hector Galensky"
-                    className="relative z-10 max-w-sm w-full h-auto drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]"
+                  
+                  {/* Video */}
+                  <video
+                    ref={videoRef}
+                    src={ciborgAvatar}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="relative z-10 max-w-sm w-full h-auto object-contain drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]"
                   />
+                  
+                  {/* Pause indicator */}
+                  {!isVideoPlaying && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20">
+                      <div className="w-16 h-16 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm">
+                        <Play className="w-8 h-8 text-primary-foreground ml-1" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               
