@@ -11,7 +11,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import ciborgAvatar from "@/assets/ciborg-avatar.mp4";
+import hectorVideo from "@/assets/hector1.mp4";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -186,7 +186,7 @@ const LandingPage: React.FC = () => {
                 {/* Video */}
                 <video
                   ref={videoRef}
-                  src={ciborgAvatar}
+                  src={hectorVideo}
                   autoPlay
                   loop
                   muted
