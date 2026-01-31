@@ -185,19 +185,12 @@ const LandingPage: React.FC = () => {
               onClick={toggleVideo}
             >
               <div className="relative group">
-                {/* Outer glow effect */}
-                <div className="absolute -inset-4 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20 rounded-2xl blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* Subtle glow effect */}
+                <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-secondary/15 to-primary/20 rounded-2xl blur-xl opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
                 
-                {/* Holographic frame */}
-                <div className="relative p-1 rounded-xl bg-gradient-to-br from-primary via-secondary to-accent animate-pulse">
-                  {/* Inner holographic border with animation */}
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-accent via-primary to-secondary opacity-50 animate-[spin_8s_linear_infinite]" />
-                  
-                  {/* Glass inner container */}
-                  <div className="relative rounded-lg overflow-hidden glass-strong">
-                    {/* Holographic shimmer overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 z-20 pointer-events-none" />
-                    
+                {/* Clean gradient border frame */}
+                <div className="relative p-[2px] rounded-xl bg-gradient-to-br from-primary via-secondary to-primary">
+                  <div className="relative rounded-[10px] overflow-hidden bg-background/90">
                     {/* Video */}
                     <video
                       ref={videoRef}
@@ -211,20 +204,14 @@ const LandingPage: React.FC = () => {
                     
                     {/* Pause indicator */}
                     {!isVideoPlaying && (
-                      <div className="absolute inset-0 flex items-center justify-center z-20">
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm border border-primary/50">
+                      <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/20">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/90 flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-lg">
                           <Play className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground ml-1" />
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
-                
-                {/* Corner accents */}
-                <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-primary rounded-tl-lg" />
-                <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-secondary rounded-tr-lg" />
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-accent rounded-bl-lg" />
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-primary rounded-br-lg" />
               </div>
             </div>
 
