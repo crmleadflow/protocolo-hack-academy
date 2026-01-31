@@ -13,7 +13,10 @@ import {
   Zap,
   Shield,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Star,
+  Clock,
+  Sparkles
 } from "lucide-react";
 import { ParticleBackground } from "@/components/ui/particle-background";
 import { HolographicCard } from "@/components/ui/holographic-card";
@@ -288,162 +291,215 @@ const CheckoutPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <ParticleBackground particleCount={30} />
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-background via-background to-primary/5">
+      <ParticleBackground particleCount={25} />
 
       {/* Background decorative elements */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
-        {/* Header */}
-        <div className="mb-8">
+      <div className="relative z-10 min-h-screen">
+        {/* Mobile Header - Fixed */}
+        <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-border/50 lg:hidden">
+          <div className="container mx-auto px-4 py-3">
+            <Link
+              to="/catalog"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Volver
+            </Link>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-6 lg:py-12 max-w-6xl">
+          {/* Desktop Back Link */}
           <Link
             to="/catalog"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-4"
+            className="hidden lg:inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver al catálogo
           </Link>
-          <h1 className="text-3xl md:text-4xl font-heading font-bold">
-            Completar <span className="text-gradient">Compra</span>
-          </h1>
-        </div>
 
-        <div className="grid lg:grid-cols-5 gap-8">
-          {/* Payment Methods - Left Side */}
-          <div className="lg:col-span-3 space-y-6">
-            <HolographicCard variant="gradient" className="p-6">
-              <h2 className="text-xl font-heading font-semibold mb-6 flex items-center gap-2">
-                <Lock className="w-5 h-5 text-primary" />
-                Selecciona tu método de pago
-              </h2>
+          {/* Main Layout - Mobile First */}
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+            
+            {/* Order Summary - Shows first on mobile */}
+            <div className="lg:order-2 lg:w-[380px] lg:flex-shrink-0">
+              <div className="lg:sticky lg:top-8">
+                {/* Program Card */}
+                <HolographicCard variant="gradient" className="p-0 overflow-hidden">
+                  {/* Program Image */}
+                  <div className="relative aspect-[16/9] lg:aspect-[16/10] overflow-hidden">
+                    {program.thumbnail_url ? (
+                      <img
+                        src={program.thumbnail_url}
+                        alt={program.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 via-primary/20 to-secondary/30">
+                        <BookOpen className="w-16 h-16 text-primary/60" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                    
+                    {/* Price Badge */}
+                    <div className="absolute top-4 right-4">
+                      <div className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-heading font-bold text-lg shadow-lg shadow-primary/30">
+                        ${program.price.toFixed(0)} {program.currency}
+                      </div>
+                    </div>
+                  </div>
 
+                  {/* Program Info */}
+                  <div className="p-5 lg:p-6 space-y-4">
+                    <div>
+                      <h2 className="font-heading font-bold text-xl lg:text-2xl mb-2">
+                        {program.title}
+                      </h2>
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <BookOpen className="w-4 h-4 text-primary" />
+                          {program.totalLessons} lecciones
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Users className="w-4 h-4 text-primary" />
+                          {program.totalModules} módulos
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Benefits Grid */}
+                    <div className="grid grid-cols-1 gap-2 pt-4 border-t border-border/50">
+                      <div className="flex items-center gap-3 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <Zap className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-sm font-medium">Acceso de por vida</span>
+                      </div>
+                      <div className="flex items-center gap-3 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-sm font-medium">Actualizaciones incluidas</span>
+                      </div>
+                      <div className="flex items-center gap-3 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <BookOpen className="w-4 h-4 text-primary" />
+                        </div>
+                        <span className="text-sm font-medium">Material descargable</span>
+                      </div>
+                    </div>
+                  </div>
+                </HolographicCard>
+
+                {/* Trust Badges - Hidden on mobile, visible on desktop */}
+                <div className="hidden lg:flex items-center justify-center gap-6 mt-6 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <Shield className="w-4 h-4 text-primary" />
+                    <span>Pago seguro</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="w-4 h-4 text-primary" />
+                    <span>SSL Encriptado</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Section */}
+            <div className="lg:order-1 flex-1 space-y-6">
+              {/* Title - Desktop only */}
+              <div className="hidden lg:block">
+                <h1 className="text-3xl font-heading font-bold mb-2">
+                  Completar <span className="text-gradient">Compra</span>
+                </h1>
+                <p className="text-muted-foreground">
+                  Selecciona tu método de pago preferido
+                </p>
+              </div>
+
+              {/* Mobile Title */}
+              <div className="lg:hidden text-center">
+                <h1 className="text-2xl font-heading font-bold">
+                  Método de <span className="text-gradient">Pago</span>
+                </h1>
+              </div>
+
+              {/* Payment Methods */}
               <div className="space-y-3">
                 {paymentMethods.map((method) => (
                   <button
                     key={method.id}
                     onClick={() => method.available && setSelectedMethod(method.id)}
                     disabled={!method.available}
-                    className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                    className={`w-full p-4 lg:p-5 rounded-2xl border-2 transition-all duration-300 text-left group ${
                       selectedMethod === method.id
-                        ? "border-primary bg-primary/10 shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
+                        ? "border-primary bg-primary/10 shadow-[0_0_30px_hsl(var(--primary)/0.2)] scale-[1.02]"
                         : method.available
-                        ? "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-card/80"
-                        : "border-border/30 bg-card/30 opacity-60 cursor-not-allowed"
+                        ? "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-card/80 hover:scale-[1.01]"
+                        : "border-border/30 bg-card/30 opacity-50 cursor-not-allowed"
                     }`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        className={`w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center transition-all ${
                           selectedMethod === method.id
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground"
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+                            : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
                         }`}
                       >
                         {method.icon}
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-heading font-semibold">{method.name}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-heading font-semibold text-base lg:text-lg">
+                            {method.name}
+                          </span>
                           {method.comingSoon && (
-                            <span className="px-2 py-0.5 text-xs rounded-full bg-secondary/20 text-secondary">
+                            <span className="px-2 py-0.5 text-xs rounded-full bg-secondary/20 text-secondary font-medium">
                               Próximamente
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">{method.description}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {method.description}
+                        </p>
                       </div>
-                      {selectedMethod === method.id && (
-                        <CheckCircle className="w-6 h-6 text-primary" />
-                      )}
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                        selectedMethod === method.id
+                          ? "border-primary bg-primary"
+                          : "border-border"
+                      }`}>
+                        {selectedMethod === method.id && (
+                          <CheckCircle className="w-4 h-4 text-primary-foreground" />
+                        )}
+                      </div>
                     </div>
                   </button>
                 ))}
               </div>
-            </HolographicCard>
 
-            {/* Security Note */}
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Shield className="w-4 h-4" />
-              <span>Tus datos están protegidos con encriptación de nivel bancario</span>
-            </div>
-          </div>
-
-          {/* Order Summary - Right Side */}
-          <div className="lg:col-span-2 space-y-6">
-            <HolographicCard variant="gradient" className="p-6 sticky top-8">
-              <h2 className="text-lg font-heading font-semibold mb-4">Resumen del pedido</h2>
-
-              {/* Program Preview */}
-              <div className="flex gap-4 mb-6 pb-6 border-b border-border/50">
-                <div className="w-24 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                  {program.thumbnail_url ? (
-                    <img
-                      src={program.thumbnail_url}
-                      alt={program.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                      <BookOpen className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-heading font-semibold truncate">{program.title}</h3>
-                  <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <BookOpen className="w-3 h-3" />
-                      {program.totalLessons} lecciones
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
-                      {program.totalModules} módulos
+              {/* Price Summary - Mobile */}
+              <div className="lg:hidden">
+                <HolographicCard className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span>${program.price.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between pb-3 border-b border-border/50">
+                    <span className="text-muted-foreground">Descuento</span>
+                    <span className="text-primary">$0.00</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-3">
+                    <span className="font-heading font-bold text-lg">Total</span>
+                    <span className="font-heading font-bold text-xl text-gradient">
+                      ${program.price.toFixed(2)} {program.currency}
                     </span>
                   </div>
-                </div>
-              </div>
-
-              {/* Benefits */}
-              <div className="space-y-3 mb-6 pb-6 border-b border-border/50">
-                <h4 className="text-sm font-medium text-muted-foreground">Incluye:</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="w-3 h-3 text-primary" />
-                    </div>
-                    <span>Acceso de por vida</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Zap className="w-3 h-3 text-primary" />
-                    </div>
-                    <span>Actualizaciones futuras</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <BookOpen className="w-3 h-3 text-primary" />
-                    </div>
-                    <span>Material descargable</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Price */}
-              <div className="space-y-2 mb-6">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>${program.price.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Descuento</span>
-                  <span className="text-primary">$0.00</span>
-                </div>
-                <div className="flex justify-between text-lg font-heading font-bold pt-2 border-t border-border/50">
-                  <span>Total</span>
-                  <span className="text-gradient">${program.price.toFixed(2)} {program.currency}</span>
-                </div>
+                </HolographicCard>
               </div>
 
               {/* Pay Button */}
@@ -451,7 +507,7 @@ const CheckoutPage: React.FC = () => {
                 onClick={handlePayment}
                 disabled={!selectedMethod || isProcessing}
                 size="lg"
-                className="w-full h-14 text-lg"
+                className="w-full h-14 lg:h-16 text-lg lg:text-xl font-bold"
               >
                 {isProcessing ? (
                   <>
@@ -462,17 +518,33 @@ const CheckoutPage: React.FC = () => {
                   <>
                     <Lock className="w-5 h-5" />
                     {selectedMethod 
-                      ? `Pagar $${program.price.toFixed(2)}`
-                      : "Selecciona un método de pago"
+                      ? `Pagar $${program.price.toFixed(2)} ${program.currency}`
+                      : "Selecciona un método"
                     }
                   </>
                 )}
               </NeonButton>
 
-              <p className="text-xs text-center text-muted-foreground mt-4">
-                Al completar la compra, aceptas nuestros términos y condiciones
+              {/* Security Note - Mobile */}
+              <div className="flex items-center justify-center gap-4 lg:hidden text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Pago seguro</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Lock className="w-4 h-4 text-primary" />
+                  <span>SSL Encriptado</span>
+                </div>
+              </div>
+
+              {/* Terms */}
+              <p className="text-xs text-center text-muted-foreground">
+                Al completar la compra, aceptas nuestros{" "}
+                <Link to="/terms" className="text-primary hover:underline">
+                  términos y condiciones
+                </Link>
               </p>
-            </HolographicCard>
+            </div>
           </div>
         </div>
       </div>
