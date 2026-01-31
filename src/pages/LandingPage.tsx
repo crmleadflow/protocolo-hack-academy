@@ -99,6 +99,19 @@ const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  const toggleVideo = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsVideoPlaying(!isVideoPlaying);
+    }
+  };
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -200,18 +213,28 @@ const LandingPage: React.FC = () => {
                     <div className="w-64 h-64 rounded-full border border-accent/25 animate-spin" style={{ animationDuration: '25s' }} />
                   </div>
                   
-                  {/* Video container - no background, blends with page */}
-                  <div className="relative z-10 w-80 h-80 md:w-96 md:h-96 flex items-center justify-center">
+                  {/* Video container - clickable to pause/play */}
+                  <div 
+                    className="relative z-10 w-80 h-80 md:w-96 md:h-96 flex items-center justify-center cursor-pointer group"
+                    onClick={toggleVideo}
+                  >
                     <video 
+                      ref={videoRef}
                       src={ciborgVideo}
                       autoPlay 
                       loop 
+                      muted
                       playsInline
-                      controls
                       className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,217,255,0.5)]"
                     />
                     {/* Holographic glow overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-secondary/5 pointer-events-none rounded-2xl" />
+                    {/* Pause indicator */}
+                    {!isVideoPlaying && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/30 backdrop-blur-sm rounded-2xl">
+                        <Play className="w-16 h-16 text-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.8)]" />
+                      </div>
+                    )}
                   </div>
                   
                   {/* Bottom fade effect */}
