@@ -167,11 +167,43 @@ const LandingPage: React.FC = () => {
             </p>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
               El ecosistema de alto rendimiento donde el conocimiento se transforma en{" "}
               <span className="text-primary font-medium">resultados financieros</span> y{" "}
               <span className="text-secondary font-medium">personales</span>.
             </p>
+
+            {/* Avatar Video */}
+            <div 
+              className="flex justify-center mb-8 animate-fade-in cursor-pointer"
+              style={{ animationDelay: "0.25s" }}
+              onClick={toggleVideo}
+            >
+              <div className="relative">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-transparent rounded-full blur-3xl" />
+                
+                {/* Video */}
+                <video
+                  ref={videoRef}
+                  src={ciborgAvatar}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="relative z-10 max-w-xs md:max-w-sm w-full h-auto object-contain drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]"
+                />
+                
+                {/* Pause indicator */}
+                {!isVideoPlaying && (
+                  <div className="absolute inset-0 flex items-center justify-center z-20">
+                    <div className="w-16 h-16 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm">
+                      <Play className="w-8 h-8 text-primary-foreground ml-1" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
@@ -194,53 +226,19 @@ const LandingPage: React.FC = () => {
       <section className="relative z-10 -mt-12 pt-0 pb-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8 items-center mb-12">
-              {/* Avatar Video */}
-              <div className="flex justify-center order-2 md:order-1">
-                <div 
-                  className="relative cursor-pointer group"
-                  onClick={toggleVideo}
-                >
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-transparent rounded-full blur-3xl" />
-                  
-                  {/* Video */}
-                  <video
-                    ref={videoRef}
-                    src={ciborgAvatar}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="relative z-10 max-w-sm w-full h-auto object-contain drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]"
-                  />
-                  
-                  {/* Pause indicator */}
-                  {!isVideoPlaying && (
-                    <div className="absolute inset-0 flex items-center justify-center z-20">
-                      <div className="w-16 h-16 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm">
-                        <Play className="w-8 h-8 text-primary-foreground ml-1" />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Mentor Text */}
-              <div className="text-center md:text-left order-1 md:order-2">
-                <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-                  Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
-                </h2>
-                <p className="text-muted-foreground text-lg mb-6">
-                  En un mundo saturado de teorías vacías, existe alguien que ha caminado el camino antes que tú. 
-                  Su autoridad no proviene de diplomas, sino de <span className="text-primary">resultados que hablan por sí solos</span>.
-                </p>
-                <p className="text-muted-foreground">
-                  Empresario, visionario y entrenador de élite. Con más de 25 años forjando éxitos, 
-                  ha construido comunidades de más de 380,000 personas y alcanzado la cima como Top Earner en múltiples compañías a nivel global. 
-                  <span className="text-secondary font-medium"> Ahora, está listo para guiarte hacia tu propia transformación.</span>
-                </p>
-              </div>
+            <div className="max-w-3xl mx-auto text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6">
+                En un mundo saturado de teorías vacías, existe alguien que ha caminado el camino antes que tú. 
+                Su autoridad no proviene de diplomas, sino de <span className="text-primary">resultados que hablan por sí solos</span>.
+              </p>
+              <p className="text-muted-foreground">
+                Empresario, visionario y entrenador de élite. Con más de 25 años forjando éxitos, 
+                ha construido comunidades de más de 380,000 personas y alcanzado la cima como Top Earner en múltiples compañías a nivel global. 
+                <span className="text-secondary font-medium"> Ahora, está listo para guiarte hacia tu propia transformación.</span>
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
