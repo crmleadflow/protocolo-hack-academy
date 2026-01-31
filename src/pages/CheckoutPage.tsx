@@ -60,6 +60,7 @@ const CheckoutPage: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [invalidIdError, setInvalidIdError] = useState(false);
+  const [countdown, setCountdown] = useState(3);
 
   const paymentMethods: PaymentMethod[] = [
     {
@@ -94,6 +95,22 @@ const CheckoutPage: React.FC = () => {
       comingSoon: true,
     },
   ];
+
+  // Auto-redirect countdown for invalid ID
+  useEffect(() => {
+    if (!invalidIdError) return;
+    
+    if (countdown <= 0) {
+      navigate("/catalog", { replace: true });
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [invalidIdError, countdown, navigate]);
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -211,16 +228,8 @@ const CheckoutPage: React.FC = () => {
     );
   }
 
-  // Error screen for invalid program ID
+  // Error screen for invalid program ID with auto-redirect
   if (invalidIdError) {
-    const handleReportProblem = () => {
-      const subject = encodeURIComponent("Problema con checkout - ID inválido");
-      const body = encodeURIComponent(
-        `Hola,\n\nEncontré un error al intentar acceder al checkout.\n\nDetalles:\n- URL: ${window.location.href}\n- ID recibido: ${programId || "(vacío)"}\n- Fecha: ${new Date().toLocaleString()}\n\nPor favor ayúdenme a resolver este problema.\n\nGracias.`
-      );
-      window.open(`mailto:soporte@protocolohack.com?subject=${subject}&body=${body}`, "_blank");
-    };
-
     return (
       <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
         <ParticleBackground particleCount={20} />
@@ -228,40 +237,29 @@ const CheckoutPage: React.FC = () => {
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         
         <HolographicCard variant="gradient" className="p-8 text-center max-w-md relative z-10">
-          <div className="w-20 h-20 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-10 h-10 text-destructive" />
+          <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6 animate-pulse">
+            <Loader2 className="w-10 h-10 text-primary animate-spin" />
           </div>
           
           <h2 className="text-2xl font-heading font-bold mb-3">
-            Enlace de pago inválido
+            Redirigiendo al catálogo...
           </h2>
           
-          <p className="text-muted-foreground mb-2">
-            El enlace que usaste para acceder a esta página no es válido o ha expirado.
-          </p>
-          
-          <p className="text-sm text-muted-foreground mb-6">
-            ID recibido: <code className="px-2 py-1 bg-muted rounded text-xs font-mono">{programId || "(vacío)"}</code>
+          <p className="text-muted-foreground mb-4">
+            El enlace de pago no es válido. Te llevaremos al catálogo en{" "}
+            <span className="font-bold text-primary">{countdown}</span> segundos.
           </p>
 
-          <div className="space-y-3">
-            <NeonButton onClick={() => navigate("/catalog")} className="w-full">
-              <BookOpen className="w-4 h-4" />
-              Ir al catálogo
-            </NeonButton>
-            
-            <NeonButton 
-              variant="outline" 
-              onClick={handleReportProblem}
-              className="w-full"
-            >
-              <AlertCircle className="w-4 h-4" />
-              Reportar problema
-            </NeonButton>
-          </div>
+          <NeonButton 
+            onClick={() => navigate("/catalog", { replace: true })} 
+            className="w-full"
+          >
+            <BookOpen className="w-4 h-4" />
+            Ir ahora al catálogo
+          </NeonButton>
 
           <p className="text-xs text-muted-foreground mt-6">
-            Si llegaste aquí desde un enlace, es posible que esté mal formado o que el programa ya no exista.
+            Selecciona el programa que deseas adquirir desde el catálogo.
           </p>
         </HolographicCard>
       </div>
