@@ -104,6 +104,11 @@ const LandingPage: React.FC = () => {
 
   const toggleVideo = () => {
     if (videoRef.current) {
+      // Unmute on first interaction
+      if (videoRef.current.muted) {
+        videoRef.current.muted = false;
+      }
+      
       if (isVideoPlaying) {
         videoRef.current.pause();
       } else {
