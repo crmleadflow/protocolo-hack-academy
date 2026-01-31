@@ -11,7 +11,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import hectorImage from "@/assets/hector-galensky-hero-transparent-v2.png";
+import ciborgVideo from "@/assets/ciborg-avatar.mp4";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -185,16 +185,44 @@ const LandingPage: React.FC = () => {
               {/* Image */}
               <div className="relative flex justify-center">
                 <div className="relative">
-                  {/* Glow effect behind image */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/30 blur-3xl scale-110 rounded-full" />
-                  <img 
-                    src={hectorImage} 
-                    alt="Hector Galensky" 
-                    className="relative z-10 max-w-md w-full h-auto drop-shadow-2xl"
-                    style={{ mixBlendMode: 'multiply' }}
-                  />
+                  {/* Holographic background effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/40 blur-3xl scale-125 rounded-full animate-pulse" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-2xl scale-110 rounded-full animate-float" />
+                  
+                  {/* Holographic ring effects */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-80 h-80 rounded-full border border-primary/30 animate-spin" style={{ animationDuration: '20s' }} />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-72 h-72 rounded-full border border-secondary/20 animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }} />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-64 h-64 rounded-full border border-accent/25 animate-spin" style={{ animationDuration: '25s' }} />
+                  </div>
+                  
+                  {/* Video container with holographic frame */}
+                  <div className="relative z-10 w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden holographic-border shadow-[0_0_60px_rgba(0,217,255,0.4),0_0_100px_rgba(176,38,255,0.3)]">
+                    <video 
+                      src={ciborgVideo}
+                      autoPlay 
+                      loop 
+                      muted 
+                      playsInline
+                      className="w-full h-full object-cover scale-110"
+                    />
+                    {/* Holographic overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-secondary/10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none animate-pulse" style={{ animationDuration: '3s' }} />
+                  </div>
+                  
                   {/* Bottom fade effect */}
-                  <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent z-20 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background via-background/60 to-transparent z-20 pointer-events-none" />
+                  
+                  {/* Floating particles around video */}
+                  <div className="absolute top-4 left-4 w-2 h-2 bg-primary rounded-full animate-ping" style={{ animationDuration: '2s' }} />
+                  <div className="absolute top-8 right-8 w-1.5 h-1.5 bg-secondary rounded-full animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
+                  <div className="absolute bottom-16 left-8 w-1 h-1 bg-accent rounded-full animate-ping" style={{ animationDuration: '3s', animationDelay: '1s' }} />
+                  <div className="absolute bottom-8 right-4 w-2 h-2 bg-cyan-400 rounded-full animate-ping" style={{ animationDuration: '2.2s', animationDelay: '0.3s' }} />
                 </div>
               </div>
               
