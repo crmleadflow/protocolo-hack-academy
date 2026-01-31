@@ -100,6 +100,9 @@ const LandingPage: React.FC = () => {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [maxProgress, setMaxProgress] = useState(0);
+  const [videoDuration, setVideoDuration] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const toggleVideo = () => {
@@ -115,6 +118,39 @@ const LandingPage: React.FC = () => {
         videoRef.current.play();
       }
       setIsVideoPlaying(!isVideoPlaying);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      const current = videoRef.current.currentTime;
+      const duration = videoRef.current.duration;
+      const progress = (current / duration) * 100;
+      setVideoProgress(progress);
+      // Track maximum progress reached
+      setMaxProgress(prev => Math.max(prev, progress));
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setVideoDuration(videoRef.current.duration);
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (videoRef.current && videoDuration > 0) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      const clickProgress = (clickX / width) * 100;
+      
+      // Only allow seeking backwards (to positions already watched)
+      if (clickProgress <= maxProgress) {
+        const newTime = (clickProgress / 100) * videoDuration;
+        videoRef.current.currentTime = newTime;
+        setVideoProgress(clickProgress);
+      }
     }
   };
 
@@ -180,9 +216,8 @@ const LandingPage: React.FC = () => {
 
             {/* Avatar Video */}
             <div 
-              className="flex justify-center mb-6 md:mb-8 animate-fade-in cursor-pointer"
+              className="flex justify-center mb-6 md:mb-8 animate-fade-in"
               style={{ animationDelay: "0.25s" }}
-              onClick={toggleVideo}
             >
               <div className="relative group">
                 {/* Subtle glow effect */}
@@ -199,12 +234,37 @@ const LandingPage: React.FC = () => {
                       loop
                       muted
                       playsInline
-                      className="relative z-10 max-w-[200px] sm:max-w-xs md:max-w-sm w-full h-auto object-contain"
+                      onTimeUpdate={handleTimeUpdate}
+                      onLoadedMetadata={handleLoadedMetadata}
+                      onClick={toggleVideo}
+                      className="relative z-10 max-w-[200px] sm:max-w-xs md:max-w-sm w-full h-auto object-contain cursor-pointer"
                     />
+                    
+                    {/* Progress bar */}
+                    <div 
+                      className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/40 backdrop-blur-sm cursor-pointer z-20"
+                      onClick={handleProgressClick}
+                    >
+                      {/* Max progress indicator (what user has watched) */}
+                      <div 
+                        className="absolute top-0 left-0 h-full bg-white/20"
+                        style={{ width: `${maxProgress}%` }}
+                      />
+                      {/* Current progress */}
+                      <div 
+                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-secondary transition-all duration-100"
+                        style={{ width: `${videoProgress}%` }}
+                      />
+                      {/* Progress handle */}
+                      <div 
+                        className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ left: `calc(${videoProgress}% - 6px)` }}
+                      />
+                    </div>
                     
                     {/* Pause indicator */}
                     {!isVideoPlaying && (
-                      <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/20">
+                      <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/20" onClick={toggleVideo}>
                         <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/90 flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-lg">
                           <Play className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground ml-1" />
                         </div>
