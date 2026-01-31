@@ -222,7 +222,7 @@ const LandingPage: React.FC = () => {
 
 
       {/* Mentor Section */}
-      <section className="relative z-10 -mt-8 md:-mt-12 pt-0 pb-8 md:pb-10">
+      <section className="relative z-10 pt-8 md:pt-12 pb-8 md:pb-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="max-w-3xl mx-auto text-center mb-8 md:mb-12 px-2">
