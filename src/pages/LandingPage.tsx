@@ -11,7 +11,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import ciborgVideo from "@/assets/ciborg-avatar.mp4";
+
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -99,19 +99,6 @@ const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
-  const videoRef = React.useRef<HTMLVideoElement>(null);
-
-  const toggleVideo = () => {
-    if (videoRef.current) {
-      if (isVideoPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsVideoPlaying(!isVideoPlaying);
-    }
-  };
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -194,75 +181,19 @@ const LandingPage: React.FC = () => {
       <section className="relative z-10 -mt-12 pt-0 pb-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-10 items-end mb-32">
-              {/* Image */}
-              <div className="relative flex justify-center">
-                <div className="relative">
-                  {/* Holographic background effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/40 blur-3xl scale-125 rounded-full animate-pulse" />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-2xl scale-110 rounded-full animate-float" />
-                  
-                  {/* Holographic ring effects */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-80 h-80 rounded-full border border-primary/30 animate-spin" style={{ animationDuration: '20s' }} />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-72 h-72 rounded-full border border-secondary/20 animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }} />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-64 h-64 rounded-full border border-accent/25 animate-spin" style={{ animationDuration: '25s' }} />
-                  </div>
-                  
-                  {/* Video container - clickable to pause/play */}
-                  <div 
-                    className="relative z-10 w-80 h-80 md:w-96 md:h-96 flex items-center justify-center cursor-pointer group"
-                    onClick={toggleVideo}
-                  >
-                    <video 
-                      ref={videoRef}
-                      src={ciborgVideo}
-                      autoPlay 
-                      loop 
-                      muted
-                      playsInline
-                      className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,217,255,0.5)]"
-                    />
-                    {/* Holographic glow overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-secondary/5 pointer-events-none rounded-2xl" />
-                    {/* Pause indicator */}
-                    {!isVideoPlaying && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-background/30 backdrop-blur-sm rounded-2xl">
-                        <Play className="w-16 h-16 text-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.8)]" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Bottom fade effect */}
-                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background via-background/60 to-transparent z-20 pointer-events-none" />
-                  
-                  {/* Floating particles around video */}
-                  <div className="absolute top-4 left-4 w-2 h-2 bg-primary rounded-full animate-ping" style={{ animationDuration: '2s' }} />
-                  <div className="absolute top-8 right-8 w-1.5 h-1.5 bg-secondary rounded-full animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
-                  <div className="absolute bottom-16 left-8 w-1 h-1 bg-accent rounded-full animate-ping" style={{ animationDuration: '3s', animationDelay: '1s' }} />
-                  <div className="absolute bottom-8 right-4 w-2 h-2 bg-cyan-400 rounded-full animate-ping" style={{ animationDuration: '2.2s', animationDelay: '0.3s' }} />
-                </div>
-              </div>
-              
-              {/* Text */}
-              <div className="text-center lg:text-left">
-                <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-                  Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
-                </h2>
-                <p className="text-muted-foreground text-lg mb-6">
-                  En un mundo saturado de teorías vacías, existe alguien que ha caminado el camino antes que tú. 
-                  Su autoridad no proviene de diplomas, sino de <span className="text-primary">resultados que hablan por sí solos</span>.
-                </p>
-                <p className="text-muted-foreground">
-                  Empresario, visionario y entrenador de élite. Con más de 25 años forjando éxitos, 
-                  ha construido comunidades de más de 380,000 personas y alcanzado la cima como Top Earner en múltiples compañías a nivel global. 
-                  <span className="text-secondary font-medium"> Ahora, está listo para guiarte hacia tu propia transformación.</span>
-                </p>
-              </div>
+            <div className="max-w-3xl mx-auto text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
+              </h2>
+              <p className="text-muted-foreground text-lg mb-6">
+                En un mundo saturado de teorías vacías, existe alguien que ha caminado el camino antes que tú. 
+                Su autoridad no proviene de diplomas, sino de <span className="text-primary">resultados que hablan por sí solos</span>.
+              </p>
+              <p className="text-muted-foreground">
+                Empresario, visionario y entrenador de élite. Con más de 25 años forjando éxitos, 
+                ha construido comunidades de más de 380,000 personas y alcanzado la cima como Top Earner en múltiples compañías a nivel global. 
+                <span className="text-secondary font-medium"> Ahora, está listo para guiarte hacia tu propia transformación.</span>
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
