@@ -6,7 +6,8 @@ const Footer: React.FC = () => {
   const footerLinks = {
     producto: [
       { label: "Cursos", href: "/catalog" },
-      { label: "Categorías", href: "/categories" },
+      // Nota: no existe la ruta /categories en la app (redirigía a 404)
+      { label: "Categorías", href: "/catalog" },
       { label: "Instructores", href: "/instructors" },
       { label: "Precios", href: "/pricing" },
     ],

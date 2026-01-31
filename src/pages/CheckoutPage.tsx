@@ -42,6 +42,13 @@ interface ProgramDetails {
   totalLessons: number;
 }
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isUuid(value: string) {
+  return UUID_REGEX.test(value);
+}
+
 const CheckoutPage: React.FC = () => {
   const { programId } = useParams<{ programId: string }>();
   const navigate = useNavigate();
@@ -89,8 +96,14 @@ const CheckoutPage: React.FC = () => {
 
   useEffect(() => {
     const fetchProgram = async () => {
-      if (!programId) {
-        navigate("/catalog");
+      if (!programId || !isUuid(programId)) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "ID de programa inválido. Redirigiendo al catálogo...",
+        });
+        setIsLoading(false);
+        navigate("/catalog", { replace: true });
         return;
       }
 

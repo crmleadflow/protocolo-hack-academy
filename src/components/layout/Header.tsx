@@ -27,7 +27,8 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
 
   const navLinks = [
     { label: "Explorar", href: "/catalog" },
-    { label: "Categorías", href: "/categories" },
+    // Nota: no existe la ruta /categories en la app (redirigía a 404)
+    { label: "Categorías", href: "/catalog" },
     { label: "Para Empresas", href: "/enterprise" },
   ];
 
