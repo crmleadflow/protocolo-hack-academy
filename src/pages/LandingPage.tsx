@@ -11,7 +11,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-
+import hectorImage from "@/assets/hector-galensky-hero-transparent-v3.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -181,19 +181,34 @@ const LandingPage: React.FC = () => {
       <section className="relative z-10 -mt-12 pt-0 pb-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="max-w-3xl mx-auto text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-                Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
-              </h2>
-              <p className="text-muted-foreground text-lg mb-6">
-                En un mundo saturado de teorías vacías, existe alguien que ha caminado el camino antes que tú. 
-                Su autoridad no proviene de diplomas, sino de <span className="text-primary">resultados que hablan por sí solos</span>.
-              </p>
-              <p className="text-muted-foreground">
-                Empresario, visionario y entrenador de élite. Con más de 25 años forjando éxitos, 
-                ha construido comunidades de más de 380,000 personas y alcanzado la cima como Top Earner en múltiples compañías a nivel global. 
-                <span className="text-secondary font-medium"> Ahora, está listo para guiarte hacia tu propia transformación.</span>
-              </p>
+            <div className="grid md:grid-cols-2 gap-8 items-center mb-12">
+              {/* Mentor Image */}
+              <div className="flex justify-center order-2 md:order-1">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-transparent rounded-full blur-3xl" />
+                  <img 
+                    src={hectorImage} 
+                    alt="Hector Galensky"
+                    className="relative z-10 max-w-sm w-full h-auto drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]"
+                  />
+                </div>
+              </div>
+              
+              {/* Mentor Text */}
+              <div className="text-center md:text-left order-1 md:order-2">
+                <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                  Un Solo Mentor: <span className="text-gradient">Hector Galensky</span>
+                </h2>
+                <p className="text-muted-foreground text-lg mb-6">
+                  En un mundo saturado de teorías vacías, existe alguien que ha caminado el camino antes que tú. 
+                  Su autoridad no proviene de diplomas, sino de <span className="text-primary">resultados que hablan por sí solos</span>.
+                </p>
+                <p className="text-muted-foreground">
+                  Empresario, visionario y entrenador de élite. Con más de 25 años forjando éxitos, 
+                  ha construido comunidades de más de 380,000 personas y alcanzado la cima como Top Earner en múltiples compañías a nivel global. 
+                  <span className="text-secondary font-medium"> Ahora, está listo para guiarte hacia tu propia transformación.</span>
+                </p>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
