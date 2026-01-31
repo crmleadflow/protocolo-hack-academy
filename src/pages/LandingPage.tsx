@@ -200,19 +200,18 @@ const LandingPage: React.FC = () => {
                     <div className="w-64 h-64 rounded-full border border-accent/25 animate-spin" style={{ animationDuration: '25s' }} />
                   </div>
                   
-                  {/* Video container with holographic frame */}
-                  <div className="relative z-10 w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden holographic-border shadow-[0_0_60px_rgba(0,217,255,0.4),0_0_100px_rgba(176,38,255,0.3)]">
+                  {/* Video container - no background, blends with page */}
+                  <div className="relative z-10 w-80 h-80 md:w-96 md:h-96 flex items-center justify-center">
                     <video 
                       src={ciborgVideo}
                       autoPlay 
                       loop 
-                      muted 
                       playsInline
-                      className="w-full h-full object-cover scale-110"
+                      controls
+                      className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,217,255,0.5)]"
                     />
-                    {/* Holographic overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-secondary/10 pointer-events-none" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none animate-pulse" style={{ animationDuration: '3s' }} />
+                    {/* Holographic glow overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-secondary/5 pointer-events-none rounded-2xl" />
                   </div>
                   
                   {/* Bottom fade effect */}
