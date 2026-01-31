@@ -59,6 +59,7 @@ const CheckoutPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [invalidIdError, setInvalidIdError] = useState(false);
 
   const paymentMethods: PaymentMethod[] = [
     {
@@ -97,13 +98,8 @@ const CheckoutPage: React.FC = () => {
   useEffect(() => {
     const fetchProgram = async () => {
       if (!programId || !isUuid(programId)) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "ID de programa inválido. Redirigiendo al catálogo...",
-        });
+        setInvalidIdError(true);
         setIsLoading(false);
-        navigate("/catalog", { replace: true });
         return;
       }
 
@@ -215,17 +211,77 @@ const CheckoutPage: React.FC = () => {
     );
   }
 
+  // Error screen for invalid program ID
+  if (invalidIdError) {
+    const handleReportProblem = () => {
+      const subject = encodeURIComponent("Problema con checkout - ID inválido");
+      const body = encodeURIComponent(
+        `Hola,\n\nEncontré un error al intentar acceder al checkout.\n\nDetalles:\n- URL: ${window.location.href}\n- ID recibido: ${programId || "(vacío)"}\n- Fecha: ${new Date().toLocaleString()}\n\nPor favor ayúdenme a resolver este problema.\n\nGracias.`
+      );
+      window.open(`mailto:soporte@protocolohack.com?subject=${subject}&body=${body}`, "_blank");
+    };
+
+    return (
+      <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
+        <ParticleBackground particleCount={20} />
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-destructive/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        
+        <HolographicCard variant="gradient" className="p-8 text-center max-w-md relative z-10">
+          <div className="w-20 h-20 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-10 h-10 text-destructive" />
+          </div>
+          
+          <h2 className="text-2xl font-heading font-bold mb-3">
+            Enlace de pago inválido
+          </h2>
+          
+          <p className="text-muted-foreground mb-2">
+            El enlace que usaste para acceder a esta página no es válido o ha expirado.
+          </p>
+          
+          <p className="text-sm text-muted-foreground mb-6">
+            ID recibido: <code className="px-2 py-1 bg-muted rounded text-xs font-mono">{programId || "(vacío)"}</code>
+          </p>
+
+          <div className="space-y-3">
+            <NeonButton onClick={() => navigate("/catalog")} className="w-full">
+              <BookOpen className="w-4 h-4" />
+              Ir al catálogo
+            </NeonButton>
+            
+            <NeonButton 
+              variant="outline" 
+              onClick={handleReportProblem}
+              className="w-full"
+            >
+              <AlertCircle className="w-4 h-4" />
+              Reportar problema
+            </NeonButton>
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-6">
+            Si llegaste aquí desde un enlace, es posible que esté mal formado o que el programa ya no exista.
+          </p>
+        </HolographicCard>
+      </div>
+    );
+  }
+
   if (!program) {
     return (
-      <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
+      <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
         <ParticleBackground particleCount={20} />
-        <HolographicCard className="p-8 text-center max-w-md">
-          <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
-          <h2 className="text-xl font-heading font-bold mb-2">Programa no encontrado</h2>
-          <p className="text-muted-foreground mb-4">
-            El programa que buscas no está disponible.
+        <HolographicCard variant="gradient" className="p-8 text-center max-w-md">
+          <div className="w-20 h-20 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-10 h-10 text-destructive" />
+          </div>
+          <h2 className="text-2xl font-heading font-bold mb-3">Programa no encontrado</h2>
+          <p className="text-muted-foreground mb-6">
+            El programa que buscas no está disponible o ha sido eliminado.
           </p>
-          <NeonButton onClick={() => navigate("/catalog")}>
+          <NeonButton onClick={() => navigate("/catalog")} className="w-full">
+            <BookOpen className="w-4 h-4" />
             Volver al catálogo
           </NeonButton>
         </HolographicCard>
