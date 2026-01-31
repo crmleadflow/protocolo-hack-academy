@@ -11,7 +11,7 @@ import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import hectorVideo from "@/assets/hector1.mp4";
+import hectorVideo from "@/assets/protocolo_1.mp4";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -184,29 +184,47 @@ const LandingPage: React.FC = () => {
               style={{ animationDelay: "0.25s" }}
               onClick={toggleVideo}
             >
-              <div className="relative">
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-transparent rounded-full blur-3xl" />
+              <div className="relative group">
+                {/* Outer glow effect */}
+                <div className="absolute -inset-4 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20 rounded-2xl blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                {/* Video */}
-                <video
-                  ref={videoRef}
-                  src={hectorVideo}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="relative z-10 max-w-[200px] sm:max-w-xs md:max-w-sm w-full h-auto object-contain drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]"
-                />
-                
-                {/* Pause indicator */}
-                {!isVideoPlaying && (
-                  <div className="absolute inset-0 flex items-center justify-center z-20">
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm">
-                      <Play className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground ml-1" />
-                    </div>
+                {/* Holographic frame */}
+                <div className="relative p-1 rounded-xl bg-gradient-to-br from-primary via-secondary to-accent animate-pulse">
+                  {/* Inner holographic border with animation */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-accent via-primary to-secondary opacity-50 animate-[spin_8s_linear_infinite]" />
+                  
+                  {/* Glass inner container */}
+                  <div className="relative rounded-lg overflow-hidden glass-strong">
+                    {/* Holographic shimmer overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 z-20 pointer-events-none" />
+                    
+                    {/* Video */}
+                    <video
+                      ref={videoRef}
+                      src={hectorVideo}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="relative z-10 max-w-[200px] sm:max-w-xs md:max-w-sm w-full h-auto object-contain"
+                    />
+                    
+                    {/* Pause indicator */}
+                    {!isVideoPlaying && (
+                      <div className="absolute inset-0 flex items-center justify-center z-20">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/80 flex items-center justify-center backdrop-blur-sm border border-primary/50">
+                          <Play className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground ml-1" />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+                
+                {/* Corner accents */}
+                <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-primary rounded-tl-lg" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-secondary rounded-tr-lg" />
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-accent rounded-bl-lg" />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-primary rounded-br-lg" />
               </div>
             </div>
 
