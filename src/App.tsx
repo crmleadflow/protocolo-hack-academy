@@ -19,6 +19,7 @@ import ProducerNewCoursePage from "./pages/ProducerNewCoursePage";
 import ProducerCourseEditPage from "./pages/ProducerCourseEditPage";
 import AdminStudentsPage from "./pages/AdminStudentsPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import CryptoPaymentPage from "./pages/CryptoPaymentPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentCancelPage from "./pages/PaymentCancelPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -80,6 +81,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/crypto-payment"
+              element={
+                <ProtectedRoute>
+                  <CryptoPaymentPage />
                 </ProtectedRoute>
               }
             />

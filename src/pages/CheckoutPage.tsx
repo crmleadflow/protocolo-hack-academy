@@ -74,6 +74,13 @@ const CheckoutPage: React.FC = () => {
       available: true,
     },
     {
+      id: "usdt_tron",
+      name: "USDT (TRON)",
+      description: "Paga con USDT en la red TRON - Rápido y seguro",
+      icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 21.6C6.264 21.6 1.6 16.936 1.6 12S6.264 2.4 12 2.4 22.4 7.064 22.4 12 17.736 21.6 12 21.6zm3.408-15.6H8.592L7.2 9.6l4.8 8.4 4.8-8.4-1.392-3.6zm-3.408 9L9.6 10.8l2.4-1.2 2.4 1.2L12 15z"/></svg>,
+      available: true,
+    },
+    {
       id: "stripe",
       name: "Stripe",
       description: "Tarjeta de crédito/débito procesada por Stripe",
@@ -202,6 +209,19 @@ const CheckoutPage: React.FC = () => {
           window.location.href = data.approvalUrl;
         } else {
           throw new Error("No approval URL received");
+        }
+      } else if (selectedMethod === "usdt_tron") {
+        const { data, error } = await supabase.functions.invoke("nowpayments-create-payment", {
+          body: { programId: program.id },
+        });
+
+        if (error) throw error;
+
+        if (data.payAddress) {
+          // Navigate to a payment details page or show modal with payment info
+          navigate(`/crypto-payment?address=${data.payAddress}&amount=${data.payAmount}&currency=${data.payCurrency}&programId=${program.id}&paymentId=${data.paymentId}`);
+        } else {
+          throw new Error("No payment address received");
         }
       } else {
         // Placeholder for other payment methods
