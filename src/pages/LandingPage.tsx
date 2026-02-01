@@ -546,7 +546,7 @@ const LandingPage: React.FC = () => {
                   <img 
                     src={hectorCyberpunk} 
                     alt="Héctor Galensky" 
-                    className="relative w-64 sm:w-80 md:w-96 lg:w-[28rem] xl:w-[32rem] h-auto object-contain drop-shadow-2xl"
+                    className="relative w-80 sm:w-96 md:w-[28rem] lg:w-[36rem] xl:w-[42rem] h-auto object-contain drop-shadow-2xl"
                   />
                 </div>
               </div>
