@@ -1,63 +1,31 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom";
 import { 
-  Users, Search, UserPlus, Check, Ban,
-  BookOpen, Loader2, CheckCircle2, GraduationCap
+  Users, Search, Loader2, CheckCircle2, GraduationCap, BookOpen
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
-import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
-import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-interface Student {
-  id: string;
-  user_id: string;
-  full_name: string | null;
-  email: string;
-  enrollments: Array<{
-    id: string;
-    program_id: string;
-    program_title: string;
-    status: string;
-    enrolled_at: string | null;
-    is_manual: boolean;
-  }>;
-}
+import { 
+  StudentEnrollmentCard, 
+  StudentWithEnrollments, 
+  ProgramEnrollment 
+} from "@/components/admin/StudentEnrollmentCard";
 
 interface Program {
   id: string;
   title: string;
+}
+
+interface LessonProgress {
+  lesson_id: string;
+  user_id: string;
+  completed: boolean;
 }
 
 interface ProgramStats {
@@ -69,17 +37,13 @@ interface ProgramStats {
 }
 
 const AdminStudentsPage: React.FC = () => {
-  const location = useLocation();
   const { toast } = useToast();
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<StudentWithEnrollments[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showEnrollModal, setShowEnrollModal] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [selectedProgram, setSelectedProgram] = useState<string>("");
-  const [isEnrolling, setIsEnrolling] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStudentsAndPrograms();
@@ -88,37 +52,104 @@ const AdminStudentsPage: React.FC = () => {
   const fetchStudentsAndPrograms = async () => {
     setIsLoading(true);
     try {
+      // Fetch profiles
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("id, user_id, full_name");
 
       if (profilesError) throw profilesError;
 
+      // Fetch programs
       const { data: programsData, error: programsError } = await supabase
         .from("programs")
-        .select("id, title");
+        .select("id, title")
+        .order("sort_order", { ascending: true });
 
       if (programsError) throw programsError;
 
       setPrograms(programsData || []);
 
+      // Fetch enrollments
       const { data: enrollmentsData, error: enrollmentsError } = await supabase
         .from("enrollments")
         .select("id, user_id, program_id, status, enrolled_at, is_manual");
 
       if (enrollmentsError) throw enrollmentsError;
 
-      const studentsWithEnrollments: Student[] = (profilesData || []).map((profile) => {
+      // Fetch modules to map lessons to programs
+      const { data: modulesData, error: modulesError } = await supabase
+        .from("modules")
+        .select("id, program_id");
+
+      if (modulesError) throw modulesError;
+
+      // Fetch lessons
+      const { data: lessonsData, error: lessonsError } = await supabase
+        .from("lessons")
+        .select("id, module_id");
+
+      if (lessonsError) throw lessonsError;
+
+      // Fetch all lesson progress
+      const { data: progressData, error: progressError } = await supabase
+        .from("lesson_progress")
+        .select("lesson_id, user_id, completed");
+
+      if (progressError) throw progressError;
+
+      // Create a map of lesson_id to program_id
+      const lessonToProgramMap = new Map<string, string>();
+      (lessonsData || []).forEach((lesson) => {
+        const module = (modulesData || []).find((m) => m.id === lesson.module_id);
+        if (module) {
+          lessonToProgramMap.set(lesson.id, module.program_id);
+        }
+      });
+
+      // Create a map of program_id to total lessons count
+      const programLessonsCount = new Map<string, number>();
+      (lessonsData || []).forEach((lesson) => {
+        const programId = lessonToProgramMap.get(lesson.id);
+        if (programId) {
+          programLessonsCount.set(
+            programId, 
+            (programLessonsCount.get(programId) || 0) + 1
+          );
+        }
+      });
+
+      // Build students with enrollments and progress
+      const studentsWithEnrollments: StudentWithEnrollments[] = (profilesData || []).map((profile) => {
         const userEnrollments = (enrollmentsData || [])
           .filter((e) => e.user_id === profile.user_id)
-          .map((e) => ({
-            id: e.id,
-            program_id: e.program_id,
-            program_title: programsData?.find((p) => p.id === e.program_id)?.title || "Unknown",
-            status: e.status,
-            enrolled_at: e.enrolled_at,
-            is_manual: e.is_manual,
-          }));
+          .map((e) => {
+            const programTitle = programsData?.find((p) => p.id === e.program_id)?.title || "Unknown";
+            const totalLessons = programLessonsCount.get(e.program_id) || 0;
+            
+            // Count completed lessons for this user in this program
+            const completedLessons = (progressData || []).filter((p) => {
+              const lessonProgramId = lessonToProgramMap.get(p.lesson_id);
+              return p.user_id === profile.user_id && 
+                     p.completed && 
+                     lessonProgramId === e.program_id;
+            }).length;
+
+            const progress = totalLessons > 0 
+              ? Math.round((completedLessons / totalLessons) * 100) 
+              : 0;
+
+            return {
+              id: e.id,
+              program_id: e.program_id,
+              program_title: programTitle,
+              status: e.status as ProgramEnrollment["status"],
+              enrolled_at: e.enrolled_at,
+              is_manual: e.is_manual,
+              progress,
+              completedLessons,
+              totalLessons,
+            };
+          });
 
         return {
           id: profile.id,
@@ -142,92 +173,123 @@ const AdminStudentsPage: React.FC = () => {
     }
   };
 
-  const handleEnrollStudent = async () => {
-    if (!selectedStudent || !selectedProgram) return;
+  const handleToggleEnrollment = async (
+    userId: string,
+    programId: string,
+    enrollmentId: string | null,
+    currentStatus: "active" | null
+  ) => {
+    const updateKey = `${userId}-${programId}`;
+    setIsUpdating(updateKey);
 
-    setIsEnrolling(true);
     try {
-      const { error } = await supabase.from("enrollments").upsert(
-        {
-          user_id: selectedStudent.user_id,
-          program_id: selectedProgram,
-          status: "active",
-          enrolled_at: new Date().toISOString(),
-          is_manual: true,
-        },
-        { onConflict: "user_id,program_id" }
-      );
+      if (currentStatus === "active") {
+        // Deactivate
+        if (enrollmentId) {
+          const { error } = await supabase
+            .from("enrollments")
+            .update({ status: "cancelled" })
+            .eq("id", enrollmentId);
 
-      if (error) throw error;
+          if (error) throw error;
 
-      toast({
-        title: "Estudiante inscrito",
-        description: "El estudiante ha sido inscrito manualmente al programa",
-      });
+          toast({
+            title: "Acceso desactivado",
+            description: "El acceso al programa ha sido cancelado",
+          });
+        }
+      } else {
+        // Activate or create
+        const { error } = await supabase.from("enrollments").upsert(
+          {
+            user_id: userId,
+            program_id: programId,
+            status: "active",
+            enrolled_at: new Date().toISOString(),
+            is_manual: true,
+          },
+          { onConflict: "user_id,program_id" }
+        );
 
-      setShowEnrollModal(false);
-      setSelectedStudent(null);
-      setSelectedProgram("");
-      fetchStudentsAndPrograms();
+        if (error) throw error;
+
+        toast({
+          title: "Acceso activado",
+          description: "El estudiante ahora tiene acceso al programa",
+        });
+      }
+
+      await fetchStudentsAndPrograms();
     } catch (error) {
-      console.error("Error enrolling student:", error);
+      console.error("Error toggling enrollment:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudo inscribir al estudiante",
+        description: "No se pudo actualizar el acceso",
       });
     } finally {
-      setIsEnrolling(false);
+      setIsUpdating(null);
     }
   };
 
-  const handleRevokeEnrollment = async (enrollmentId: string) => {
+  const handleToggleAllPrograms = async (userId: string, activate: boolean) => {
+    const updateKey = `all-${userId}`;
+    setIsUpdating(updateKey);
+
     try {
-      const { error } = await supabase
-        .from("enrollments")
-        .update({ status: "cancelled" })
-        .eq("id", enrollmentId);
+      if (activate) {
+        // Activate all programs
+        const upsertData = programs.map((program) => ({
+          user_id: userId,
+          program_id: program.id,
+          status: "active" as const,
+          enrolled_at: new Date().toISOString(),
+          is_manual: true,
+        }));
 
-      if (error) throw error;
+        for (const enrollment of upsertData) {
+          const { error } = await supabase.from("enrollments").upsert(
+            enrollment,
+            { onConflict: "user_id,program_id" }
+          );
+          if (error) throw error;
+        }
 
-      toast({
-        title: "Acceso revocado",
-        description: "El acceso al programa ha sido cancelado",
-      });
+        toast({
+          title: "Todos los accesos activados",
+          description: `Se activaron ${programs.length} programas para el estudiante`,
+        });
+      } else {
+        // Deactivate all programs
+        const student = students.find((s) => s.user_id === userId);
+        if (student) {
+          for (const enrollment of student.enrollments) {
+            if (enrollment.id && enrollment.status === "active") {
+              const { error } = await supabase
+                .from("enrollments")
+                .update({ status: "cancelled" })
+                .eq("id", enrollment.id);
+              if (error) throw error;
+            }
+          }
+        }
 
-      fetchStudentsAndPrograms();
+        toast({
+          title: "Todos los accesos desactivados",
+          description: "Se cancelaron todos los accesos del estudiante",
+        });
+      }
+
+      await fetchStudentsAndPrograms();
     } catch (error) {
-      console.error("Error revoking enrollment:", error);
+      console.error("Error toggling all enrollments:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudo revocar el acceso",
+        description: "No se pudieron actualizar los accesos",
       });
-    }
-  };
-
-  const handleReactivateEnrollment = async (enrollmentId: string) => {
-    try {
-      const { error } = await supabase
-        .from("enrollments")
-        .update({ status: "active" })
-        .eq("id", enrollmentId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Acceso reactivado",
-        description: "El acceso al programa ha sido reactivado",
-      });
-
-      fetchStudentsAndPrograms();
-    } catch (error) {
-      console.error("Error reactivating enrollment:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "No se pudo reactivar el acceso",
-      });
+    } finally {
+      setIsUpdating(null);
     }
   };
 
@@ -257,7 +319,9 @@ const AdminStudentsPage: React.FC = () => {
     let filtered = students;
 
     // Filter by program if not "all"
-    if (activeTab !== "all") {
+    if (activeTab === "none") {
+      filtered = students.filter((student) => student.enrollments.length === 0);
+    } else if (activeTab !== "all") {
       filtered = students.filter((student) =>
         student.enrollments.some((e) => e.program_id === activeTab)
       );
@@ -275,15 +339,10 @@ const AdminStudentsPage: React.FC = () => {
     return filtered;
   }, [students, activeTab, searchTerm]);
 
-  // Get students with no enrollments for "Sin Programa" tab
+  // Get students with no enrollments
   const studentsWithoutEnrollments = useMemo(() => {
     return students.filter((student) => student.enrollments.length === 0);
   }, [students]);
-
-  const openEnrollModal = (student: Student) => {
-    setSelectedStudent(student);
-    setShowEnrollModal(true);
-  };
 
   const totalActiveEnrollments = students.filter((s) =>
     s.enrollments.some((e) => e.status === "active")
@@ -297,9 +356,19 @@ const AdminStudentsPage: React.FC = () => {
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
-            <div className="space-y-6">
+            {/* Page Header */}
+            <div className="flex flex-col gap-2">
+              <h1 className="text-2xl font-heading font-bold flex items-center gap-2">
+                <Users className="w-6 h-6 text-primary" />
+                Gestión de Alumnos
+              </h1>
+              <p className="text-muted-foreground">
+                Administra inscripciones, activa o desactiva acceso a programas y visualiza el progreso de cada estudiante.
+              </p>
+            </div>
+
             {/* Global Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <HolographicCard className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
@@ -409,286 +478,40 @@ const AdminStudentsPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Content for all tabs */}
+              {/* Content */}
               {isLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
+              ) : filteredStudents.length === 0 ? (
+                <HolographicCard className="p-12 text-center">
+                  <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">No hay estudiantes</h3>
+                  <p className="text-muted-foreground">
+                    {activeTab === "none" 
+                      ? "Todos los usuarios tienen al menos un programa asignado"
+                      : "Los estudiantes aparecerán aquí cuando se inscriban"}
+                  </p>
+                </HolographicCard>
               ) : (
-                <>
-                  <TabsContent value="all" className="mt-0">
-                    <StudentTable
-                      students={filteredStudents}
-                      onEnroll={openEnrollModal}
-                      onRevoke={handleRevokeEnrollment}
-                      onReactivate={handleReactivateEnrollment}
-                      showPrograms
+                <div className="space-y-3">
+                  {filteredStudents.map((student) => (
+                    <StudentEnrollmentCard
+                      key={student.id}
+                      student={student}
+                      allPrograms={programs}
+                      onToggleEnrollment={handleToggleEnrollment}
+                      onToggleAllPrograms={handleToggleAllPrograms}
+                      isUpdating={isUpdating}
                     />
-                  </TabsContent>
-
-                  {programs.map((program) => (
-                    <TabsContent key={program.id} value={program.id} className="mt-0">
-                      <StudentTable
-                        students={filteredStudents}
-                        onEnroll={openEnrollModal}
-                        onRevoke={handleRevokeEnrollment}
-                        onReactivate={handleReactivateEnrollment}
-                        filterProgramId={program.id}
-                      />
-                    </TabsContent>
                   ))}
-
-                  <TabsContent value="none" className="mt-0">
-                    <StudentTable
-                      students={studentsWithoutEnrollments.filter(
-                        (s) =>
-                          !searchTerm ||
-                          s.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          s.user_id.toLowerCase().includes(searchTerm.toLowerCase())
-                      )}
-                      onEnroll={openEnrollModal}
-                      onRevoke={handleRevokeEnrollment}
-                      onReactivate={handleReactivateEnrollment}
-                      showPrograms
-                      emptyMessage="No hay usuarios sin programa asignado"
-                    />
-                  </TabsContent>
-                </>
+                </div>
               )}
             </Tabs>
-            </div>
           </div>
         </main>
-
-        {/* Enroll Modal */}
-        <Dialog open={showEnrollModal} onOpenChange={setShowEnrollModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Inscribir Estudiante</DialogTitle>
-              <DialogDescription>
-                Inscribir manualmente a {selectedStudent?.full_name || "estudiante"} en un programa
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Seleccionar Programa</label>
-                <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Elige un programa" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {programs.map((program) => (
-                      <SelectItem key={program.id} value={program.id}>
-                        {program.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <DialogFooter>
-              <NeonButton variant="ghost" onClick={() => setShowEnrollModal(false)}>
-                Cancelar
-              </NeonButton>
-              <NeonButton onClick={handleEnrollStudent} disabled={!selectedProgram || isEnrolling}>
-                {isEnrolling ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Inscribiendo...
-                  </>
-                ) : (
-                  <>
-                    <Check className="w-4 h-4" />
-                    Inscribir
-                  </>
-                )}
-              </NeonButton>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     </SidebarProvider>
-  );
-};
-
-// Student Table Component
-interface StudentTableProps {
-  students: Student[];
-  onEnroll: (student: Student) => void;
-  onRevoke: (enrollmentId: string) => void;
-  onReactivate: (enrollmentId: string) => void;
-  showPrograms?: boolean;
-  filterProgramId?: string;
-  emptyMessage?: string;
-}
-
-const StudentTable: React.FC<StudentTableProps> = ({
-  students,
-  onEnroll,
-  onRevoke,
-  onReactivate,
-  showPrograms = false,
-  filterProgramId,
-  emptyMessage = "No hay estudiantes en este programa",
-}) => {
-  if (students.length === 0) {
-    return (
-      <HolographicCard className="p-12 text-center">
-        <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="text-lg font-semibold mb-2">{emptyMessage}</h3>
-        <p className="text-muted-foreground">
-          Los estudiantes aparecerán aquí cuando se inscriban
-        </p>
-      </HolographicCard>
-    );
-  }
-
-  return (
-    <HolographicCard className="overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Estudiante</TableHead>
-            {showPrograms && <TableHead>Programas</TableHead>}
-            <TableHead>Estado</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {students.map((student) => {
-            const relevantEnrollments = filterProgramId
-              ? student.enrollments.filter((e) => e.program_id === filterProgramId)
-              : student.enrollments;
-
-            const hasActiveEnrollment = relevantEnrollments.some((e) => e.status === "active");
-
-            return (
-              <TableRow key={student.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold">
-                      {student.full_name?.[0]?.toUpperCase() || "?"}
-                    </div>
-                    <div>
-                      <div className="font-medium">{student.full_name || "Sin nombre"}</div>
-                      <div className="text-xs text-muted-foreground font-mono">
-                        {student.user_id.slice(0, 8)}...
-                      </div>
-                    </div>
-                  </div>
-                </TableCell>
-
-                {showPrograms && (
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {student.enrollments.length === 0 ? (
-                        <Badge variant="secondary">Sin inscripciones</Badge>
-                      ) : (
-                        <>
-                          {student.enrollments.slice(0, 3).map((enrollment) => (
-                            <Badge
-                              key={enrollment.id}
-                              variant={enrollment.status === "active" ? "default" : "secondary"}
-                              className="text-xs"
-                            >
-                              {enrollment.program_title.length > 12
-                                ? `${enrollment.program_title.slice(0, 12)}...`
-                                : enrollment.program_title}
-                            </Badge>
-                          ))}
-                          {student.enrollments.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{student.enrollments.length - 3} más
-                            </Badge>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                )}
-
-                <TableCell>
-                  {filterProgramId ? (
-                    relevantEnrollments.map((enrollment) => (
-                      <div key={enrollment.id} className="flex items-center gap-2">
-                        <Badge
-                          variant={enrollment.status === "active" ? "default" : "secondary"}
-                        >
-                          {enrollment.status === "active" ? "Activo" : "Inactivo"}
-                        </Badge>
-                        {enrollment.is_manual && (
-                          <Badge variant="outline" className="text-xs">
-                            Manual
-                          </Badge>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <Badge variant={hasActiveEnrollment ? "default" : "secondary"}>
-                      {hasActiveEnrollment ? "Activo" : student.enrollments.length > 0 ? "Inactivo" : "Sin acceso"}
-                    </Badge>
-                  )}
-                </TableCell>
-
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    {student.enrollments.length > 0 ? (
-                      <>
-                        {student.enrollments.map((enrollment) => (
-                          <div key={enrollment.id} className="flex items-center gap-1">
-                            {enrollment.status === "active" ? (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onRevoke(enrollment.id)}
-                                className="h-8 text-xs border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                              >
-                                <Ban className="w-3 h-3 mr-1" />
-                                Desactivar
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onReactivate(enrollment.id)}
-                                className="h-8 text-xs border-primary/50 text-primary hover:bg-primary/10 hover:text-primary"
-                              >
-                                <Check className="w-3 h-3 mr-1" />
-                                Activar
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onEnroll(student)}
-                          className="h-8 text-xs"
-                        >
-                          <UserPlus className="w-3 h-3" />
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onEnroll(student)}
-                        className="h-8"
-                      >
-                        <UserPlus className="w-4 h-4 mr-1" />
-                        Inscribir
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </HolographicCard>
   );
 };
 
