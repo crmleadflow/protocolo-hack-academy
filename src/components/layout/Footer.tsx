@@ -144,11 +144,11 @@ const Footer: React.FC = () => {
               </ul>
               <div className="mt-4 md:mt-6">
                 <a
-                  href="mailto:hello@protocolohack.com"
-                  className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-primary hover:underline"
+                  href="mailto:soporte@hectorgalensky.shop"
+                  className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm text-primary hover:underline break-all"
                 >
-                  <Mail className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  hello@protocolohack.com
+                  <Mail className="w-3.5 h-3.5 md:w-4 md:h-4 flex-shrink-0" />
+                  <span className="break-all">soporte@hectorgalensky.shop</span>
                 </a>
               </div>
             </div>
