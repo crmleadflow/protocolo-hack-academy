@@ -1,13 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Twitter, Linkedin, Youtube, Instagram, Mail } from "lucide-react";
+import { Youtube, Instagram, Mail, MessageCircle } from "lucide-react";
 
 const Footer: React.FC = () => {
   const socialLinks = [
-    { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
-    { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-    { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
     { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
+    { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
+    { icon: MessageCircle, href: "https://wa.me/", label: "WhatsApp" },
   ];
 
   return (
