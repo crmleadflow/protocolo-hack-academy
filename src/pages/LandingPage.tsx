@@ -348,7 +348,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECCIÓN 4: EL MANIFIESTO DEL ESTRATEGA */}
-      <section className="py-6 md:py-16 relative z-10">
+      <section className="py-10 md:py-20 relative z-10">
         <div className="container mx-auto px-3 md:px-4">
           <div className="max-w-4xl mx-auto">
             <HolographicCard variant="gradient" className="p-4 sm:p-6 md:p-12">
@@ -377,7 +377,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECCIÓN 5: LOS 6 MOTORES DEL ARSENAL */}
-      <section className="py-6 md:py-16 relative z-10">
+      <section className="py-10 md:py-20 relative z-10">
         <div className="container mx-auto px-3 md:px-4">
           <div className="text-center mb-6 md:mb-12 px-1">
             <div className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-1 md:py-2 rounded-full glass mb-2 md:mb-4">
@@ -442,7 +442,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECCIÓN 6: LOS BONOS DE INTELIGENCIA ARTIFICIAL */}
-      <section className="py-6 md:py-16 relative z-10">
+      <section className="py-10 md:py-20 relative z-10">
         <div className="container mx-auto px-3 md:px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-6 md:mb-12">
@@ -507,7 +507,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECCIÓN 7: AUTORIDAD - Héctor Galensky */}
-      <section className="py-6 md:py-16 relative z-10">
+      <section className="py-10 md:py-20 relative z-10">
         <div className="container mx-auto px-3 md:px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-6 md:mb-12">
@@ -561,7 +561,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECCIÓN 8: LA OFERTA IRRESISTIBLE - THE STACK */}
-      <section className="py-6 md:py-16 relative z-10">
+      <section className="py-10 md:py-20 relative z-10">
         <div className="container mx-auto px-3 md:px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-6 md:mb-10">
@@ -649,7 +649,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECCIÓN 9: GARANTÍA */}
-      <section className="py-4 md:py-10 relative z-10">
+      <section className="py-10 md:py-16 relative z-10">
         <div className="container mx-auto px-3 md:px-4">
           <div className="max-w-3xl mx-auto">
             <HolographicCard className="p-3 sm:p-5 md:p-8 text-center relative overflow-hidden">
