@@ -19,7 +19,7 @@ import iaBusinessLabThumb from "@/assets/ia-business-lab-thumbnail.png";
 import neuroTalkThumb from "@/assets/neuro-talk-thumbnail.jpg";
 import fastBrandThumb from "@/assets/fast-brand-accelerator-thumbnail.png";
 import protocoloHackThumb from "@/assets/protocolo-hack-thumbnail.png";
-import prospectMachineThumb from "@/assets/prospect-machine-thumbnail.jpg";
+
 import videoMagnetThumb from "@/assets/video-magnet-thumbnail.png";
 import productCreatorThumb from "@/assets/product-creator-pro-thumbnail.png";
 
@@ -84,11 +84,6 @@ const arsenalPillars = [
     description: "La arquitectura para automatizar todos tus procesos de venta. Tu negocio crece con precisión mientras tú recuperas tu libertad.",
   },
   {
-    thumbnail: prospectMachineThumb,
-    title: "Client Factory",
-    description: "Tu generador de prospectos calificados en automático. Un flujo constante de personas interesadas directo a tu WhatsApp.",
-  },
-  {
     thumbnail: productCreatorThumb,
     title: "Digital Empire",
     description: "Aprende a empaquetar tu conocimiento en productos digitales (cursos y e-books) que facturen de forma masiva y constante.",
@@ -138,11 +133,6 @@ const accelerators = [
   {
     title: "El Diccionario de Neuro-Persuasión (Neuro-Talk)",
     description: "Guiones de copia y pega para que el cliente te diga \"SÍ\" antes de que termines de hablar.",
-    value: "$497"
-  },
-  {
-    title: "Tu Fábrica de Prospectos (Client Factory)",
-    description: "Mi configuración secreta de anuncios que trae clientes calificados cada mañana a tu móvil.",
     value: "$497"
   },
   {
@@ -403,7 +393,7 @@ const LandingPage: React.FC = () => {
               <span className="text-xs md:text-sm font-medium">Arsenal de Ejecución</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-3 md:mb-4">
-              Instala los <span className="text-gradient">7 Componentes</span> de tu nuevo Arsenal
+              Instala los <span className="text-gradient">6 Componentes</span> de tu nuevo Arsenal
             </h2>
           </div>
 
