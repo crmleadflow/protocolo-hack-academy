@@ -393,11 +393,6 @@ const LandingPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Tarjeta destacada (Arsenal Maestro) */}
-          <div className="max-w-6xl mx-auto mb-4 md:mb-8">
-            <ArsenalMaestroFeaturedCard onCtaClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} />
-          </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 max-w-6xl mx-auto">
             {arsenalMotors.map((motor, index) => (
               <HolographicCard
@@ -432,9 +427,14 @@ const LandingPage: React.FC = () => {
             ))}
           </div>
 
-          {/* CTA Button after 6 motors */}
+          {/* Tarjeta destacada (Arsenal Maestro) - Ahora debajo de los 6 programas */}
+          <div className="max-w-6xl mx-auto mt-6 md:mt-10">
+            <ArsenalMaestroFeaturedCard onCtaClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} />
+          </div>
+
+          {/* CTA Button after Arsenal Maestro */}
           <div className="text-center mt-8 md:mt-12">
-            <NeonButton 
+            <NeonButton
               size="xl" 
               onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} 
               className="w-full sm:w-auto text-xs sm:text-sm md:text-lg px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 whitespace-normal leading-tight"
