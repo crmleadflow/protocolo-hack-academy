@@ -124,10 +124,32 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   };
 
   const toggleFullscreen = () => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+    
+    // Check for iOS Safari - use webkitEnterFullscreen on video element
+    if (video && (video as any).webkitEnterFullscreen) {
+      (video as any).webkitEnterFullscreen();
+      return;
+    }
+    
+    // Standard fullscreen API for other browsers
     if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
+      if (container?.requestFullscreen) {
+        container.requestFullscreen();
+      } else if ((container as any)?.webkitRequestFullscreen) {
+        (container as any).webkitRequestFullscreen();
+      } else if ((container as any)?.msRequestFullscreen) {
+        (container as any).msRequestFullscreen();
+      }
     } else {
-      document.exitFullscreen();
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
     }
   };
 
