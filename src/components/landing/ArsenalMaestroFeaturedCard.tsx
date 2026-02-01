@@ -40,9 +40,9 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
 
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
           <div className="min-w-0">
-            <h3 className="font-heading font-bold text-lg sm:text-2xl leading-tight">
-              <span className="text-gradient neon-text">Arsenal Maestro: Hack 6</span>
-            </h3>
+          <h3 className="font-heading font-bold text-lg sm:text-2xl leading-tight text-foreground">
+            Arsenal Maestro: Hack 6
+          </h3>
             <p className="text-sm text-muted-foreground mt-1">
               Activa los 6 programas + 2 bonos de IA en un solo acceso.
             </p>
