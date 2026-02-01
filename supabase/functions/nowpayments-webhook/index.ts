@@ -7,6 +7,19 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// ID del paquete "Protocolo Hack Completo"
+const PROTOCOLO_HACK_COMPLETO_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
+
+// IDs de los 6 programas individuales incluidos en el paquete
+const INCLUDED_PROGRAM_IDS = [
+  "12ab251e-a501-4832-aa29-4edb8cef4840", // Protocolo Hack
+  "a1d8e2d4-0f9c-46b7-90d0-2aeede6a3998", // Neuro Talk
+  "b0742b04-29d1-448d-9150-2bd19069d6e9", // IA Business Lab
+  "9d46f2a1-01bd-484b-9e2c-b604af2aa984", // Product Creator Pro
+  "eaafca45-228f-442b-9a43-7f939d09623d", // Fast Brand Accelerator
+  "33aeb06d-6c44-481c-8fa7-24c3fb8debbe", // Video Magnet
+];
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -95,9 +108,9 @@ serve(async (req) => {
       console.error("Error updating payment:", updateError);
     }
 
-    // If payment completed, create enrollment
+    // If payment completed, create enrollments
     if (newStatus === "completed") {
-      // Check if enrollment already exists
+      // Check if main enrollment already exists
       const { data: existingEnrollment } = await supabaseAdmin
         .from("enrollments")
         .select("id")
@@ -106,6 +119,7 @@ serve(async (req) => {
         .single();
 
       if (!existingEnrollment) {
+        // Create main enrollment
         const { error: enrollmentError } = await supabaseAdmin
           .from("enrollments")
           .insert({
@@ -121,6 +135,44 @@ serve(async (req) => {
         } else {
           console.log("Enrollment created for user:", userId, "program:", programId);
         }
+      }
+
+      // If this is the "Protocolo Hack Completo" package, also enroll in all 6 individual programs
+      if (programId === PROTOCOLO_HACK_COMPLETO_ID) {
+        console.log("Enrolling user in all 6 included programs...");
+        
+        const enrollmentPromises = INCLUDED_PROGRAM_IDS.map(async (includedProgramId) => {
+          // Check if already enrolled
+          const { data: existing } = await supabaseAdmin
+            .from("enrollments")
+            .select("id")
+            .eq("user_id", userId)
+            .eq("program_id", includedProgramId)
+            .single();
+
+          if (!existing) {
+            const { error } = await supabaseAdmin
+              .from("enrollments")
+              .insert({
+                user_id: userId,
+                program_id: includedProgramId,
+                status: "active",
+                payment_id: existingPayment.id,
+                enrolled_at: new Date().toISOString(),
+              });
+            
+            if (error) {
+              console.error(`Error enrolling in program ${includedProgramId}:`, error);
+            } else {
+              console.log(`Successfully enrolled in program ${includedProgramId}`);
+            }
+          } else {
+            console.log(`User already enrolled in program ${includedProgramId}`);
+          }
+        });
+
+        await Promise.all(enrollmentPromises);
+        console.log("All 6 program enrollments completed");
       }
     }
 
