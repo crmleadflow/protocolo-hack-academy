@@ -335,15 +335,6 @@ const LandingPage: React.FC = () => {
                 </p>
               </div>
             </div>
-            
-
-            {/* Sub-headline movido debajo del video */}
-            <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-3xl mx-auto mt-6 md:mt-8 px-1 animate-fade-in leading-relaxed">
-              Ya sea que estés atrapado en la operación de tu empresa o estés lanzando tu primer activo digital:{" "}
-              <span className="text-primary font-semibold">Instala el Arsenal de Ejecución</span>{" "}
-              que automatiza tus ventas, crea tu marca y pone a la{" "}
-              <span className="text-secondary font-semibold">Inteligencia Artificial a trabajar por ti</span> desde el primer día.
-            </p>
           </div>
         </div>
       </section>
