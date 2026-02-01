@@ -341,9 +341,9 @@ const LandingPage: React.FC = () => {
 
             {/* CTA Button */}
             <div className="animate-fade-in px-2" style={{ animationDelay: "0.35s" }}>
-              <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-xs md:text-base px-4 md:px-6 py-3 md:py-4">
-                ¡SÍ, QUIERO ACTIVAR EL PROTOCOLO HACK AHORA!
-                <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+              <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-[10px] sm:text-xs md:text-base px-3 sm:px-4 md:px-6 py-3 md:py-4 whitespace-normal leading-tight">
+                <span className="text-center">¡SÍ, QUIERO ACTIVAR EL PROTOCOLO HACK AHORA!</span>
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
               </NeonButton>
             </div>
 
@@ -659,9 +659,9 @@ const LandingPage: React.FC = () => {
               <div className="absolute -bottom-16 -left-16 md:-bottom-24 md:-left-24 w-32 md:w-64 h-32 md:h-64 bg-secondary/20 rounded-full blur-3xl" />
 
               <div className="relative p-4 sm:p-8 md:p-16 text-center">
-                <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-xs md:text-lg px-4 md:px-12 py-3 md:py-6">
-                  ¡SÍ, QUIERO ACTIVAR MI PROTOCOLO HACK POR $499!
-                  <ArrowRight className="w-4 h-4 md:w-6 md:h-6" />
+                <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-[10px] sm:text-xs md:text-lg px-3 sm:px-4 md:px-12 py-3 md:py-6 whitespace-normal leading-tight">
+                  <span className="text-center">¡SÍ, QUIERO ACTIVAR MI PROTOCOLO HACK POR $499!</span>
+                  <ArrowRight className="w-4 h-4 md:w-6 md:h-6 flex-shrink-0" />
                 </NeonButton>
                 <p className="text-[10px] md:text-sm text-muted-foreground mt-3 md:mt-4">
                   Acceso inmediato a los 6 programas y los 2 Agentes de IA.
