@@ -36,20 +36,16 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
         <Sparkles className="absolute top-4 left-4 w-5 h-5 text-primary/60 animate-pulse hidden md:block" />
         <Star className="absolute bottom-4 right-20 w-4 h-4 text-secondary/60 animate-pulse hidden md:block" style={{ animationDelay: "0.5s" }} />
 
-        {/* Badges - Top Right Corner - Responsive */}
-        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col items-end gap-1 sm:gap-1.5 z-10">
-          {/* Main badge - compact on mobile */}
-          <span className="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-full bg-gradient-to-r from-primary to-secondary text-primary-foreground text-[9px] sm:text-xs font-bold shadow-lg shadow-primary/30 animate-pulse">
-            <Crown className="w-2.5 h-2.5 sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">RECOMENDADO</span>
-            <span className="sm:hidden">TOP</span>
-            <Flame className="w-2.5 h-2.5 sm:w-4 sm:h-4" />
+        {/* Badges - Desktop: Top Right Corner / Mobile: Below banner */}
+        <div className="hidden sm:flex absolute top-3 right-3 flex-col items-end gap-1.5 z-10">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary to-secondary text-primary-foreground text-xs font-bold shadow-lg shadow-primary/30 animate-pulse">
+            <Crown className="w-4 h-4" />
+            RECOMENDADO
+            <Flame className="w-4 h-4" />
           </span>
-          {/* Pack badge - smaller on mobile */}
-          <span className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full glass border border-primary/30 text-[8px] sm:text-[10px] text-foreground font-medium">
-            <Package className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-primary" />
-            <span className="hidden sm:inline">Pack completo</span>
-            <span className="sm:hidden">Pack</span>
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full glass border border-primary/30 text-[10px] text-foreground font-medium">
+            <Package className="w-3.5 h-3.5 text-primary" />
+            Pack completo
           </span>
         </div>
 
@@ -58,11 +54,26 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
           MEJOR PRECIO
         </div>
 
-        {/* Mobile-only horizontal banner for "MEJOR PRECIO" */}
-        <div className="sm:hidden w-full bg-gradient-to-r from-secondary to-primary py-1.5 px-3 flex items-center justify-center gap-2 rounded-t-lg -mt-3 -mx-3 mb-3" style={{ width: 'calc(100% + 1.5rem)' }}>
-          <Sparkles className="w-3 h-3 text-primary-foreground" />
-          <span className="text-[10px] font-bold text-primary-foreground tracking-wide">MEJOR PRECIO • AHORRAS 87%</span>
-          <Sparkles className="w-3 h-3 text-primary-foreground" />
+        {/* Mobile-only: horizontal banner + badges in same row */}
+        <div className="sm:hidden flex flex-col w-full -mt-3 -mx-3 mb-3" style={{ width: 'calc(100% + 1.5rem)' }}>
+          {/* Banner */}
+          <div className="w-full bg-gradient-to-r from-secondary to-primary py-1.5 px-3 flex items-center justify-center gap-2 rounded-t-lg">
+            <Sparkles className="w-3 h-3 text-primary-foreground" />
+            <span className="text-[10px] font-bold text-primary-foreground tracking-wide">MEJOR PRECIO • AHORRAS 87%</span>
+            <Sparkles className="w-3 h-3 text-primary-foreground" />
+          </div>
+          {/* Badges row below banner */}
+          <div className="flex items-center justify-center gap-2 py-1.5 bg-background/50 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-primary to-secondary text-primary-foreground text-[9px] font-bold shadow-md">
+              <Crown className="w-2.5 h-2.5" />
+              TOP
+              <Flame className="w-2.5 h-2.5" />
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full glass border border-primary/30 text-[9px] text-foreground font-medium">
+              <Package className="w-2.5 h-2.5 text-primary" />
+              Pack completo
+            </span>
+          </div>
         </div>
 
         <div className="relative pt-2 sm:pt-6 md:pt-4 sm:pl-10 md:pl-8">
