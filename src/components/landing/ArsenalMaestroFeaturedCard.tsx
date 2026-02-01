@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, CheckCircle, Crown, Package, Sparkles, Star, Flame, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle, Crown, Package, Sparkles, Flame, Zap } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { HolographicCard } from "@/components/ui/holographic-card";
@@ -32,9 +32,8 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
         <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-primary/30 blur-3xl animate-pulse" />
         <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-secondary/30 blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
         
-        {/* Sparkle decorations - hidden on mobile */}
+        {/* Sparkle decoration - hidden on mobile */}
         <Sparkles className="absolute top-4 left-4 w-5 h-5 text-primary/60 animate-pulse hidden md:block" />
-        <Star className="absolute bottom-4 right-20 w-4 h-4 text-secondary/60 animate-pulse hidden md:block" style={{ animationDelay: "0.5s" }} />
 
         {/* Badges - Desktop: Top Right Corner / Mobile: Below banner */}
         <div className="hidden sm:flex absolute top-3 right-3 flex-col items-end gap-1.5 z-10">
