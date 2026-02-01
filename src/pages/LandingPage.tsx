@@ -565,13 +565,31 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto px-3 md:px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-6 md:mb-10">
+              {/* Badge RECOMENDADO */}
+              <div className="relative inline-block mb-4 md:mb-6">
+                <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 blur-lg opacity-50 animate-pulse rounded-full" />
+                <div className="relative flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-black text-xs md:text-sm font-bold rounded-full shadow-xl">
+                  <Crown className="w-4 h-4 md:w-5 md:h-5" />
+                  <span>RECOMENDADO</span>
+                  <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+              </div>
+
               <div className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-1 md:py-2 rounded-full glass mb-2 md:mb-4">
                 <Package className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                 <span className="text-[10px] md:text-sm font-medium">LA OFERTA IRRESISTIBLE</span>
               </div>
-              <h2 className="text-lg sm:text-2xl md:text-4xl font-heading font-bold">
-                RESUMEN DE TU <span className="text-gradient">ACTIVACIÓN</span>:
+
+              {/* Título Arsenal Maestro: Hack 6 */}
+              <h2 className="text-xl sm:text-3xl md:text-5xl font-heading font-bold mb-2 md:mb-3">
+                <span className="text-gradient neon-text">ARSENAL MAESTRO: HACK 6</span>
               </h2>
+              <p className="text-sm md:text-lg text-muted-foreground mb-4">
+                El ecosistema completo de Héctor Galensky
+              </p>
+              <h3 className="text-lg sm:text-2xl md:text-3xl font-heading font-bold">
+                RESUMEN DE TU <span className="text-gradient">ACTIVACIÓN</span>:
+              </h3>
             </div>
 
             {/* Stack List */}
