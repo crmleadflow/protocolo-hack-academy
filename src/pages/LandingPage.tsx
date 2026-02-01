@@ -222,10 +222,9 @@ const LandingPage: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="glass rounded-lg md:rounded-xl p-3 md:p-6 text-center border border-primary/30">
               <p className="text-xs md:text-base text-muted-foreground leading-relaxed">
-                <span className="text-primary font-semibold">¡ATENCIÓN!</span>{" "}
-                <span className="text-foreground font-medium">ESTE ES EL ATAJO SECRETO:</span>{" "}
-                Hecho solo para personas que ya facturan pero quieren escalar, y personas que quieren armar un negocio de éxito desde cero.{" "}
-                Activa hoy el <span className="text-secondary font-semibold">'Poder de la IA'</span>: la herramienta que te quita el trabajo pesado de encima, borra tus errores y te da la llave maestra para ganar dinero en tiempo récord.
+                <span className="text-primary font-semibold">¡ALERTA!</span>{" "}
+                <span className="text-foreground font-medium">EL ATAJO PARA ESCALAR O EMPEZAR DE CERO.</span>{" "}
+                Activa el poder de la IA: elimina el trabajo pesado, borra errores y acelera tus resultados en tiempo récord.
               </p>
             </div>
           </div>
