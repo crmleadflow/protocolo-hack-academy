@@ -1256,6 +1256,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_user_xp: {
+        Args: { _user_id: string; _xp_amount: number }
+        Returns: undefined
+      }
       has_active_enrollment: {
         Args: { _program_id: string; _user_id: string }
         Returns: boolean
