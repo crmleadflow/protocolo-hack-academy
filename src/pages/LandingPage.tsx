@@ -412,10 +412,6 @@ const LandingPage: React.FC = () => {
                   <div className="absolute top-2 left-2 md:top-3 md:left-3 w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                     <span className="text-white font-bold text-xs md:text-sm">{motor.number}</span>
                   </div>
-                  {/* Price badge */}
-                  <div className="absolute top-2 right-2 md:top-3 md:right-3 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full bg-primary/90 backdrop-blur-sm">
-                    <span className="text-[10px] md:text-xs font-bold text-primary-foreground">{motor.price}</span>
-                  </div>
                 </div>
                 <div className="p-3 md:p-5">
                   <h3 className="font-heading font-bold text-sm md:text-lg mb-0.5 md:mb-1 group-hover:text-primary transition-colors">
