@@ -242,25 +242,11 @@ const LandingPage: React.FC = () => {
 
         <div className="container mx-auto px-3 md:px-4 relative z-10">
           <div className="max-w-5xl mx-auto text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-1 md:py-2 rounded-full glass mb-4 md:mb-8 animate-fade-in">
-              <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-primary" />
-              <span className="text-[10px] md:text-sm font-medium">El Arsenal de Ejecución Definitivo</span>
-            </div>
-
             {/* Headline */}
             <h1 className="text-xl sm:text-2xl md:text-5xl lg:text-6xl font-heading font-bold mb-3 md:mb-6 animate-fade-in leading-tight px-1" style={{ animationDelay: "0.1s" }}>
               <span className="text-gradient neon-text">PROTOCOLO HACK:</span>{" "}
               <span className="text-foreground">El Código Maestro de IA y Neuro-Persuasión para Construir, Escalar y Dominar cualquier Negocio en tiempo récord.</span>
             </h1>
-
-            {/* SECCIÓN 3: EL SUB-HEADLINE (La Promesa de Libertad) */}
-            <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-3xl mx-auto mb-4 md:mb-8 px-1 animate-fade-in leading-relaxed" style={{ animationDelay: "0.2s" }}>
-              Ya sea que estés atrapado en la operación de tu empresa o estés lanzando tu primer activo digital:{" "}
-              <span className="text-primary font-semibold">Instala el Arsenal de Ejecución</span>{" "}
-              que automatiza tus ventas, crea tu marca y pone a la{" "}
-              <span className="text-secondary font-semibold">Inteligencia Artificial a trabajar por ti</span> desde el primer día.
-            </p>
           </div>
         </div>
       </section>
@@ -349,6 +335,14 @@ const LandingPage: React.FC = () => {
             {/* Texto debajo del video */}
             <p className="text-center text-xs md:text-lg text-primary font-semibold animate-pulse mt-4 md:mt-6">
               👇 MIRA EL VIDEO COMPLETO PARA ACTIVAR TU ACCESO 👇
+            </p>
+
+            {/* Sub-headline movido debajo del video */}
+            <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-3xl mx-auto mt-6 md:mt-8 px-1 animate-fade-in leading-relaxed">
+              Ya sea que estés atrapado en la operación de tu empresa o estés lanzando tu primer activo digital:{" "}
+              <span className="text-primary font-semibold">Instala el Arsenal de Ejecución</span>{" "}
+              que automatiza tus ventas, crea tu marca y pone a la{" "}
+              <span className="text-secondary font-semibold">Inteligencia Artificial a trabajar por ti</span> desde el primer día.
             </p>
           </div>
         </div>
