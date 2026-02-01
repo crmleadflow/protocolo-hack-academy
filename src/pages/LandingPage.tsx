@@ -612,15 +612,15 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* SECCIÓN 9: GARANTÍA */}
-      <section className="py-10 md:py-16 relative z-10">
+      <section className="py-6 md:py-10 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <HolographicCard className="p-6 sm:p-8 md:p-10 text-center relative overflow-hidden">
+            <HolographicCard className="p-4 sm:p-6 md:p-8 text-center relative overflow-hidden">
               <div className="relative z-10">
                 <img 
                   src={warrantyBadge} 
                   alt="Garantía de Riesgo Cero" 
-                  className="w-48 h-48 md:w-64 md:h-64 mx-auto mb-4 md:mb-6 object-contain"
+                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto mb-2 md:mb-4 object-contain"
                 />
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6">
                   GARANTÍA DE <span className="text-gradient">RIESGO CERO</span> POR 7 DÍAS
