@@ -337,6 +337,16 @@ const LandingPage: React.FC = () => {
             <p className="text-center text-xs md:text-lg text-primary font-semibold animate-pulse mt-4 md:mt-6">
               👇 MIRA EL VIDEO COMPLETO PARA ACTIVAR TU ACCESO 👇
             </p>
+            
+            {/* Alerta de valor */}
+            <div className="mt-4 md:mt-6 max-w-3xl mx-auto text-center">
+              <p className="text-sm md:text-xl font-heading font-bold text-secondary mb-1 md:mb-2">
+                ¡ALERTA! EL ATAJO PARA ESCALAR O EMPEZAR DE CERO.
+              </p>
+              <p className="text-xs md:text-base text-muted-foreground leading-relaxed">
+                Activa el poder de la IA: elimina el trabajo pesado, borra errores y acelera tus resultados en tiempo récord.
+              </p>
+            </div>
 
             {/* Sub-headline movido debajo del video */}
             <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-3xl mx-auto mt-6 md:mt-8 px-1 animate-fade-in leading-relaxed">
