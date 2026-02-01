@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Play, ChevronRight, Sparkles, ArrowRight, Quote, Star,
-  Zap, Target, Mic, Bot, Video, Crown, Package, UserCheck, Rocket, Globe, TrendingUp, Users, BookOpen, Loader2
+  ChevronRight, Sparkles, ArrowRight, Quote, Star,
+  Zap, Target, Mic, Bot, Video, Crown, Package, UserCheck, Rocket, Globe, TrendingUp, Users, BookOpen, Loader2, Volume2, VolumeX, Play
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -99,25 +99,17 @@ const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [videoProgress, setVideoProgress] = useState(0);
   const [maxProgress, setMaxProgress] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const toggleVideo = () => {
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (videoRef.current) {
-      // Unmute on first interaction
-      if (videoRef.current.muted) {
-        videoRef.current.muted = false;
-      }
-      
-      if (isVideoPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsVideoPlaying(!isVideoPlaying);
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
     }
   };
 
@@ -236,9 +228,21 @@ const LandingPage: React.FC = () => {
                       playsInline
                       onTimeUpdate={handleTimeUpdate}
                       onLoadedMetadata={handleLoadedMetadata}
-                      onClick={toggleVideo}
-                      className="relative z-10 max-w-[200px] sm:max-w-xs md:max-w-sm w-full h-auto object-contain cursor-pointer"
+                      className="relative z-10 max-w-[200px] sm:max-w-xs md:max-w-sm w-full h-auto object-contain"
                     />
+                    
+                    {/* Audio toggle button */}
+                    <button
+                      onClick={toggleMute}
+                      className="absolute top-2 right-2 z-30 p-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
+                      title={isMuted ? "Activar audio" : "Silenciar"}
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-4 h-4 text-white" />
+                      ) : (
+                        <Volume2 className="w-4 h-4 text-white" />
+                      )}
+                    </button>
                     
                     {/* Progress bar */}
                     <div 
@@ -261,15 +265,6 @@ const LandingPage: React.FC = () => {
                         style={{ left: `calc(${videoProgress}% - 6px)` }}
                       />
                     </div>
-                    
-                    {/* Pause indicator */}
-                    {!isVideoPlaying && (
-                      <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/20" onClick={toggleVideo}>
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/90 flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-lg">
-                          <Play className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground ml-1" />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
