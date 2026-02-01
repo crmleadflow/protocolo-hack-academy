@@ -54,9 +54,9 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
           MEJOR PRECIO
         </div>
 
-        <div className="relative pt-2 md:pt-4">
+        <div className="relative pt-6 md:pt-4 pl-12 md:pl-8">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div className="min-w-0 pr-4 md:pr-0 pl-8 md:pl-0">
+            <div className="min-w-0 pr-4 md:pr-0">
               {/* Title with icon */}
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="w-6 h-6 text-primary animate-pulse hidden md:block" />
