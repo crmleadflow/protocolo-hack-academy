@@ -22,6 +22,7 @@ import protocoloHackThumb from "@/assets/protocolo-hack-thumbnail.png";
 
 import videoMagnetThumb from "@/assets/video-magnet-thumbnail.png";
 import productCreatorThumb from "@/assets/product-creator-pro-thumbnail.png";
+import warrantyBadge from "@/assets/warranty-badge.jpg";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -615,13 +616,12 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <HolographicCard className="p-6 sm:p-8 md:p-10 text-center relative overflow-hidden">
-              {/* Shield icon background */}
-              <Shield className="absolute top-4 right-4 w-20 h-20 md:w-32 md:h-32 text-primary/5" />
-              
               <div className="relative z-10">
-                <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 md:mb-6 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                  <Shield className="w-8 h-8 md:w-10 md:h-10 text-primary" />
-                </div>
+                <img 
+                  src={warrantyBadge} 
+                  alt="Garantía de Riesgo Cero" 
+                  className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 md:mb-6 object-contain"
+                />
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6">
                   GARANTÍA DE <span className="text-gradient">RIESGO CERO</span> POR 7 DÍAS
                 </h2>
