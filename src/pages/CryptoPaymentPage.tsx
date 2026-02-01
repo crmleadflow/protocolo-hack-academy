@@ -219,7 +219,7 @@ const CryptoPaymentPage: React.FC = () => {
 
             {/* Status Check */}
             <NeonButton
-              onClick={() => navigate(`/payment-success?programId=${programId}&method=crypto`)}
+              onClick={() => navigate(`/crypto-payment/verify?programId=${programId}`)}
               variant="secondary"
               className="w-full"
             >
