@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
       <div className="container mx-auto px-4">
         {/* Single holographic band for the entire header */}
         <div className="relative">
-          <div className="absolute inset-0 -mx-2 rounded-xl bg-gradient-to-r from-primary/10 via-secondary/15 to-primary/10 backdrop-blur-sm border border-white/10" />
+          <div className="absolute inset-0 -mx-4 bg-gradient-to-r from-primary/10 via-secondary/15 to-primary/10 backdrop-blur-sm border-y border-white/10" />
           
           <div className="relative flex items-center justify-between h-16 md:h-20 px-2">
             {/* Logo */}
