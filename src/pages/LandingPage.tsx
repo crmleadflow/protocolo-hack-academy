@@ -270,15 +270,15 @@ const LandingPage: React.FC = () => {
             {/* Headline */}
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-heading font-bold mb-4 md:mb-6 animate-fade-in leading-tight" style={{ animationDelay: "0.1s" }}>
               <span className="text-gradient neon-text">PROTOCOLO HACK:</span>{" "}
-              <span className="text-foreground">El Método Fácil para Dominar tus Ventas y que te digan 'SÍ' casi sin esfuerzo.</span>
+              <span className="text-foreground">El Código Maestro de IA y Neuro-Persuasión para Construir, Escalar y Dominar cualquier Negocio en tiempo récord.</span>
             </h1>
 
             {/* SECCIÓN 3: EL SUB-HEADLINE (La Promesa de Libertad) */}
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 md:mb-8 px-2 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Deja de matarte trabajando como los demás. Pon a la{" "}
-              <span className="text-primary font-semibold">Inteligencia Artificial</span>{" "}
-              a buscar clientes por ti mientras tú solo te encargas de cerrar los tratos y{" "}
-              <span className="text-secondary font-semibold">disfrutar de tu tiempo libre</span>.
+              Ya sea que estés atrapado en la operación de tu empresa o estés lanzando tu primer activo digital:{" "}
+              <span className="text-primary font-semibold">Instala el Arsenal de Ejecución</span>{" "}
+              que automatiza tus ventas, crea tu marca y pone a la{" "}
+              <span className="text-secondary font-semibold">Inteligencia Artificial a trabajar por ti</span> desde el primer día.
             </p>
           </div>
         </div>
