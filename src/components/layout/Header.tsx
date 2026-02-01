@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
-                  key={link.href}
+                  key={`${link.href}-${link.label}`}
                   to={link.href}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
@@ -190,7 +190,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             <nav className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
-                  key={link.href}
+                  key={`${link.href}-${link.label}`}
                   to={link.href}
                   className="px-4 py-3 rounded-lg hover:bg-muted transition-colors"
                   onClick={() => setIsMenuOpen(false)}
