@@ -116,13 +116,14 @@ const aiBonuses = [
     subtitle: "Acceso 24/7 a mi Cerebro",
     description: "He entrenado a un Agente de IA con mis 25 años de trayectoria. Te responderá dudas, te dará estrategias y te guiará como si yo estuviera presente en tu oficina en cada paso que des.",
     icon: Bot,
+    value: "$150 USD",
   },
   {
-    title: "Analizador de Neuro-Oratoria",
-    subtitle: "Tu Coach de Persuasión",
+    title: "Neuro Analyzer Pro",
+    subtitle: "Analizador de Neuro-Oratoria",
     description: "Sube tus discursos, tus guiones o tus copys. Este Agente especializado analizará tu redacción y te dirá exactamente qué corregir y cómo mejorarla para que sea imposible que te digan que no.",
     icon: Mic,
-    value: "$997 USD",
+    value: "$150 USD",
   },
 ];
 
@@ -134,8 +135,8 @@ const offerStack = [
   { title: "Fast Brand Accelerator", price: "$497 USD", isPremium: false },
   { title: "Video Magnet", price: "$497 USD", isPremium: false },
   { title: "Product Creator Pro", price: "$497 USD", isPremium: false },
-  { title: "BONO: Analizador de Neuro-Oratoria", price: "$997 USD", isBonus: true },
-  { title: "BONO: Mi Mentor IA", price: "INCLUIDO", isBonus: true },
+  { title: "BONO: Neuro Analyzer Pro", price: "$150 USD", isBonus: true },
+  { title: "BONO: Mi Mentor IA", price: "$150 USD", isBonus: true },
 ];
 
 // Mentor credentials
@@ -591,14 +592,14 @@ const LandingPage: React.FC = () => {
               <div className="text-center">
                 <p className="text-muted-foreground text-sm md:text-base mb-1">VALOR TOTAL:</p>
                 <p className="text-2xl md:text-3xl font-heading font-bold text-muted-foreground line-through mb-4">
-                  $4,583 USD
+                  $3,886 USD
                 </p>
                 <p className="text-lg md:text-xl text-secondary font-semibold mb-2">OFERTA DE ACCESO TOTAL:</p>
                 <p className="text-4xl md:text-6xl font-heading font-bold text-gradient neon-text mb-4">
                   $499 USD
                 </p>
                 <p className="text-sm md:text-base text-muted-foreground mb-6">
-                  (Ahorras más de <span className="text-primary font-bold">$4,000 USD</span> y obtienes el Arsenal de Ejecución completo de por vida)
+                  (Ahorras más de <span className="text-primary font-bold">$3,300 USD</span> y obtienes el Arsenal de Ejecución completo de por vida)
                 </p>
               </div>
             </HolographicCard>

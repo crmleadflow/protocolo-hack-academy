@@ -41,7 +41,7 @@ const faqCategories = [
       {
         question: "¿Cómo empiezo con Protocolo Hack?",
         answer:
-          "Una vez registrado, dirígete al catálogo de programas para explorar los cursos disponibles. Puedes inscribirte en cualquier programa y comenzar a aprender de inmediato. Todos los programas incluyen videos, recursos descargables y acceso a nuestro mentor IA.",
+          "Una vez registrado, dirígete al catálogo de programas para explorar los cursos disponibles. Puedes inscribirte en cualquier programa y comenzar a aprender de inmediato. Todos los programas incluyen videos, recursos descargables y acceso a Mi Mentor IA.",
       },
       {
         question: "¿Qué programas están disponibles?",
@@ -57,16 +57,16 @@ const faqCategories = [
   },
   {
     id: "mentor",
-    title: "Mentor IA",
+    title: "Mi Mentor IA",
     icon: Sparkles,
     faqs: [
       {
-        question: "¿Qué es el Mentor IA?",
+        question: "¿Qué es Mi Mentor IA?",
         answer:
-          "El Mentor IA es tu asistente personal de producción musical, disponible 24/7. Está entrenado con todo el contenido de nuestros programas y puede responder preguntas específicas sobre técnicas, software, y estrategias de producción.",
+          "Mi Mentor IA es tu asistente personal de negocios, disponible 24/7. Está entrenado con todo el contenido de nuestros programas y puede responder preguntas específicas sobre técnicas, estrategias y neuro-persuasión.",
       },
       {
-        question: "¿Cómo uso el Mentor IA?",
+        question: "¿Cómo uso Mi Mentor IA?",
         answer:
           "Accede al Mentor desde el menú lateral y escribe tu pregunta. El mentor analizará tu consulta y te proporcionará respuestas detalladas basadas en el contenido de los programas.",
       },
@@ -344,7 +344,7 @@ const HelpPage: React.FC = () => {
                 <HolographicCard className="p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <Sparkles className="w-6 h-6 text-primary" />
-                    <h3 className="font-semibold">Pregúntale al Mentor IA</h3>
+                    <h3 className="font-semibold">Pregúntale a Mi Mentor IA</h3>
                   </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     ¿Tienes alguna pregunta? Nuestro asistente de IA está

@@ -337,10 +337,10 @@ export default function NeuroScannerPage() {
                     <Brain className="w-8 h-8 text-primary" />
                     <div className="text-left">
                       <h1 className="text-2xl md:text-3xl font-heading font-bold text-gradient">
-                        Neuro Scanner
+                        Neuro Analyzer Pro
                       </h1>
                       <p className="text-sm text-muted-foreground hidden md:block">
-                        Analiza tu discurso de venta
+                        Analizador de Neuro-Oratoria
                       </p>
                     </div>
                   </div>

@@ -48,7 +48,7 @@ const adminMenuItems = [
 // Admin secondary items
 const adminSecondaryItems = [
   { title: "Crear Programa", url: "/producer/new-course", icon: Plus },
-  { title: "Mentor IA", url: "/producer/mentor", icon: Sparkles },
+  { title: "Mi Mentor IA", url: "/producer/mentor", icon: Sparkles },
   { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
   { title: "Configuración", url: "/producer/settings", icon: Settings },
 ];

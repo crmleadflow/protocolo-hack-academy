@@ -51,10 +51,10 @@ const MentorPage: React.FC = () => {
                   <Sparkles className="w-8 h-8 text-primary" />
                   <div className="text-left">
                     <h1 className="text-2xl md:text-3xl font-heading font-bold text-gradient">
-                      Héctor Galensky AI
+                      Mi Mentor IA
                     </h1>
                     <p className="text-sm text-muted-foreground hidden md:block">
-                      Tu Mentor 24/7
+                      Héctor Galensky 24/7
                     </p>
                   </div>
                 </div>
