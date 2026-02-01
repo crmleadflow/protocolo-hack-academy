@@ -23,6 +23,7 @@ import protocoloHackThumb from "@/assets/protocolo-hack-thumbnail.png";
 import videoMagnetThumb from "@/assets/video-magnet-thumbnail.png";
 import productCreatorThumb from "@/assets/product-creator-pro-thumbnail.png";
 import warrantyBadge from "@/assets/warranty-badge.png";
+import hectorCyberpunk from "@/assets/hector-galensky-cyberpunk.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -523,6 +524,18 @@ const LandingPage: React.FC = () => {
               <h2 className="text-lg sm:text-2xl md:text-4xl font-heading font-bold mb-4 md:mb-6">
                 ¿Quién es <span className="text-gradient">Héctor Galensky</span>?
               </h2>
+              
+              {/* Héctor Cyberpunk Image */}
+              <div className="flex justify-center mb-6 md:mb-8">
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 via-secondary/20 to-primary/30 rounded-full blur-2xl opacity-60" />
+                  <img 
+                    src={hectorCyberpunk} 
+                    alt="Héctor Galensky" 
+                    className="relative w-48 sm:w-64 md:w-80 lg:w-96 h-auto object-contain drop-shadow-2xl"
+                  />
+                </div>
+              </div>
               
               {/* Quote */}
               <div className="relative max-w-3xl mx-auto mb-6 md:mb-8 px-6 md:px-8">
