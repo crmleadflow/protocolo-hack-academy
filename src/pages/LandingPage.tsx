@@ -242,7 +242,7 @@ const LandingPage: React.FC = () => {
               <p className="text-sm md:text-base text-muted-foreground">
                 <span className="text-primary font-semibold">¡ATENCIÓN!</span>{" "}
                 <span className="text-foreground font-medium">ESTE ES EL ATAJO SECRETO:</span>{" "}
-                Hecho solo para personas que quieren crecer en grande y armar un negocio de éxito desde cero.{" "}
+                Hecho solo para personas que ya facturan pero quieren escalar, y personas que quieren armar un negocio de éxito desde cero.{" "}
                 Activa hoy el <span className="text-secondary font-semibold">'Poder de la IA'</span>: la herramienta que te quita el trabajo pesado de encima, borra tus errores y te da la llave maestra para ganar dinero en tiempo récord.
               </p>
             </div>
