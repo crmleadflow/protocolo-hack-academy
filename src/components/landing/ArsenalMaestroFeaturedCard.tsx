@@ -50,20 +50,19 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
           </span>
         </div>
 
-        {/* "BEST VALUE" ribbon effect - Hidden on small mobile */}
+        {/* "BEST VALUE" ribbon effect - Hidden on mobile, shown on sm+ */}
         <div className="absolute -left-12 top-5 rotate-[-45deg] bg-gradient-to-r from-secondary to-primary px-14 py-1.5 text-[9px] md:text-[10px] font-bold text-primary-foreground shadow-lg z-20 tracking-wide hidden sm:block">
           MEJOR PRECIO
         </div>
 
-        {/* Mobile-only top badge for "MEJOR PRECIO" */}
-        <div className="sm:hidden absolute top-2 left-2 z-10">
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-secondary to-primary text-[9px] font-bold text-primary-foreground shadow-lg">
-            <Sparkles className="w-3 h-3" />
-            -87%
-          </span>
+        {/* Mobile-only horizontal banner for "MEJOR PRECIO" */}
+        <div className="sm:hidden w-full bg-gradient-to-r from-secondary to-primary py-1.5 px-3 flex items-center justify-center gap-2 rounded-t-lg -mt-3 -mx-3 mb-3" style={{ width: 'calc(100% + 1.5rem)' }}>
+          <Sparkles className="w-3 h-3 text-primary-foreground" />
+          <span className="text-[10px] font-bold text-primary-foreground tracking-wide">MEJOR PRECIO • AHORRAS 87%</span>
+          <Sparkles className="w-3 h-3 text-primary-foreground" />
         </div>
 
-        <div className="relative pt-10 sm:pt-6 md:pt-4 sm:pl-10 md:pl-8">
+        <div className="relative pt-2 sm:pt-6 md:pt-4 sm:pl-10 md:pl-8">
           <div className="flex flex-col gap-4">
             <div className="min-w-0">
               {/* Title with icon */}
