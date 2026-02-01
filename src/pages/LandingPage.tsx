@@ -458,18 +458,6 @@ const LandingPage: React.FC = () => {
             <ArsenalMaestroFeaturedCard onCtaClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} />
           </div>
 
-          {/* CTA Button after Arsenal Maestro */}
-          <div className="text-center mt-8 md:mt-12">
-            <NeonButton
-              size="xl" 
-              onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} 
-              className="w-full sm:w-auto text-xs sm:text-sm md:text-lg px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 whitespace-normal leading-tight"
-            >
-              <Package className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
-              <span className="text-center">OBTÉN EL ARSENAL COMPLETO POR SOLO $499</span>
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
-            </NeonButton>
-          </div>
         </div>
       </section>
 
