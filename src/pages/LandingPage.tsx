@@ -234,22 +234,23 @@ const LandingPage: React.FC = () => {
       <ParticleBackground particleCount={40} />
       <Header transparent />
 
-      {/* SECCIÓN 1: FILTRO DE AUDIENCIA */}
+      {/* SECCIÓN 1: EL FILTRO DE ÉLITE (Pre-Headline) */}
       <section className="relative pt-20 md:pt-24 pb-4">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="glass rounded-xl p-4 md:p-6 text-center border border-primary/30">
               <p className="text-sm md:text-base text-muted-foreground">
-                <span className="text-primary font-semibold">Atención:</span> Este sistema está reservado exclusivamente para{" "}
-                <span className="text-foreground font-medium">Networkers, Emprendedores y Dueños de Negocio</span>{" "}
-                decididos a dejar de perseguir clientes y empezar a dominar su mercado.
+                <span className="text-primary font-semibold">¡ATENCIÓN!</span>{" "}
+                <span className="text-foreground font-medium">ESTE ES EL ATAJO SECRETO:</span>{" "}
+                Hecho solo para personas que quieren crecer en grande y armar un negocio de éxito desde cero.{" "}
+                Activa hoy el <span className="text-secondary font-semibold">'Poder de la IA'</span>: la herramienta que te quita el trabajo pesado de encima, borra tus errores y te da la llave maestra para ganar dinero en tiempo récord.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECCIÓN 2: TITULAR MAESTRO (Hero) */}
+      {/* SECCIÓN 2: EL DISPARADOR MAESTRO (Headline) */}
       <section className="relative flex items-center pb-6 md:pb-8">
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
@@ -269,14 +270,15 @@ const LandingPage: React.FC = () => {
             {/* Headline */}
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-heading font-bold mb-4 md:mb-6 animate-fade-in leading-tight" style={{ animationDelay: "0.1s" }}>
               <span className="text-gradient neon-text">PROTOCOLO HACK:</span>{" "}
-              <span className="text-foreground">El Ecosistema de IA y Neuro-Persuasión que Hackea tu Mente para Automatizar tus Ventas, Escalar tu Marca y Crear un Imperio Digital en Piloto Automático.</span>
+              <span className="text-foreground">El Método Fácil para Dominar tus Ventas y que te digan 'SÍ' casi sin esfuerzo.</span>
             </h1>
 
-            {/* Sub-headline */}
+            {/* SECCIÓN 3: EL SUB-HEADLINE (La Promesa de Libertad) */}
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 md:mb-8 px-2 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              No te limites a estudiar el éxito, <span className="text-primary font-semibold">instálalo</span>. 
-              Accede al Arsenal de Ejecución definitivo y activa el atajo del{" "}
-              <span className="text-secondary font-semibold">'SÍ'</span> en cada conversación de negocio.
+              Deja de matarte trabajando como los demás. Pon a la{" "}
+              <span className="text-primary font-semibold">Inteligencia Artificial</span>{" "}
+              a buscar clientes por ti mientras tú solo te encargas de cerrar los tratos y{" "}
+              <span className="text-secondary font-semibold">disfrutar de tu tiempo libre</span>.
             </p>
           </div>
         </div>
