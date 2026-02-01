@@ -502,32 +502,35 @@ const LandingPage: React.FC = () => {
                 <Crown className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
                 <span className="text-xs md:text-sm font-medium">AUTORIDAD</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-4">
-                ¿QUIÉN ES <span className="text-gradient">HÉCTOR GALENSKY</span>?
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-6">
+                ¿Quién es <span className="text-gradient">Héctor Galensky</span>?
               </h2>
-              <p className="text-muted-foreground text-sm md:text-lg max-w-3xl mx-auto">
-                Con más de <span className="text-primary font-semibold">25 años en la industria</span>, Héctor ha construido 
-                comunidades de <span className="text-secondary font-semibold">380,000 personas en 94 países</span>. Ha sido 
-                <span className="text-foreground font-medium"> Top Earner en 7 compañías</span> y hoy entrega su sistema probado 
-                para que no tengas que pasar por los mismos errores que él cometió.
-              </p>
+              
+              {/* Quote */}
+              <div className="relative max-w-3xl mx-auto mb-8">
+                <div className="absolute -left-4 top-0 text-6xl text-primary/30 font-serif">"</div>
+                <blockquote className="text-lg md:text-2xl font-heading italic text-foreground/90 px-8">
+                  El éxito que te quita la libertad no es éxito, es una jaula. Si te roba la vida no es éxito, es una carga.
+                </blockquote>
+                <div className="absolute -right-4 bottom-0 text-6xl text-primary/30 font-serif">"</div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              {credentials.map((credential, index) => (
-                <HolographicCard
-                  key={index}
-                  className="text-center animate-fade-in p-4 md:p-5"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                    <credential.icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-                  </div>
-                  <h3 className="font-heading font-semibold text-sm md:text-base mb-1">{credential.title}</h3>
-                  <p className="text-xs text-muted-foreground">{credential.description}</p>
-                </HolographicCard>
-              ))}
-            </div>
+            <HolographicCard variant="glow" className="p-6 md:p-10 relative overflow-hidden">
+              {/* Decorative glow */}
+              <div className="absolute -top-20 -right-20 w-48 h-48 bg-primary/20 rounded-full blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-secondary/20 rounded-full blur-3xl" />
+              
+              <div className="relative z-10 space-y-6">
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+                  Héctor Galensky no es solo un estratega con <span className="text-primary font-semibold">25 años de trayectoria</span>; es el mentor que ha guiado a miles de personas en <span className="text-secondary font-semibold">100 países</span> a recuperar su activo más valioso: <span className="text-foreground font-medium">el tiempo</span>. Tras construir imperios globales, entendió que el verdadero poder no está en trabajar más horas, sino en diseñar un sistema que trabaje por ti.
+                </p>
+                
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+                  Como padre y mentor, su obsesión es clara: entregarte la <span className="text-secondary font-semibold">Inteligencia Artificial</span> para que dejes de ser el operario de tu negocio y te conviertas en el <span className="text-primary font-semibold">Arquitecto de tu Libertad</span>. Héctor ya recorrió el camino difícil y cometió los errores, para que tú solo tengas que instalar el resultado y proteger lo que realmente importa.
+                </p>
+              </div>
+            </HolographicCard>
           </div>
         </div>
       </section>
