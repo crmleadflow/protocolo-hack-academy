@@ -22,7 +22,7 @@ import protocoloHackThumb from "@/assets/protocolo-hack-thumbnail.png";
 
 import videoMagnetThumb from "@/assets/video-magnet-thumbnail.png";
 import productCreatorThumb from "@/assets/product-creator-pro-thumbnail.png";
-import warrantyBadge from "@/assets/warranty-badge.jpg";
+import warrantyBadge from "@/assets/warranty-badge.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
@@ -620,7 +620,7 @@ const LandingPage: React.FC = () => {
                 <img 
                   src={warrantyBadge} 
                   alt="Garantía de Riesgo Cero" 
-                  className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-4 md:mb-6 object-contain"
+                  className="w-48 h-48 md:w-64 md:h-64 mx-auto mb-4 md:mb-6 object-contain"
                 />
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6">
                   GARANTÍA DE <span className="text-gradient">RIESGO CERO</span> POR 7 DÍAS
