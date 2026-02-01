@@ -68,7 +68,7 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
 
           <div className="flex flex-col items-start lg:items-end gap-2">
             <div className="text-xs text-muted-foreground">Hoy por</div>
-            <div className="text-3xl sm:text-4xl font-heading font-bold text-gradient neon-text">$499 USD</div>
+            <div className="text-3xl sm:text-4xl font-heading font-bold text-primary">$499 USD</div>
 
             {onCtaClick && (
               <NeonButton size="lg" onClick={onCtaClick} className="w-full lg:w-auto whitespace-normal">
