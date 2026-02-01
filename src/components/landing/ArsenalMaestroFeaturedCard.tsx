@@ -50,16 +50,16 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
         </div>
 
         {/* "BEST VALUE" ribbon effect */}
-        <div className="absolute -left-8 top-6 rotate-[-45deg] bg-gradient-to-r from-secondary to-primary px-10 py-1 text-[10px] font-bold text-primary-foreground shadow-lg">
+        <div className="absolute -left-10 top-4 rotate-[-45deg] bg-gradient-to-r from-secondary to-primary px-12 py-1 text-[10px] font-bold text-primary-foreground shadow-lg z-20">
           MEJOR PRECIO
         </div>
 
-        <div className="relative pt-8 md:pt-4">
+        <div className="relative pt-2 md:pt-4">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div className="min-w-0 pr-4 md:pr-0">
+            <div className="min-w-0 pr-4 md:pr-0 pl-8 md:pl-0">
               {/* Title with icon */}
               <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-6 h-6 text-primary animate-pulse" />
+                <Zap className="w-6 h-6 text-primary animate-pulse hidden md:block" />
                 <h3 className="font-heading font-bold text-xl sm:text-2xl md:text-3xl leading-tight text-foreground">
                   Arsenal Maestro: Hack 6
                 </h3>
