@@ -57,37 +57,85 @@ const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: strin
 };
 
 // 7 Pillars data with thumbnails
-const arsenalPillars = [
+// Los 6 Motores del Arsenal
+const arsenalMotors = [
   {
-    thumbnail: iaBusinessLabThumb,
-    title: "IA-Sales Master",
-    description: "Pon a un ejército de robots a prospectar, calificar y filtrar clientes por ti las 24 horas del día.",
-  },
-  {
-    thumbnail: neuroTalkThumb,
-    title: "Neuro-Talk",
-    description: "El lenguaje de la neuro-persuasión para que el cerebro de tu cliente confíe en ti y el 'SÍ' sea su única respuesta lógica.",
-  },
-  {
-    thumbnail: fastBrandThumb,
-    title: "Marca Imbatible",
-    description: "Construye una autoridad magnética que haga que los clientes te busquen a ti, eliminando la necesidad de perseguirlos.",
-  },
-  {
+    number: 1,
     thumbnail: protocoloHackThumb,
-    title: "Mindset de Éxito",
-    description: "Hackeo cerebral profundo para eliminar bloqueos de escasez e instalar el sistema operativo de un Top Earner.",
+    title: "Protocolo Hack",
+    adn: "Software Mental de Abundancia",
+    description: "El manual definitivo para reprogramar tu mente, borrar miedos y eliminar bloqueos de escasez. Instalamos en ti el sistema operativo de un líder de élite para atraer resultados millonarios por diseño, no por suerte.",
+    price: null,
   },
   {
+    number: 2,
+    thumbnail: neuroTalkThumb,
+    title: "Neuro Talk",
+    adn: "El Mensaje que obliga al 'SÍ'",
+    description: "Aprende a llegar directamente al cerebro de tus clientes para que tomen una decisión de compra rápida. Sabrás cómo enviar el mensaje correcto para vender, hackeando el proceso de decisión para que el 'SÍ' sea inevitable.",
+    price: "$999 USD",
+  },
+  {
+    number: 3,
+    thumbnail: iaBusinessLabThumb,
+    title: "IA Business Lab",
+    adn: "Automatización Total",
+    description: "Domina la Inteligencia Artificial para automatizar y facilitar procesos: creación de anuncios, guiones, landing pages, embudos y agentes de IA que atienden clientes 24/7. Tú eres el Arquitecto, la IA es tu constructora.",
+    price: "$599 USD",
+  },
+  {
+    number: 4,
+    thumbnail: fastBrandThumb,
+    title: "Fast Brand Accelerator",
+    adn: "Autoridad a Máxima Velocidad",
+    description: "Escala y potencializa tu marca personal con las estrategias correctas. Usa la IA para producir y editar tu contenido; haz que la tecnología lo haga por ti y deja de ser un esclavo de las redes sociales.",
+    price: null,
+  },
+  {
+    number: 5,
     thumbnail: videoMagnetThumb,
-    title: "Automate-X",
-    description: "La arquitectura para automatizar todos tus procesos de venta. Tu negocio crece con precisión mientras tú recuperas tu libertad.",
+    title: "Video Magnet",
+    adn: "Atracción Magnética",
+    description: "Convierte tus videos en un imán de clientes. Aprende a crear contenido visual que detenga el scroll y atraiga prospectos calificados en automático, posicionándote como la única opción en el mercado.",
+    price: null,
   },
   {
+    number: 6,
     thumbnail: productCreatorThumb,
-    title: "Digital Empire",
-    description: "Aprende a empaquetar tu conocimiento en productos digitales (cursos y e-books) que facturen de forma masiva y constante.",
-  }
+    title: "Product Creator Pro",
+    adn: "Fábrica de Activos",
+    description: "Transforma tu experiencia en productos digitales (e-books, cursos, mentorías) que se vendan solos. Convierte tu conocimiento en una fuente de ingresos pasivos que no dependa de tu tiempo.",
+    price: null,
+  },
+];
+
+// Bonos de IA
+const aiBonuses = [
+  {
+    title: "Mi Mentor IA",
+    subtitle: "Acceso 24/7 a mi Cerebro",
+    description: "He entrenado a un Agente de IA con mis 25 años de trayectoria. Te responderá dudas, te dará estrategias y te guiará como si yo estuviera presente en tu oficina en cada paso que des.",
+    icon: Bot,
+  },
+  {
+    title: "Analizador de Neuro-Oratoria",
+    subtitle: "Tu Coach de Persuasión",
+    description: "Sube tus discursos, tus guiones o tus copys. Este Agente especializado analizará tu redacción y te dirá exactamente qué corregir y cómo mejorarla para que sea imposible que te digan que no.",
+    icon: Mic,
+    value: "$997 USD",
+  },
+];
+
+// Stack de la oferta
+const offerStack = [
+  { title: "Neuro Talk", price: "$999 USD", isPremium: true },
+  { title: "IA Business Lab", price: "$599 USD", isPremium: true },
+  { title: "Protocolo Hack", price: "$497 USD", isPremium: false },
+  { title: "Fast Brand Accelerator", price: "$497 USD", isPremium: false },
+  { title: "Video Magnet", price: "$497 USD", isPremium: false },
+  { title: "Product Creator Pro", price: "$497 USD", isPremium: false },
+  { title: "BONO: Analizador de Neuro-Oratoria", price: "$997 USD", isBonus: true },
+  { title: "BONO: Mi Mentor IA", price: "INCLUIDO", isBonus: true },
 ];
 
 // Mentor credentials
@@ -112,64 +160,6 @@ const credentials = [
     title: "Lead Navigator",
     description: "Creador de herramientas de automatización",
   },
-];
-
-// Hybrid System Motors
-const hybridMotors = [
-  {
-    title: "MOTOR 1: Protocolo Hack (Reprogramación de Élite)",
-    description: "El sistema para eliminar el miedo al rechazo e instalar el \"Software de Abundancia\" en tu mente.",
-    value: "$997"
-  },
-  {
-    title: "MOTOR 2: IA-Sales Master (El Clon Digital)",
-    description: "Tu ejército de bots que prospectan, califican y agendan citas mientras tú duermes.",
-    value: "$1,497"
-  }
-];
-
-// Accelerators (Bonos)
-const accelerators = [
-  {
-    title: "El Diccionario de Neuro-Persuasión (Neuro-Talk)",
-    description: "Guiones de copia y pega para que el cliente te diga \"SÍ\" antes de que termines de hablar.",
-    value: "$497"
-  },
-  {
-    title: "Libertad Operativa (Automate-X)",
-    description: "Plantillas de automatización listas para importar. Haz en 10 minutos lo que a otros les toma meses.",
-    value: "$597"
-  },
-  {
-    title: "Marca Magnética (Personal Branding)",
-    description: "El mapa para que te vean como la única autoridad en tu industria.",
-    value: "$397"
-  },
-  {
-    title: "El Generador de Riqueza Pasiva (Digital Empire)",
-    description: "Cómo crear tu propio producto digital y lanzarlo en 21 días.",
-    value: "$697"
-  }
-];
-
-// Grand Slam Summary
-const grandSlamItems = [
-  "Sistema Híbrido (Mente + IA)",
-  "5 Aceleradores de Ejecución",
-  "Acceso Vitalicio a las Actualizaciones",
-  "Garantía de Riesgo Cero"
-];
-
-// FAQs
-const faqs = [
-  {
-    question: "¿Necesito saber de tecnología?",
-    answer: "No, el sistema está diseñado para ser instalado paso a paso. Te guiamos en cada etapa del proceso."
-  },
-  {
-    question: "¿Cuándo veo resultados?",
-    answer: "El pilar de generación de clientes puede activarse en tus primeras 24 horas."
-  }
 ];
 
 const LandingPage: React.FC = () => {
@@ -354,29 +344,37 @@ const LandingPage: React.FC = () => {
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
               </NeonButton>
             </div>
+
+            {/* Texto debajo del video */}
+            <p className="text-center text-sm md:text-lg text-primary font-semibold animate-pulse mt-6">
+              👇 MIRA EL VIDEO COMPLETO PARA ACTIVAR TU ACCESO 👇
+            </p>
           </div>
         </div>
       </section>
 
-      {/* SECCIÓN 4: AGITACIÓN DEL PROBLEMA */}
+      {/* SECCIÓN 4: EL MANIFIESTO DEL ESTRATEGA */}
       <section className="py-10 md:py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <HolographicCard variant="gradient" className="p-6 sm:p-8 md:p-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6 text-center">
-                ¿Sientes que estás peleando una guerra moderna con{" "}
-                <span className="text-muted-foreground">herramientas del pasado</span>?
+                ¿POR QUÉ LA MAYORÍA DE LOS EMPRENDEDORES{" "}
+                <span className="text-muted-foreground">SE QUEDAN ESTANCADOS</span>?
               </h2>
               <div className="space-y-4 text-muted-foreground text-sm md:text-lg text-center">
                 <p>
-                  El mercado cambió. Los guiones de ventas tradicionales y el esfuerzo manual ya no son suficientes.
+                  Porque intentan ganar una guerra moderna con herramientas del pasado. 
+                  Seguir buscando clientes "a mano" es como intentar cruzar el océano nadando 
+                  cuando tienes un <span className="text-primary font-medium">jet privado a tu disposición</span>.
                 </p>
                 <p>
-                  Si no tienes un sistema que trabaje por ti mientras duermes, no tienes un negocio;{" "}
-                  <span className="text-foreground font-medium">tienes un auto-empleo que te agota.</span>
+                  Si tu negocio depende 100% de que tú estés pegado al teléfono, no tienes un negocio, 
+                  <span className="text-foreground font-medium"> tienes un auto-empleo que te está robando la vida</span>.
                 </p>
-                <p className="text-primary font-semibold text-base md:text-xl pt-2">
-                  Es momento de dejar de 'intentar' y empezar a <span className="text-gradient">'Hackear'</span> tus resultados.
+                <p className="text-primary font-semibold text-base md:text-xl pt-4 border-t border-border/50 mt-6">
+                  El Protocolo Hack no es un curso; es la <span className="text-gradient">Fase de Activación</span> para que 
+                  la tecnología trabaje por ti y tu mente aprenda a cerrar tratos de alto nivel sin esfuerzo.
                 </p>
               </div>
             </HolographicCard>
@@ -384,40 +382,57 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN 5: LOS 7 PILARES DEL ARSENAL */}
+      {/* SECCIÓN 5: LOS 6 MOTORES DEL ARSENAL */}
       <section className="py-10 md:py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 px-2">
             <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full glass mb-3 md:mb-4">
               <Rocket className="w-3.5 h-3.5 md:w-4 md:h-4 text-secondary" />
-              <span className="text-xs md:text-sm font-medium">Arsenal de Ejecución</span>
+              <span className="text-xs md:text-sm font-medium">LOS 6 MOTORES DEL ARSENAL</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-3 md:mb-4">
-              Instala los <span className="text-gradient">6 Componentes</span> de tu nuevo Arsenal
+              Al entrar hoy, instalas el <span className="text-gradient">Ecosistema Completo</span> de Héctor Galensky
             </h2>
+            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+              En este orden estratégico:
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {arsenalPillars.map((pillar, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
+            {arsenalMotors.map((motor, index) => (
               <HolographicCard
                 key={index}
+                variant={motor.price ? "gradient" : "default"}
                 className="group cursor-default animate-fade-in overflow-hidden p-0"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Thumbnail image */}
-                <div className="relative h-28 md:h-36 overflow-hidden">
+                <div className="relative h-32 md:h-40 overflow-hidden">
                   <img 
-                    src={pillar.thumbnail} 
-                    alt={pillar.title}
+                    src={motor.thumbnail} 
+                    alt={motor.title}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
+                  {/* Number badge */}
+                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">{motor.number}</span>
+                  </div>
+                  {/* Price badge if premium */}
+                  {motor.price && (
+                    <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-primary/90 backdrop-blur-sm">
+                      <span className="text-xs font-bold text-primary-foreground">{motor.price}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-4 md:p-5">
-                  <h3 className="font-heading font-semibold text-sm md:text-lg mb-1 md:mb-2 group-hover:text-primary transition-colors">
-                    {pillar.title}
+                  <h3 className="font-heading font-bold text-base md:text-lg mb-1 group-hover:text-primary transition-colors">
+                    {motor.title}
                   </h3>
-                  <p className="text-xs md:text-sm text-muted-foreground">{pillar.description}</p>
+                  <p className="text-xs md:text-sm text-secondary font-medium mb-2">
+                    ADN: {motor.adn}
+                  </p>
+                  <p className="text-xs md:text-sm text-muted-foreground">{motor.description}</p>
                 </div>
               </HolographicCard>
             ))}
@@ -425,36 +440,51 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN 6: AUTORIDAD - Héctor Galensky */}
+      {/* SECCIÓN 6: LOS BONOS DE INTELIGENCIA ARTIFICIAL */}
       <section className="py-10 md:py-16 relative z-10">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="max-w-3xl mx-auto text-center mb-8 md:mb-12 px-2">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-3 md:mb-4">
-                <span className="text-gradient">Héctor Galensky:</span> El Arquitecto detrás del Protocolo
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8 md:mb-12">
+              <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full glass mb-3 md:mb-4 border border-secondary/50">
+                <Bot className="w-3.5 h-3.5 md:w-4 md:h-4 text-secondary" />
+                <span className="text-xs md:text-sm font-medium text-secondary">LOS BONOS DE INTELIGENCIA ARTIFICIAL</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold">
+                SOLO POR ESTA FASE DE ACTIVACIÓN, RECIBES{" "}
+                <span className="text-gradient">MIS DOS ARMAS SECRETAS</span>:
               </h2>
-              <p className="text-muted-foreground text-sm md:text-base">
-                Con más de <span className="text-primary font-semibold">25 años de resultados comprobados</span>, Héctor ha sido Top Earner en 7 compañías, 
-                ha construido comunidades de más de <span className="text-secondary font-semibold">380,000 personas en 94 países</span> y es el creador de Lead Navigator.
-              </p>
-              <p className="text-muted-foreground text-sm md:text-base mt-3">
-                Hoy, entrega su <span className="text-foreground font-medium">Arsenal de Ejecución personal</span> para que tú no tengas que adivinar el camino al éxito.
-              </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-              {credentials.map((credential, index) => (
+            <div className="grid md:grid-cols-2 gap-6">
+              {aiBonuses.map((bonus, index) => (
                 <HolographicCard
                   key={index}
-                  variant="gradient"
-                  className="text-center animate-fade-in p-4 md:p-6"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  variant="glow"
+                  className="p-6 md:p-8 animate-fade-in relative overflow-hidden"
+                  style={{ animationDelay: `${index * 0.15}s` }}
                 >
-                  <div className="w-10 h-10 md:w-14 md:h-14 mx-auto mb-3 md:mb-6 rounded-xl md:rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                    <credential.icon className="w-5 h-5 md:w-7 md:h-7 text-primary" />
+                  {/* Glow effect */}
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-secondary/20 rounded-full blur-3xl" />
+                  
+                  <div className="relative z-10">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-secondary/30 to-primary/30 flex items-center justify-center flex-shrink-0">
+                        <bonus.icon className="w-6 h-6 md:w-7 md:h-7 text-secondary" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-medium text-secondary uppercase tracking-wider">BONO {index + 1}</span>
+                        <h3 className="font-heading font-bold text-lg md:text-xl">{bonus.title}</h3>
+                        <p className="text-sm text-primary font-medium">{bonus.subtitle}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm md:text-base text-muted-foreground">{bonus.description}</p>
+                    {bonus.value && (
+                      <div className="mt-4 pt-4 border-t border-border/50 flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Valor Individual:</span>
+                        <span className="text-lg font-bold text-secondary">{bonus.value}</span>
+                      </div>
+                    )}
                   </div>
-                  <h3 className="font-heading font-semibold text-sm md:text-lg mb-1 md:mb-2">{credential.title}</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground">{credential.description}</p>
                 </HolographicCard>
               ))}
             </div>
@@ -462,126 +492,121 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN 7: LA OFERTA - THE HYBRID ASCENSION SYSTEM */}
+      {/* SECCIÓN 7: AUTORIDAD - Héctor Galensky */}
       <section className="py-10 md:py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            {/* Main Headline */}
             <div className="text-center mb-8 md:mb-12">
               <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full glass mb-3 md:mb-4">
-                <Package className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
-                <span className="text-xs md:text-sm font-medium">La Oferta</span>
+                <Crown className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
+                <span className="text-xs md:text-sm font-medium">AUTORIDAD</span>
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-4">
-                <span className="text-gradient">"THE HYBRID ASCENSION SYSTEM"</span>
+                ¿QUIÉN ES <span className="text-gradient">HÉCTOR GALENSKY</span>?
               </h2>
-              <p className="text-muted-foreground text-sm md:text-base">
-                (Protocolo Hack + IA-Sales Master)
+              <p className="text-muted-foreground text-sm md:text-lg max-w-3xl mx-auto">
+                Con más de <span className="text-primary font-semibold">25 años en la industria</span>, Héctor ha construido 
+                comunidades de <span className="text-secondary font-semibold">380,000 personas en 94 países</span>. Ha sido 
+                <span className="text-foreground font-medium"> Top Earner en 7 compañías</span> y hoy entrega su sistema probado 
+                para que no tengas que pasar por los mismos errores que él cometió.
               </p>
             </div>
 
-            {/* Big Domino Hook */}
-            <HolographicCard variant="gradient" className="p-6 sm:p-8 md:p-10 mb-6 text-center">
-              <Brain className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 text-primary" />
-              <p className="text-base md:text-xl font-medium text-foreground">
-                Instala en tu negocio el <span className="text-gradient font-bold">Sistema Híbrido</span>: La mentalidad de un Top Earner 
-                <span className="text-primary"> (Protocolo Hack)</span> ejecutada por una Inteligencia Artificial que no descansa 
-                <span className="text-secondary"> (IA-Sales Master)</span>.
-              </p>
-            </HolographicCard>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              {credentials.map((credential, index) => (
+                <HolographicCard
+                  key={index}
+                  className="text-center animate-fade-in p-4 md:p-5"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <credential.icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                  </div>
+                  <h3 className="font-heading font-semibold text-sm md:text-base mb-1">{credential.title}</h3>
+                  <p className="text-xs text-muted-foreground">{credential.description}</p>
+                </HolographicCard>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Value Stack */}
-            <HolographicCard className="p-6 sm:p-8 md:p-10 mb-6">
-              {/* Motors */}
-              <div className="mb-8">
-                <h3 className="text-lg md:text-xl font-heading font-bold mb-6 text-center">
-                  <Zap className="w-5 h-5 inline mr-2 text-primary" />
-                  El Sistema Híbrido de Dos Motores
-                </h3>
-                <div className="space-y-4">
-                  {hybridMotors.map((motor, index) => (
-                    <div key={index} className="flex items-start gap-3 md:gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-bold text-sm">{index + 1}</span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm md:text-base text-foreground">{motor.title}</p>
-                        <p className="text-xs md:text-sm text-muted-foreground mt-1">{motor.description}</p>
-                      </div>
-                      <span className="text-primary font-bold text-sm md:text-base whitespace-nowrap">{motor.value}</span>
-                    </div>
-                  ))}
-                </div>
+      {/* SECCIÓN 8: LA OFERTA IRRESISTIBLE - THE STACK */}
+      <section className="py-10 md:py-16 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-8 md:mb-10">
+              <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full glass mb-3 md:mb-4">
+                <Package className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
+                <span className="text-xs md:text-sm font-medium">LA OFERTA IRRESISTIBLE</span>
               </div>
-
-              {/* Accelerators */}
-              <div className="pt-6 border-t border-border">
-                <h3 className="text-lg md:text-xl font-heading font-bold mb-4 text-center">
-                  <Rocket className="w-5 h-5 inline mr-2 text-secondary" />
-                  Los 5 Aceleradores de Éxito
-                </h3>
-                <p className="text-xs md:text-sm text-muted-foreground text-center mb-6">
-                  Bonos de alto impacto que eliminan el "¿cómo lo hago?"
-                </p>
-                <div className="space-y-3">
-                  {accelerators.map((acc, index) => (
-                    <div key={index} className="flex items-start gap-3 md:gap-4">
-                      <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-secondary flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm md:text-base">
-                          <span className="text-secondary">Acelerador #{index + 1}:</span> {acc.title}
-                        </p>
-                        <p className="text-xs md:text-sm text-muted-foreground mt-1">{acc.description}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <span className="text-muted-foreground line-through text-xs md:text-sm">{acc.value}</span>
-                        <span className="block text-primary font-bold text-xs md:text-sm">GRATIS</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </HolographicCard>
-
-            {/* Urgency Box */}
-            <div className="glass rounded-xl p-4 md:p-6 border border-secondary/40 bg-secondary/5 mb-6 text-center">
-              <p className="text-sm md:text-base font-medium">
-                ⚡ Esta oferta de <span className="text-gradient font-bold">$499</span> solo está disponible para los primeros 
-                <span className="text-secondary font-bold"> 50 fundadores del Summit</span>. Una vez alcancemos el cupo, 
-                el sistema volverá a su precio real de <span className="line-through">$1,497</span>.
-              </p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold">
+                RESUMEN DE TU <span className="text-gradient">ACTIVACIÓN</span>:
+              </h2>
             </div>
 
-            {/* Grand Slam Summary & Price */}
-            <HolographicCard variant="glow" className="p-6 sm:p-8 md:p-10 text-center">
-              <h3 className="text-lg md:text-xl font-heading font-bold mb-6">
-                Resumen de tu Inversión (The Grand Slam)
-              </h3>
-              <div className="flex flex-wrap justify-center gap-3 mb-8">
-                {grandSlamItems.map((item, index) => (
-                  <div key={index} className="flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs md:text-sm">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>{item}</span>
+            {/* Stack List */}
+            <HolographicCard className="p-6 md:p-8 mb-6">
+              <div className="space-y-3">
+                {offerStack.map((item, index) => (
+                  <div 
+                    key={index} 
+                    className={cn(
+                      "flex items-center justify-between p-3 md:p-4 rounded-xl transition-all",
+                      item.isPremium && "bg-primary/10 border border-primary/30",
+                      item.isBonus && "bg-secondary/10 border border-secondary/30",
+                      !item.isPremium && !item.isBonus && "bg-muted/30 border border-border/30"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className={cn(
+                        "w-5 h-5 flex-shrink-0",
+                        item.isPremium && "text-primary",
+                        item.isBonus && "text-secondary",
+                        !item.isPremium && !item.isBonus && "text-muted-foreground"
+                      )} />
+                      <span className={cn(
+                        "font-medium text-sm md:text-base",
+                        item.isBonus && "text-secondary"
+                      )}>
+                        {item.title}
+                      </span>
+                    </div>
+                    <span className={cn(
+                      "font-bold text-sm md:text-base whitespace-nowrap",
+                      item.isPremium && "text-primary",
+                      item.isBonus && "text-secondary",
+                      !item.isPremium && !item.isBonus && "text-muted-foreground"
+                    )}>
+                      {item.price}
+                    </span>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-6 border-t border-border">
-                <p className="text-muted-foreground text-sm md:text-base mb-2">VALOR TOTAL:</p>
-                <p className="text-2xl md:text-3xl font-heading font-bold text-muted-foreground line-through mb-4">$5,179 USD</p>
-                <p className="text-lg md:text-xl text-secondary font-semibold mb-2">HOY:</p>
-                <p className="text-4xl md:text-6xl font-heading font-bold text-gradient neon-text mb-6">Solo $499 USD</p>
-                <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto">
-                  ¡ACTIVAR EL SISTEMA HÍBRIDO AHORA!
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                </NeonButton>
+              {/* Divider */}
+              <div className="my-6 border-t-2 border-dashed border-border" />
+
+              {/* Total & Price */}
+              <div className="text-center">
+                <p className="text-muted-foreground text-sm md:text-base mb-1">VALOR TOTAL:</p>
+                <p className="text-2xl md:text-3xl font-heading font-bold text-muted-foreground line-through mb-4">
+                  $4,583 USD
+                </p>
+                <p className="text-lg md:text-xl text-secondary font-semibold mb-2">OFERTA DE ACCESO TOTAL:</p>
+                <p className="text-4xl md:text-6xl font-heading font-bold text-gradient neon-text mb-4">
+                  $499 USD
+                </p>
+                <p className="text-sm md:text-base text-muted-foreground mb-6">
+                  (Ahorras más de <span className="text-primary font-bold">$4,000 USD</span> y obtienes el Arsenal de Ejecución completo de por vida)
+                </p>
               </div>
             </HolographicCard>
           </div>
         </div>
       </section>
 
-      {/* SECCIÓN 8: GARANTÍA ANTI-TONTOS */}
+      {/* SECCIÓN 9: GARANTÍA */}
       <section className="py-10 md:py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
@@ -594,15 +619,14 @@ const LandingPage: React.FC = () => {
                   <Shield className="w-8 h-8 md:w-10 md:h-10 text-primary" />
                 </div>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6">
-                  Garantía de <span className="text-gradient">Implementación</span> de 7 Días
+                  GARANTÍA DE <span className="text-gradient">RIESGO CERO</span> POR 7 DÍAS
                 </h2>
                 <p className="text-sm md:text-lg text-muted-foreground">
-                  "Entra, instala el Protocolo Hack, activa tu IA. Si en 7 días no sientes que tienes un 
-                  <span className="text-foreground font-medium"> Arsenal de Guerra</span> en tus manos que te ahorrará años de trabajo, 
-                  <span className="text-primary font-semibold"> te devuelvo el 100% de tu dinero</span>."
+                  Si en una semana no sientes que este sistema te ahorrará años de esfuerzo y multiplicará tus ventas, 
+                  <span className="text-primary font-semibold"> te devuelvo el 100% de tu dinero</span>.
                 </p>
-                <p className="text-sm md:text-base text-secondary font-medium mt-4">
-                  Y puedes quedarte con todos los aceleradores (bonos) por el tiempo perdido. Sin preguntas. Sin resentimientos.
+                <p className="text-base md:text-lg text-foreground font-medium mt-4">
+                  Sin preguntas. El riesgo es todo mío.
                 </p>
               </div>
             </HolographicCard>
@@ -610,38 +634,18 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* SECCIÓN 9: CIERRE Y FAQs */}
-      <section className="py-10 md:py-16 relative z-10">
+      {/* SECCIÓN 10: LLAMADO A LA ACCIÓN FINAL */}
+      <section className="py-10 md:py-20 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* Closing headline */}
             <div className="text-center mb-8 md:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-4 md:mb-6">
-                ¿Vas a seguir operando con el{" "}
-                <span className="text-muted-foreground">sistema antiguo</span>{" "}
-                o vas a instalar el{" "}
-                <span className="text-gradient neon-text">Protocolo Hack</span>?
+                ¿VAS A SEGUIR OPERANDO{" "}
+                <span className="text-muted-foreground">MANUALMENTE</span>{" "}
+                O VAS A INSTALAR EL{" "}
+                <span className="text-gradient neon-text">PROTOCOLO</span>?
               </h2>
-            </div>
-
-            {/* FAQs */}
-            <div className="mb-8 md:mb-12">
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <HelpCircle className="w-5 h-5 text-primary" />
-                <h3 className="text-lg md:text-xl font-heading font-semibold">Preguntas Frecuentes</h3>
-              </div>
-              <Accordion type="single" collapsible className="space-y-3">
-                {faqs.map((faq, index) => (
-                  <AccordionItem key={index} value={`faq-${index}`} className="glass rounded-xl px-4 md:px-6 border-0">
-                    <AccordionTrigger className="text-sm md:text-base font-medium hover:no-underline">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
             </div>
 
             {/* Final CTA */}
@@ -651,10 +655,13 @@ const LandingPage: React.FC = () => {
               <div className="absolute -bottom-24 -left-24 w-48 md:w-64 h-48 md:h-64 bg-secondary/20 rounded-full blur-3xl" />
 
               <div className="relative p-8 sm:p-10 md:p-16 text-center">
-                <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-sm md:text-base">
-                  ¡INICIAR DESCARGA DEL PROTOCOLO HACK AHORA!
-                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+                <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-sm md:text-lg px-8 md:px-12 py-4 md:py-6">
+                  ¡SÍ, QUIERO ACTIVAR MI PROTOCOLO HACK POR $499!
+                  <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
                 </NeonButton>
+                <p className="text-xs md:text-sm text-muted-foreground mt-4">
+                  Acceso inmediato a los 6 programas y los 2 Agentes de IA.
+                </p>
               </div>
             </div>
           </div>
