@@ -14,6 +14,15 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import hectorVideo from "@/assets/protocolo_1.mp4";
 
+// Program thumbnails for pillars
+import iaBusinessLabThumb from "@/assets/ia-business-lab-thumbnail.png";
+import neuroTalkThumb from "@/assets/neuro-talk-thumbnail.jpg";
+import fastBrandThumb from "@/assets/fast-brand-accelerator-thumbnail.png";
+import protocoloHackThumb from "@/assets/protocolo-hack-thumbnail.png";
+import prospectMachineThumb from "@/assets/prospect-machine-thumbnail.jpg";
+import videoMagnetThumb from "@/assets/video-magnet-thumbnail.png";
+import productCreatorThumb from "@/assets/product-creator-pro-thumbnail.png";
+
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
   end,
@@ -47,49 +56,42 @@ const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: strin
   );
 };
 
-// 7 Pillars data
+// 7 Pillars data with thumbnails
 const arsenalPillars = [
   {
-    icon: Bot,
+    thumbnail: iaBusinessLabThumb,
     title: "IA-Sales Master",
     description: "Pon a un ejército de robots a prospectar, calificar y filtrar clientes por ti las 24 horas del día.",
-    color: "primary" as const
   },
   {
-    icon: Mic,
+    thumbnail: neuroTalkThumb,
     title: "Neuro-Talk",
     description: "El lenguaje de la neuro-persuasión para que el cerebro de tu cliente confíe en ti y el 'SÍ' sea su única respuesta lógica.",
-    color: "secondary" as const
   },
   {
-    icon: Crown,
+    thumbnail: fastBrandThumb,
     title: "Marca Imbatible",
     description: "Construye una autoridad magnética que haga que los clientes te busquen a ti, eliminando la necesidad de perseguirlos.",
-    color: "accent" as const
   },
   {
-    icon: Brain,
+    thumbnail: protocoloHackThumb,
     title: "Mindset de Éxito",
     description: "Hackeo cerebral profundo para eliminar bloqueos de escasez e instalar el sistema operativo de un Top Earner.",
-    color: "primary" as const
   },
   {
-    icon: Zap,
+    thumbnail: videoMagnetThumb,
     title: "Automate-X",
     description: "La arquitectura para automatizar todos tus procesos de venta. Tu negocio crece con precisión mientras tú recuperas tu libertad.",
-    color: "secondary" as const
   },
   {
-    icon: Factory,
+    thumbnail: prospectMachineThumb,
     title: "Client Factory",
     description: "Tu generador de prospectos calificados en automático. Un flujo constante de personas interesadas directo a tu WhatsApp.",
-    color: "accent" as const
   },
   {
-    icon: Briefcase,
+    thumbnail: productCreatorThumb,
     title: "Digital Empire",
     description: "Aprende a empaquetar tu conocimiento en productos digitales (cursos y e-books) que facturen de forma masiva y constante.",
-    color: "primary" as const
   }
 ];
 
@@ -380,26 +382,24 @@ const LandingPage: React.FC = () => {
             {arsenalPillars.map((pillar, index) => (
               <HolographicCard
                 key={index}
-                className="group cursor-default animate-fade-in p-4 md:p-6"
+                className="group cursor-default animate-fade-in overflow-hidden p-0"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className={cn(
-                  "w-10 h-10 md:w-12 md:h-12 mb-3 md:mb-4 rounded-lg md:rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                  pillar.color === "primary" && "bg-primary/20",
-                  pillar.color === "secondary" && "bg-secondary/20",
-                  pillar.color === "accent" && "bg-accent/20"
-                )}>
-                  <pillar.icon className={cn(
-                    "w-5 h-5 md:w-6 md:h-6",
-                    pillar.color === "primary" && "text-primary",
-                    pillar.color === "secondary" && "text-secondary",
-                    pillar.color === "accent" && "text-accent"
-                  )} />
+                {/* Thumbnail image */}
+                <div className="relative h-28 md:h-36 overflow-hidden">
+                  <img 
+                    src={pillar.thumbnail} 
+                    alt={pillar.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
                 </div>
-                <h3 className="font-heading font-semibold text-sm md:text-lg mb-1 md:mb-2 group-hover:text-primary transition-colors">
-                  {pillar.title}
-                </h3>
-                <p className="text-xs md:text-sm text-muted-foreground">{pillar.description}</p>
+                <div className="p-4 md:p-5">
+                  <h3 className="font-heading font-semibold text-sm md:text-lg mb-1 md:mb-2 group-hover:text-primary transition-colors">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">{pillar.description}</p>
+                </div>
               </HolographicCard>
             ))}
           </div>
