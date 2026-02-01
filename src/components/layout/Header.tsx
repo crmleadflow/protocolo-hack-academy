@@ -43,9 +43,10 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <span className="font-heading font-bold text-xl tracking-wider text-gradient">
+          {/* Logo with holographic band */}
+          <Link to="/" className="flex items-center gap-3 relative">
+            <div className="absolute inset-0 -mx-3 -my-1 rounded-lg bg-gradient-to-r from-primary/10 via-secondary/15 to-primary/10 backdrop-blur-sm border border-white/10" />
+            <span className="relative font-heading font-bold text-xl tracking-wider text-gradient px-3 py-1">
               PROTOCOLO HACK
             </span>
           </Link>
@@ -148,8 +149,10 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               </>
             ) : (
               <div className="flex items-center gap-3">
-                <Link to="/login">
-                  <NeonButton variant="ghost" size="sm">
+                {/* Login button with holographic band */}
+                <Link to="/login" className="relative">
+                  <div className="absolute inset-0 -mx-1 rounded-lg bg-gradient-to-r from-primary/10 via-secondary/15 to-primary/10 backdrop-blur-sm border border-white/10" />
+                  <NeonButton variant="ghost" size="sm" className="relative">
                     Iniciar Sesión
                   </NeonButton>
                 </Link>
@@ -161,12 +164,13 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               </div>
             )}
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle with holographic band */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 hover:bg-muted rounded-lg"
+              className="lg:hidden p-2 hover:bg-muted rounded-lg relative"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/10 via-secondary/15 to-primary/10 backdrop-blur-sm border border-white/10" />
+              {isMenuOpen ? <X className="w-6 h-6 relative z-10" /> : <Menu className="w-6 h-6 relative z-10" />}
             </button>
           </div>
         </div>
