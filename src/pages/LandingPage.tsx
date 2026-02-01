@@ -232,7 +232,6 @@ const LandingPage: React.FC = () => {
           <div className="max-w-5xl mx-auto text-center">
             {/* Headline */}
             <h1 className="text-xl sm:text-2xl md:text-5xl lg:text-6xl font-heading font-bold mb-3 md:mb-6 animate-fade-in leading-tight px-1" style={{ animationDelay: "0.1s" }}>
-              <span className="text-gradient neon-text">PROTOCOLO HACK:</span>{" "}
               <span className="text-foreground">El Código Maestro de IA y Neuro-Persuasión para Construir, Escalar y Dominar cualquier Negocio en tiempo récord.</span>
             </h1>
           </div>
