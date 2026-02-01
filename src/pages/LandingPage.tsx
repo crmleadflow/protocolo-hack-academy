@@ -311,6 +311,19 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
 
+            {/* CTA Button */}
+            <div className="animate-fade-in px-2 mt-4 md:mt-6" style={{ animationDelay: "0.35s" }}>
+              {/* Texto encima del botón */}
+              <p className="text-center text-xs md:text-lg text-primary font-semibold animate-pulse mb-3 md:mb-4">
+                MIRA EL VIDEO COMPLETO PARA ACTIVAR TU ACCESO 👇
+              </p>
+              
+              <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-[10px] sm:text-xs md:text-base px-3 sm:px-4 md:px-6 py-3 md:py-4 whitespace-normal leading-tight">
+                <span className="text-center">¡SÍ, QUIERO ACTIVAR EL PROTOCOLO HACK AHORA!</span>
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
+              </NeonButton>
+            </div>
+
             {/* Alerta de valor - Contenedor azul */}
             <div className="max-w-4xl mx-auto mt-4 md:mt-6">
               <div className="glass rounded-lg md:rounded-xl p-3 md:p-6 text-center border border-primary/30 bg-primary/5">
@@ -320,18 +333,6 @@ const LandingPage: React.FC = () => {
                   Activa el poder de la IA: elimina el trabajo pesado, borra errores y acelera tus resultados en tiempo récord.
                 </p>
               </div>
-            </div>
-
-            <div className="animate-fade-in px-2" style={{ animationDelay: "0.35s" }}>
-              {/* Texto encima del botón */}
-              <p className="text-center text-xs md:text-lg text-primary font-semibold animate-pulse mb-3 md:mb-4">
-                👇 MIRA EL VIDEO COMPLETO PARA ACTIVAR TU ACCESO 👇
-              </p>
-              
-              <NeonButton size="xl" onClick={() => navigate("/register")} className="w-full sm:w-auto text-[10px] sm:text-xs md:text-base px-3 sm:px-4 md:px-6 py-3 md:py-4 whitespace-normal leading-tight">
-                <span className="text-center">¡SÍ, QUIERO ACTIVAR EL PROTOCOLO HACK AHORA!</span>
-                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
-              </NeonButton>
             </div>
             
 
