@@ -137,7 +137,7 @@ serve(async (req) => {
         }
       }
 
-      // If this is the "Protocolo Hack Completo" package, also enroll in all 6 individual programs
+      // If this is the "Arsenal Maestro: Hack 6" package, also enroll in all 6 individual programs
       if (programId === ARSENAL_MAESTRO_HACK6_ID) {
         console.log("Enrolling user in all 6 included programs...");
         
