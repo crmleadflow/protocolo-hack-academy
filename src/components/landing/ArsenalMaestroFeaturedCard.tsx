@@ -50,7 +50,7 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
         </div>
 
         {/* "BEST VALUE" ribbon effect - Hidden on mobile, shown on sm+ */}
-        <div className="absolute -left-12 top-5 rotate-[-45deg] bg-gradient-to-r from-secondary to-primary px-14 py-1.5 text-[9px] md:text-[10px] font-bold text-primary-foreground shadow-lg z-20 tracking-wide hidden sm:block">
+        <div className="absolute -left-10 top-6 rotate-[-45deg] bg-gradient-to-r from-secondary to-primary px-12 py-1.5 text-[9px] md:text-[10px] font-bold text-primary-foreground shadow-lg z-20 tracking-wide hidden sm:block text-center w-40">
           MEJOR PRECIO
         </div>
 
