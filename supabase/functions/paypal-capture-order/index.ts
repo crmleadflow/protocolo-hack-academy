@@ -7,6 +7,19 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// ID del paquete "Protocolo Hack Completo"
+const PROTOCOLO_HACK_COMPLETO_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
+
+// IDs de los 6 programas individuales incluidos en el paquete
+const INCLUDED_PROGRAM_IDS = [
+  "12ab251e-a501-4832-aa29-4edb8cef4840", // Protocolo Hack
+  "a1d8e2d4-0f9c-46b7-90d0-2aeede6a3998", // Neuro Talk
+  "b0742b04-29d1-448d-9150-2bd19069d6e9", // IA Business Lab
+  "9d46f2a1-01bd-484b-9e2c-b604af2aa984", // Product Creator Pro
+  "eaafca45-228f-442b-9a43-7f939d09623d", // Fast Brand Accelerator
+  "33aeb06d-6c44-481c-8fa7-24c3fb8debbe", // Video Magnet
+];
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -121,7 +134,7 @@ serve(async (req) => {
       throw new Error("Failed to update payment record");
     }
 
-    // Create enrollment
+    // Create enrollment for the main program
     const { error: enrollmentError } = await supabase.from("enrollments").upsert(
       {
         user_id: userId,
@@ -137,6 +150,34 @@ serve(async (req) => {
     if (enrollmentError) {
       console.error("Error creating enrollment:", enrollmentError);
       throw new Error("Failed to create enrollment");
+    }
+
+    // If this is the "Protocolo Hack Completo" package, also enroll in all 6 individual programs
+    if (payment.program_id === PROTOCOLO_HACK_COMPLETO_ID) {
+      console.log("Enrolling user in all 6 included programs...");
+      
+      const enrollmentPromises = INCLUDED_PROGRAM_IDS.map(async (programId) => {
+        const { error } = await supabase.from("enrollments").upsert(
+          {
+            user_id: userId,
+            program_id: programId,
+            payment_id: payment.id,
+            status: "active",
+            enrolled_at: new Date().toISOString(),
+            is_manual: false,
+          },
+          { onConflict: "user_id,program_id" }
+        );
+        
+        if (error) {
+          console.error(`Error enrolling in program ${programId}:`, error);
+        } else {
+          console.log(`Successfully enrolled in program ${programId}`);
+        }
+      });
+
+      await Promise.all(enrollmentPromises);
+      console.log("All 6 program enrollments completed");
     }
 
     return new Response(
