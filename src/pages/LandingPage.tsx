@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   ChevronRight, Sparkles, ArrowRight, Quote, Star,
-  Zap, Target, Mic, Bot, Video, Crown, Package, UserCheck, Rocket, Globe, TrendingUp, Users, BookOpen, Loader2, Volume2, VolumeX, Play, Shield, Brain, Magnet, Factory, Briefcase, CheckCircle, HelpCircle
+  Zap, Target, Mic, Bot, Video, Crown, Package, UserCheck, Rocket, Globe, TrendingUp, Users, BookOpen, Loader2, Volume2, VolumeX, Play, Shield, Brain, Magnet, Factory, Briefcase, CheckCircle, HelpCircle, Maximize
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -277,21 +277,41 @@ const LandingPage: React.FC = () => {
                       playsInline
                       onTimeUpdate={handleTimeUpdate}
                       onLoadedMetadata={handleLoadedMetadata}
-                      className="relative z-10 max-w-[280px] sm:max-w-sm md:max-w-md w-full h-auto object-contain"
+                      className="relative z-10 max-w-[340px] sm:max-w-md md:max-w-lg w-full h-auto object-contain"
                     />
                     
-                    {/* Audio toggle button */}
-                    <button
-                      onClick={toggleMute}
-                      className="absolute top-2 right-2 z-30 p-1.5 md:p-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
-                      title={isMuted ? "Activar audio" : "Silenciar"}
-                    >
-                      {isMuted ? (
-                        <VolumeX className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-                      ) : (
-                        <Volume2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-                      )}
-                    </button>
+                    {/* Video controls overlay */}
+                    <div className="absolute top-2 right-2 z-30 flex items-center gap-1.5">
+                      {/* Audio toggle button */}
+                      <button
+                        onClick={toggleMute}
+                        className="p-1.5 md:p-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
+                        title={isMuted ? "Activar audio" : "Silenciar"}
+                      >
+                        {isMuted ? (
+                          <VolumeX className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                        )}
+                      </button>
+                      
+                      {/* Fullscreen button */}
+                      <button
+                        onClick={() => {
+                          if (videoRef.current) {
+                            if (document.fullscreenElement) {
+                              document.exitFullscreen();
+                            } else {
+                              videoRef.current.requestFullscreen();
+                            }
+                          }
+                        }}
+                        className="p-1.5 md:p-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
+                        title="Pantalla completa"
+                      >
+                        <Maximize className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                      </button>
+                    </div>
                     
                     {/* Progress bar */}
                     <div 
