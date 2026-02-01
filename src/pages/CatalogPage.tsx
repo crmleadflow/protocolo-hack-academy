@@ -1,9 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Play, Clock, BookOpen, Search, Lock, Loader2, CheckCircle, Filter, GripVertical
+  Play, Clock, BookOpen, Search, Lock, Loader2, CheckCircle, Filter, GripVertical, Sparkles, Crown
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
+
+// ID del paquete Arsenal Maestro: Hack 6 (recomendado)
+const ARSENAL_MAESTRO_HACK6_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { GlassInput } from "@/components/ui/glass-input";
 import { ProgressRing } from "@/components/ui/progress-ring";
@@ -264,16 +267,34 @@ function ProgramCard({
     }
   };
 
+  const isRecommended = program.id === ARSENAL_MAESTRO_HACK6_ID;
+
   return (
     <HolographicCard
-      variant={program.progress > 0 ? "gradient" : "default"}
+      variant={isRecommended ? "glow" : program.progress > 0 ? "gradient" : "default"}
       className={cn(
         "group cursor-pointer animate-fade-in flex flex-col relative overflow-hidden",
-        isDragging && "shadow-2xl shadow-primary/20 ring-2 ring-primary/50"
+        isDragging && "shadow-2xl shadow-primary/20 ring-2 ring-primary/50",
+        isRecommended && "ring-2 ring-primary/60 shadow-lg shadow-primary/30"
       )}
       style={{ animationDelay: `${index * 0.05}s` }}
       onClick={handleClick}
     >
+      {/* Recommended Badge */}
+      {isRecommended && (
+        <div className="absolute -top-1 -right-1 z-30">
+          <div className="relative">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 blur-md opacity-60 animate-pulse" />
+            <div className="relative flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-black text-xs font-bold rounded-bl-xl rounded-tr-lg shadow-lg">
+              <Crown className="w-3.5 h-3.5" />
+              <span>RECOMENDADO</span>
+              <Sparkles className="w-3 h-3" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Drag Handle for Admin */}
       {dragListeners && (
         <button
