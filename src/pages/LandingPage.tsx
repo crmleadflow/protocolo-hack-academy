@@ -228,7 +228,7 @@ const LandingPage: React.FC = () => {
                       playsInline
                       onTimeUpdate={handleTimeUpdate}
                       onLoadedMetadata={handleLoadedMetadata}
-                      className="relative z-10 max-w-[280px] sm:max-w-xs md:max-w-sm w-full h-auto object-contain"
+                      className="relative z-10 max-w-[340px] sm:max-w-sm md:max-w-md w-full h-auto object-contain"
                     />
                     
                     {/* Audio toggle button */}
