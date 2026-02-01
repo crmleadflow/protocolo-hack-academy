@@ -22,7 +22,7 @@ import protocoloHackThumb from "@/assets/protocolo-hack-thumbnail.png";
 
 import videoMagnetThumb from "@/assets/video-magnet-thumbnail.png";
 import productCreatorThumb from "@/assets/product-creator-pro-thumbnail.png";
-import warrantyBadge from "@/assets/warranty-badge.png";
+import warrantyBadge from "@/assets/warranty-seal.png";
 
 // Animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
