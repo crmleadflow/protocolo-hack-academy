@@ -436,11 +436,11 @@ const LandingPage: React.FC = () => {
             <NeonButton 
               size="xl" 
               onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} 
-              className="text-sm md:text-lg px-6 md:px-10 py-4 md:py-5"
+              className="w-full sm:w-auto text-xs sm:text-sm md:text-lg px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 whitespace-normal leading-tight"
             >
-              <Package className="w-5 h-5 md:w-6 md:h-6" />
-              OBTÉN EL ARSENAL COMPLETO POR SOLO $499
-              <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+              <Package className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="text-center">OBTÉN EL ARSENAL COMPLETO POR SOLO $499</span>
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
             </NeonButton>
           </div>
         </div>
@@ -500,11 +500,11 @@ const LandingPage: React.FC = () => {
               <NeonButton 
                 size="xl" 
                 onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} 
-                className="text-sm md:text-lg px-6 md:px-10 py-4 md:py-5"
+                className="w-full sm:w-auto text-xs sm:text-sm md:text-lg px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 whitespace-normal leading-tight"
               >
-                <Bot className="w-5 h-5 md:w-6 md:h-6" />
-                QUIERO MI ARSENAL + MIS AGENTES DE IA
-                <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+                <Bot className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
+                <span className="text-center">QUIERO MI ARSENAL + MIS AGENTES DE IA</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
               </NeonButton>
             </div>
           </div>
@@ -676,10 +676,10 @@ const LandingPage: React.FC = () => {
               <div className="absolute -bottom-16 -left-16 md:-bottom-24 md:-left-24 w-32 md:w-64 h-32 md:h-64 bg-secondary/20 rounded-full blur-3xl" />
 
               <div className="relative p-4 sm:p-8 md:p-16 text-center">
-                <NeonButton size="xl" onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} className="w-full sm:w-auto text-[10px] sm:text-xs md:text-lg px-3 sm:px-4 md:px-12 py-3 md:py-6 whitespace-normal leading-tight">
-                  <Shield className="w-4 h-4 md:w-6 md:h-6 flex-shrink-0" />
+                <NeonButton size="xl" onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} className="w-full sm:w-auto text-xs sm:text-sm md:text-lg px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 whitespace-normal leading-tight">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
                   <span className="text-center">EMPEZAR MI TRANSFORMACIÓN SIN RIESGO</span>
-                  <ArrowRight className="w-4 h-4 md:w-6 md:h-6 flex-shrink-0" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
                 </NeonButton>
                 <p className="text-[10px] md:text-sm text-muted-foreground mt-3 md:mt-4">
                   Acceso inmediato a los 6 programas y los 2 Agentes de IA.
