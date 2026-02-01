@@ -944,6 +944,42 @@ export type Database = {
         }
         Relationships: []
       }
+      program_tools: {
+        Row: {
+          created_at: string
+          id: string
+          program_id: string
+          tool_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          program_id: string
+          tool_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          program_id?: string
+          tool_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_tools_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "program_tools_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       programs: {
         Row: {
           created_at: string
@@ -957,6 +993,7 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           updated_at: string
+          visibility_status: Database["public"]["Enums"]["visibility_status"]
         }
         Insert: {
           created_at?: string
@@ -970,6 +1007,7 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           updated_at?: string
+          visibility_status?: Database["public"]["Enums"]["visibility_status"]
         }
         Update: {
           created_at?: string
@@ -983,6 +1021,105 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+          visibility_status?: Database["public"]["Enums"]["visibility_status"]
+        }
+        Relationships: []
+      }
+      tool_subscriptions: {
+        Row: {
+          billing_cycle: Database["public"]["Enums"]["billing_cycle"]
+          created_at: string
+          current_period_end: string
+          current_period_start: string
+          id: string
+          payment_data: Json | null
+          status: string
+          tool_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_cycle?: Database["public"]["Enums"]["billing_cycle"]
+          created_at?: string
+          current_period_end: string
+          current_period_start?: string
+          id?: string
+          payment_data?: Json | null
+          status?: string
+          tool_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_cycle?: Database["public"]["Enums"]["billing_cycle"]
+          created_at?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          payment_data?: Json | null
+          status?: string
+          tool_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tool_subscriptions_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tools: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          description: string | null
+          id: string
+          price_monthly: number
+          price_yearly: number
+          sort_order: number
+          thumbnail_url: string | null
+          title: string
+          tool_type: string
+          tool_url: string | null
+          updated_at: string
+          visibility_status: Database["public"]["Enums"]["visibility_status"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          price_monthly?: number
+          price_yearly?: number
+          sort_order?: number
+          thumbnail_url?: string | null
+          title: string
+          tool_type?: string
+          tool_url?: string | null
+          updated_at?: string
+          visibility_status?: Database["public"]["Enums"]["visibility_status"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          price_monthly?: number
+          price_yearly?: number
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string
+          tool_type?: string
+          tool_url?: string | null
+          updated_at?: string
+          visibility_status?: Database["public"]["Enums"]["visibility_status"]
         }
         Relationships: []
       }
@@ -1123,6 +1260,10 @@ export type Database = {
         Args: { _program_id: string; _user_id: string }
         Returns: boolean
       }
+      has_active_tool_subscription: {
+        Args: { _tool_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1130,14 +1271,21 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_tool_access: {
+        Args: { _tool_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       achievement_category: "progress" | "social" | "milestone"
       app_role: "admin" | "student"
+      billing_cycle: "monthly" | "yearly" | "one_time"
       community_content_type: "discussion" | "question" | "announcement"
       enrollment_status: "pending" | "active" | "expired" | "cancelled"
       mentor_document_type: "transcript" | "pdf" | "text" | "notes"
       payment_status: "pending" | "completed" | "failed" | "refunded"
+      product_type: "program" | "tool"
+      visibility_status: "published" | "coming_soon" | "draft"
       vote_type: "up" | "down"
     }
     CompositeTypes: {
@@ -1268,10 +1416,13 @@ export const Constants = {
     Enums: {
       achievement_category: ["progress", "social", "milestone"],
       app_role: ["admin", "student"],
+      billing_cycle: ["monthly", "yearly", "one_time"],
       community_content_type: ["discussion", "question", "announcement"],
       enrollment_status: ["pending", "active", "expired", "cancelled"],
       mentor_document_type: ["transcript", "pdf", "text", "notes"],
       payment_status: ["pending", "completed", "failed", "refunded"],
+      product_type: ["program", "tool"],
+      visibility_status: ["published", "coming_soon", "draft"],
       vote_type: ["up", "down"],
     },
   },
