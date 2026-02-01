@@ -172,6 +172,7 @@ const LandingPage: React.FC = () => {
   const [maxProgress, setMaxProgress] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
+  const [contentUnlocked, setContentUnlocked] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const toggleMute = (e: React.MouseEvent) => {
@@ -188,7 +189,14 @@ const LandingPage: React.FC = () => {
       const duration = videoRef.current.duration;
       const progress = (current / duration) * 100;
       setVideoProgress(progress);
-      setMaxProgress(prev => Math.max(prev, progress));
+      setMaxProgress(prev => {
+        const newMax = Math.max(prev, progress);
+        // Unlock content when 80% of the video has been watched
+        if (newMax >= 80 && !contentUnlocked) {
+          setContentUnlocked(true);
+        }
+        return newMax;
+      });
     }
   };
 
@@ -366,6 +374,9 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Hidden content - unlocks after 80% video watched */}
+      {contentUnlocked ? (
+        <div className="animate-fade-in">
       {/* SECCIÓN 4: EL MANIFIESTO DEL ESTRATEGA */}
       <section className="py-10 md:py-20 relative z-10">
         <div className="container mx-auto px-3 md:px-4">
@@ -749,6 +760,34 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+        </div>
+      ) : (
+        /* Locked content placeholder - shows teaser to encourage video watching */
+        <section className="py-16 md:py-32 relative z-10">
+          <div className="container mx-auto px-4 text-center">
+            <div className="max-w-2xl mx-auto glass rounded-2xl p-6 md:p-12 border border-primary/30">
+              <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 md:mb-6 rounded-full bg-primary/20 flex items-center justify-center">
+                <Play className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+              </div>
+              <h3 className="text-xl md:text-3xl font-heading font-bold mb-3 md:mb-4">
+                Mira el video para <span className="text-primary">desbloquear</span> el contenido
+              </h3>
+              <p className="text-muted-foreground text-sm md:text-base mb-4">
+                Reproduce el video de arriba para descubrir el resto del Arsenal Maestro
+              </p>
+              <div className="w-full bg-muted/30 rounded-full h-2 md:h-3 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300"
+                  style={{ width: `${Math.min(maxProgress, 80) / 80 * 100}%` }}
+                />
+              </div>
+              <p className="text-xs md:text-sm text-muted-foreground mt-2">
+                {Math.round(Math.min(maxProgress, 80))}% de 80% completado
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>
