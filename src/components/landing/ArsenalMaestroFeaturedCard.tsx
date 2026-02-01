@@ -129,7 +129,7 @@ export const ArsenalMaestroFeaturedCard: React.FC<ArsenalMaestroFeaturedCardProp
 
               {onCtaClick && (
                 <NeonButton size="lg" onClick={onCtaClick} className="w-full sm:w-auto whitespace-normal group">
-                  <span className="text-center text-sm sm:text-base">¡ACTIVAR ARSENAL!</span>
+                  <span className="text-center text-sm sm:text-base">OBTÉN EL ARSENAL COMPLETO POR SOLO $499</span>
                   <ArrowRight className="w-4 h-4 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
                 </NeonButton>
               )}
