@@ -66,7 +66,7 @@ const arsenalMotors = [
     title: "Protocolo Hack",
     adn: "Software Mental de Abundancia",
     description: "El manual definitivo para reprogramar tu mente, borrar miedos y eliminar bloqueos de escasez. Instalamos en ti el sistema operativo de un líder de élite para atraer resultados millonarios por diseño, no por suerte.",
-    price: null,
+    price: "$497 USD",
   },
   {
     number: 2,
@@ -90,7 +90,7 @@ const arsenalMotors = [
     title: "Fast Brand Accelerator",
     adn: "Autoridad a Máxima Velocidad",
     description: "Escala y potencializa tu marca personal con las estrategias correctas. Usa la IA para producir y editar tu contenido; haz que la tecnología lo haga por ti y deja de ser un esclavo de las redes sociales.",
-    price: null,
+    price: "$497 USD",
   },
   {
     number: 5,
@@ -98,7 +98,7 @@ const arsenalMotors = [
     title: "Video Magnet",
     adn: "Atracción Magnética",
     description: "Convierte tus videos en un imán de clientes. Aprende a crear contenido visual que detenga el scroll y atraiga prospectos calificados en automático, posicionándote como la única opción en el mercado.",
-    price: null,
+    price: "$497 USD",
   },
   {
     number: 6,
@@ -106,7 +106,7 @@ const arsenalMotors = [
     title: "Product Creator Pro",
     adn: "Fábrica de Activos",
     description: "Transforma tu experiencia en productos digitales (e-books, cursos, mentorías) que se vendan solos. Convierte tu conocimiento en una fuente de ingresos pasivos que no dependa de tu tiempo.",
-    price: null,
+    price: "$497 USD",
   },
 ];
 
@@ -404,7 +404,7 @@ const LandingPage: React.FC = () => {
             {arsenalMotors.map((motor, index) => (
               <HolographicCard
                 key={index}
-                variant={motor.price ? "gradient" : "default"}
+                variant="gradient"
                 className="group cursor-default animate-fade-in overflow-hidden p-0"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -420,12 +420,10 @@ const LandingPage: React.FC = () => {
                   <div className="absolute top-2 left-2 md:top-3 md:left-3 w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                     <span className="text-white font-bold text-xs md:text-sm">{motor.number}</span>
                   </div>
-                  {/* Price badge if premium */}
-                  {motor.price && (
-                    <div className="absolute top-2 right-2 md:top-3 md:right-3 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full bg-primary/90 backdrop-blur-sm">
-                      <span className="text-[10px] md:text-xs font-bold text-primary-foreground">{motor.price}</span>
-                    </div>
-                  )}
+                  {/* Price badge */}
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full bg-primary/90 backdrop-blur-sm">
+                    <span className="text-[10px] md:text-xs font-bold text-primary-foreground">{motor.price}</span>
+                  </div>
                 </div>
                 <div className="p-3 md:p-5">
                   <h3 className="font-heading font-bold text-sm md:text-lg mb-0.5 md:mb-1 group-hover:text-primary transition-colors">
