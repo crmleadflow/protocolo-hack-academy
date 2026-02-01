@@ -299,10 +299,18 @@ const LandingPage: React.FC = () => {
                       <button
                         onClick={() => {
                           if (videoRef.current) {
-                            if (document.fullscreenElement) {
+                            const video = videoRef.current as HTMLVideoElement & {
+                              webkitEnterFullscreen?: () => void;
+                              webkitExitFullscreen?: () => void;
+                            };
+                            
+                            // iOS Safari uses webkitEnterFullscreen for video elements
+                            if (video.webkitEnterFullscreen) {
+                              video.webkitEnterFullscreen();
+                            } else if (document.fullscreenElement) {
                               document.exitFullscreen();
-                            } else {
-                              videoRef.current.requestFullscreen();
+                            } else if (video.requestFullscreen) {
+                              video.requestFullscreen();
                             }
                           }
                         }}
