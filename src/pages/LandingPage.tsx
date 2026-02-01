@@ -217,23 +217,9 @@ const LandingPage: React.FC = () => {
       <ParticleBackground particleCount={40} />
       <Header transparent />
 
-      {/* SECCIÓN 1: EL FILTRO DE ÉLITE (Pre-Headline) */}
-      <section className="relative pt-16 md:pt-24 pb-3 md:pb-4">
-        <div className="container mx-auto px-3 md:px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="glass rounded-lg md:rounded-xl p-3 md:p-6 text-center border border-primary/30">
-              <p className="text-xs md:text-base text-muted-foreground leading-relaxed">
-                <span className="text-primary font-semibold">¡ALERTA!</span>{" "}
-                <span className="text-foreground font-medium">EL ATAJO PARA ESCALAR O EMPEZAR DE CERO.</span>{" "}
-                Activa el poder de la IA: elimina el trabajo pesado, borra errores y acelera tus resultados en tiempo récord.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* SECCIÓN 2: EL DISPARADOR MAESTRO (Headline) */}
-      <section className="relative flex items-center pb-4 md:pb-8">
+      {/* SECCIÓN 1: EL DISPARADOR MAESTRO (Headline) */}
+      <section className="relative flex items-center pt-20 md:pt-28 pb-4 md:pb-8">
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
         
@@ -325,7 +311,17 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* CTA Button */}
+            {/* Alerta de valor - Contenedor azul */}
+            <div className="max-w-4xl mx-auto mt-4 md:mt-6">
+              <div className="glass rounded-lg md:rounded-xl p-3 md:p-6 text-center border border-primary/30 bg-primary/5">
+                <p className="text-xs md:text-base text-muted-foreground leading-relaxed">
+                  <span className="text-primary font-semibold">¡ALERTA!</span>{" "}
+                  <span className="text-foreground font-medium">EL ATAJO PARA ESCALAR O EMPEZAR DE CERO.</span>{" "}
+                  Activa el poder de la IA: elimina el trabajo pesado, borra errores y acelera tus resultados en tiempo récord.
+                </p>
+              </div>
+            </div>
+
             <div className="animate-fade-in px-2" style={{ animationDelay: "0.35s" }}>
               {/* Texto encima del botón */}
               <p className="text-center text-xs md:text-lg text-primary font-semibold animate-pulse mb-3 md:mb-4">
@@ -338,15 +334,6 @@ const LandingPage: React.FC = () => {
               </NeonButton>
             </div>
             
-            {/* Alerta de valor */}
-            <div className="mt-4 md:mt-6 max-w-3xl mx-auto text-center">
-              <p className="text-sm md:text-xl font-heading font-bold text-secondary mb-1 md:mb-2">
-                ¡ALERTA! EL ATAJO PARA ESCALAR O EMPEZAR DE CERO.
-              </p>
-              <p className="text-xs md:text-base text-muted-foreground leading-relaxed">
-                Activa el poder de la IA: elimina el trabajo pesado, borra errores y acelera tus resultados en tiempo récord.
-              </p>
-            </div>
 
             {/* Sub-headline movido debajo del video */}
             <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-3xl mx-auto mt-6 md:mt-8 px-1 animate-fade-in leading-relaxed">
