@@ -7,8 +7,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// ID del paquete "Protocolo Hack Completo"
-const PROTOCOLO_HACK_COMPLETO_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
+// ID del paquete "Arsenal Maestro: Hack 6"
+const ARSENAL_MAESTRO_HACK6_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
 
 // IDs de los 6 programas individuales incluidos en el paquete
 const INCLUDED_PROGRAM_IDS = [
@@ -138,7 +138,7 @@ serve(async (req) => {
       }
 
       // If this is the "Protocolo Hack Completo" package, also enroll in all 6 individual programs
-      if (programId === PROTOCOLO_HACK_COMPLETO_ID) {
+      if (programId === ARSENAL_MAESTRO_HACK6_ID) {
         console.log("Enrolling user in all 6 included programs...");
         
         const enrollmentPromises = INCLUDED_PROGRAM_IDS.map(async (includedProgramId) => {
