@@ -521,12 +521,12 @@ const LandingPage: React.FC = () => {
                 <Crown className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                 <span className="text-[10px] md:text-sm font-medium">AUTORIDAD</span>
               </div>
-              <h2 className="text-lg sm:text-2xl md:text-4xl font-heading font-bold mb-4 md:mb-6">
+              <h2 className="text-lg sm:text-2xl md:text-4xl font-heading font-bold mb-2 md:mb-3">
                 ¿Quién es <span className="text-gradient">Héctor Galensky</span>?
               </h2>
               
               {/* Héctor Cyberpunk Image */}
-              <div className="flex justify-center mb-6 md:mb-8">
+              <div className="flex justify-center mt-2 md:mt-4 mb-3 md:mb-4">
                 <div className="relative">
                   <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 via-secondary/20 to-primary/30 rounded-full blur-2xl opacity-60" />
                   <img 
