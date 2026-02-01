@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ParticleBackground } from "@/components/ui/particle-background";
 import { NeonButton } from "@/components/ui/neon-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
+import { ArsenalMaestroFeaturedCard } from "@/components/landing/ArsenalMaestroFeaturedCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -392,6 +393,11 @@ const LandingPage: React.FC = () => {
             </p>
           </div>
 
+          {/* Tarjeta destacada (Arsenal Maestro) */}
+          <div className="max-w-6xl mx-auto mb-4 md:mb-8">
+            <ArsenalMaestroFeaturedCard onCtaClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 max-w-6xl mx-auto">
             {arsenalMotors.map((motor, index) => (
               <HolographicCard
@@ -567,8 +573,8 @@ const LandingPage: React.FC = () => {
             <div className="text-center mb-6 md:mb-10">
               {/* Badge RECOMENDADO */}
               <div className="relative inline-block mb-4 md:mb-6">
-                <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 blur-lg opacity-50 animate-pulse rounded-full" />
-                <div className="relative flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-black text-xs md:text-sm font-bold rounded-full shadow-xl">
+                <div className="absolute -inset-1 bg-gradient-to-r from-secondary via-primary to-secondary blur-lg opacity-50 animate-pulse rounded-full" />
+                <div className="relative flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-secondary via-primary to-secondary text-primary-foreground text-xs md:text-sm font-bold rounded-full shadow-xl">
                   <Crown className="w-4 h-4 md:w-5 md:h-5" />
                   <span>RECOMENDADO</span>
                   <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
