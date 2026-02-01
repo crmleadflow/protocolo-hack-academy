@@ -232,7 +232,15 @@ const LandingPage: React.FC = () => {
           <div className="max-w-5xl mx-auto text-center">
             {/* Headline */}
             <h1 className="text-xl sm:text-2xl md:text-5xl lg:text-6xl font-heading font-bold mb-3 md:mb-6 animate-fade-in leading-tight px-1" style={{ animationDelay: "0.1s" }}>
-              <span className="text-foreground">El Código Maestro de IA y Neuro-Persuasión para Construir, Escalar y Dominar cualquier Negocio en tiempo récord.</span>
+              <span className="text-foreground">El </span>
+              <span className="text-primary">Código Maestro</span>
+              <span className="text-foreground"> de </span>
+              <span className="text-secondary">IA y Neuro-Persuasión</span>
+              <span className="text-foreground"> para </span>
+              <span className="text-primary">Construir, Escalar y Dominar</span>
+              <span className="text-foreground"> cualquier Negocio en </span>
+              <span className="text-secondary">tiempo récord</span>
+              <span className="text-foreground">.</span>
             </h1>
           </div>
         </div>
