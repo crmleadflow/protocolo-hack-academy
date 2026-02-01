@@ -310,7 +310,7 @@ export const MentorDocumentsPanel: React.FC = () => {
             Documentos de Entrenamiento
           </h3>
           <p className="text-sm text-muted-foreground">
-            Sube archivos y contenido para entrenar al mentor IA
+            Sube archivos y contenido para entrenar a Mi Mentor IA
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

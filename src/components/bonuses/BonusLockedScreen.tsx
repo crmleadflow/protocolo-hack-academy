@@ -14,7 +14,8 @@ export function BonusLockedScreen({ bonusType }: BonusLockedScreenProps) {
 
   const isMentor = bonusType === "mentor";
   const Icon = isMentor ? Sparkles : Brain;
-  const title = isMentor ? "Mentor IA" : "Neuro Scanner";
+  const title = isMentor ? "Mi Mentor IA" : "Neuro Analyzer Pro";
+  const subtitle = isMentor ? null : "Analizador de Neuro-Oratoria";
   const description = isMentor
     ? "Tu mentor virtual 24/7 entrenado con todo el conocimiento de los programas."
     : "Analiza tu discurso de venta con IA. Mejora tu capacidad de cierre y persuasión.";
@@ -39,6 +40,9 @@ export function BonusLockedScreen({ bonusType }: BonusLockedScreenProps) {
                 {title}
               </h1>
             </div>
+            {subtitle && (
+              <p className="text-sm text-primary/80 font-medium">{subtitle}</p>
+            )}
             <p className="text-muted-foreground">
               {description}
             </p>
@@ -70,11 +74,11 @@ export function BonusLockedScreen({ bonusType }: BonusLockedScreenProps) {
           <div className="flex justify-center gap-4">
             <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${isMentor ? "bg-primary/20 border border-primary/30" : "bg-muted/50"}`}>
               <Sparkles className={`w-4 h-4 ${isMentor ? "text-primary" : "text-muted-foreground"}`} />
-              <span className={`text-sm ${isMentor ? "text-primary font-medium" : "text-muted-foreground"}`}>Mentor IA</span>
+              <span className={`text-sm ${isMentor ? "text-primary font-medium" : "text-muted-foreground"}`}>Mi Mentor IA</span>
             </div>
             <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${!isMentor ? "bg-secondary/20 border border-secondary/30" : "bg-muted/50"}`}>
               <Brain className={`w-4 h-4 ${!isMentor ? "text-secondary" : "text-muted-foreground"}`} />
-              <span className={`text-sm ${!isMentor ? "text-secondary font-medium" : "text-muted-foreground"}`}>Neuro Scanner</span>
+              <span className={`text-sm ${!isMentor ? "text-secondary font-medium" : "text-muted-foreground"}`}>Neuro Analyzer Pro</span>
             </div>
           </div>
 

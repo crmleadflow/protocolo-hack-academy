@@ -30,8 +30,8 @@ import { Mail } from "lucide-react";
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Programas", url: "/catalog", icon: BookOpen },
-  { title: "Mi Mentor", url: "/mentor", icon: Sparkles, requiresBonus: "mentor" as const },
-  { title: "Neuro Scanner", url: "/neuro-scanner", icon: Brain, requiresBonus: "neuro-scanner" as const },
+  { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles, requiresBonus: "mentor" as const },
+  { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain, requiresBonus: "neuro-scanner" as const },
   { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
   { title: "Logros", url: "/achievements", icon: Trophy },
   { title: "Comunidad", url: "/community", icon: MessageSquare },

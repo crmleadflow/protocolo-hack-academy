@@ -10,7 +10,7 @@ const ProducerMentorPage: React.FC = () => {
 
   return (
     <AppLayout
-      title="Mentor IA"
+      title="Mi Mentor IA"
       subtitle="Configura y entrena tu mentor virtual"
     >
       <div className="max-w-4xl mx-auto">
