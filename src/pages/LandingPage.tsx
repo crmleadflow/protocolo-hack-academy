@@ -704,10 +704,8 @@ const LandingPage: React.FC = () => {
             {/* Closing headline */}
             <div className="text-center mb-6 md:mb-12 px-2">
               <h2 className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-heading font-bold mb-3 md:mb-6 leading-tight">
-                ¿VAS A SEGUIR OPERANDO{" "}
-                <span className="text-muted-foreground">MANUALMENTE</span>{" "}
-                O VAS A INSTALAR EL{" "}
-                <span className="text-gradient neon-text">PROTOCOLO</span>?
+                ¿Seguirás operando con <span className="text-muted-foreground">herramientas de ayer</span> o vas a <span className="text-primary">comandar el futuro</span> de tu industria hoy?{" "}
+                <span className="text-gradient neon-text">Desbloquea el Arsenal Maestro.</span>
               </h2>
             </div>
 
