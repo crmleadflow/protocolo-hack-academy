@@ -325,6 +325,13 @@ const LandingPage: React.FC = () => {
               </NeonButton>
             </div>
 
+            {/* Tarjeta visible del Arsenal Maestro (arriba del pliegue) */}
+            <div className="max-w-4xl mx-auto mt-4 md:mt-6 px-2">
+              <ArsenalMaestroFeaturedCard
+                onCtaClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")}
+              />
+            </div>
+
             {/* Alerta de valor - Contenedor azul */}
             <div className="max-w-4xl mx-auto mt-4 md:mt-6">
               <div className="glass rounded-lg md:rounded-xl p-3 md:p-6 text-center border border-primary/30 bg-primary/5">
