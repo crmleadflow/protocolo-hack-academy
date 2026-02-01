@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Home, BookOpen, Trophy, Settings, LogOut, User,
-  Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain, PanelLeft
+  Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain, PanelLeft, Lock
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -22,6 +22,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useDirectMessages } from "@/hooks/useDirectMessages";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useBonusAccess } from "@/hooks/useBonusAccess";
 import { cn } from "@/lib/utils";
 
 import { Mail } from "lucide-react";
@@ -29,8 +30,8 @@ import { Mail } from "lucide-react";
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Programas", url: "/catalog", icon: BookOpen },
-  { title: "Mi Mentor", url: "/mentor", icon: Sparkles },
-  { title: "Neuro Scanner", url: "/neuro-scanner", icon: Brain },
+  { title: "Mi Mentor", url: "/mentor", icon: Sparkles, requiresBonus: "mentor" as const },
+  { title: "Neuro Scanner", url: "/neuro-scanner", icon: Brain, requiresBonus: "neuro-scanner" as const },
   { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
   { title: "Logros", url: "/achievements", icon: Trophy },
   { title: "Comunidad", url: "/community", icon: MessageSquare },
@@ -51,8 +52,16 @@ export function AppSidebar() {
   const { isAdmin, signOut } = useAuth();
   const { profile, displayName, initials } = useProfile();
   const { unreadCount } = useDirectMessages();
+  const { hasMentorAccess, hasNeuroScannerAccess } = useBonusAccess();
 
   const isActive = (path: string) => location.pathname === path;
+  
+  const hasBonusAccess = (bonusType?: "mentor" | "neuro-scanner") => {
+    if (!bonusType) return true;
+    if (bonusType === "mentor") return hasMentorAccess;
+    if (bonusType === "neuro-scanner") return hasNeuroScannerAccess;
+    return true;
+  };
 
   // Cerrar el sidebar en móvil al hacer clic en un enlace
   const handleLinkClick = () => {
@@ -138,35 +147,47 @@ export function AppSidebar() {
           {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Menú Principal</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      onClick={handleLinkClick}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
-                        isActive(item.url) 
-                          ? "bg-primary/20 text-primary neon-glow" 
-                          : "hover:bg-white/5"
-                      )}
-                    >
-                      <item.icon className="w-5 h-5 flex-shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
-                      {item.hasBadge && unreadCount > 0 && (
-                        <span className={cn(
-                          "absolute flex items-center justify-center bg-destructive text-destructive-foreground text-xs font-bold rounded-full",
-                          collapsed 
-                            ? "top-0 right-0 w-4 h-4 text-[10px]" 
-                            : "ml-auto w-5 h-5"
-                        )}>
-                          {unreadCount > 9 ? "9+" : unreadCount}
-                        </span>
-                      )}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {menuItems.map((item) => {
+                const hasAccess = hasBonusAccess(item.requiresBonus);
+                const showLock = item.requiresBonus && !hasAccess;
+                
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to={item.url} 
+                        onClick={handleLinkClick}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
+                          isActive(item.url) 
+                            ? "bg-primary/20 text-primary neon-glow" 
+                            : "hover:bg-white/5",
+                          showLock && "opacity-70"
+                        )}
+                      >
+                        <item.icon className="w-5 h-5 flex-shrink-0" />
+                        {!collapsed && <span>{item.title}</span>}
+                        {showLock && (
+                          <Lock className={cn(
+                            "w-3 h-3 text-muted-foreground",
+                            collapsed ? "absolute top-0 right-0" : "ml-auto"
+                          )} />
+                        )}
+                        {item.hasBadge && unreadCount > 0 && (
+                          <span className={cn(
+                            "absolute flex items-center justify-center bg-destructive text-destructive-foreground text-xs font-bold rounded-full",
+                            collapsed 
+                              ? "top-0 right-0 w-4 h-4 text-[10px]" 
+                              : "ml-auto w-5 h-5"
+                          )}>
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
