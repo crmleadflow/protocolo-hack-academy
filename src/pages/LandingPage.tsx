@@ -494,6 +494,19 @@ const LandingPage: React.FC = () => {
                 </HolographicCard>
               ))}
             </div>
+
+            {/* CTA Button after bonuses */}
+            <div className="text-center mt-8 md:mt-12">
+              <NeonButton 
+                size="xl" 
+                onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} 
+                className="text-sm md:text-lg px-6 md:px-10 py-4 md:py-5"
+              >
+                <Bot className="w-5 h-5 md:w-6 md:h-6" />
+                QUIERO MI ARSENAL + MIS AGENTES DE IA
+                <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+              </NeonButton>
+            </div>
           </div>
         </div>
       </section>
