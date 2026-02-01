@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-// ID del programa "Protocolo Hack Completo" que otorga los bonos
-const PROTOCOLO_HACK_COMPLETO_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
+// ID del programa "Arsenal Maestro: Hack 6" que otorga los bonos
+const ARSENAL_MAESTRO_HACK6_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
 
 // IDs de las herramientas
 const MENTOR_IA_TOOL_ID = "a9132702-2ef7-4867-b661-fa7c07043e79";
@@ -29,7 +29,7 @@ export function useBonusAccess(): BonusAccess {
         .from("enrollments")
         .select("id")
         .eq("user_id", user.id)
-        .eq("program_id", PROTOCOLO_HACK_COMPLETO_ID)
+        .eq("program_id", ARSENAL_MAESTRO_HACK6_ID)
         .eq("status", "active")
         .maybeSingle();
 
@@ -82,4 +82,4 @@ export function useBonusAccess(): BonusAccess {
   };
 }
 
-export { PROTOCOLO_HACK_COMPLETO_ID, MENTOR_IA_TOOL_ID, NEURO_SCANNER_TOOL_ID };
+export { ARSENAL_MAESTRO_HACK6_ID, MENTOR_IA_TOOL_ID, NEURO_SCANNER_TOOL_ID };

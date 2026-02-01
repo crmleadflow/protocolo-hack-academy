@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Lock, Sparkles, Brain, Gift, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { PROTOCOLO_HACK_COMPLETO_ID } from "@/hooks/useBonusAccess";
+import { ARSENAL_MAESTRO_HACK6_ID } from "@/hooks/useBonusAccess";
 
 interface BonusLockedScreenProps {
   bonusType: "mentor" | "neuro-scanner";
@@ -55,7 +55,7 @@ export function BonusLockedScreen({ bonusType }: BonusLockedScreenProps) {
               <span className="font-semibold text-secondary">Bono Exclusivo</span>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Esta herramienta está disponible como <strong>bono exclusivo</strong> para los miembros del paquete <strong>"Protocolo Hack Completo"</strong>.
+              Esta herramienta está disponible como <strong>bono exclusivo</strong> para los miembros del paquete <strong>"Arsenal Maestro: Hack 6"</strong>.
             </p>
             <div className="bg-background/50 rounded-lg p-4">
               <p className="text-lg font-bold text-gradient">
@@ -84,7 +84,7 @@ export function BonusLockedScreen({ bonusType }: BonusLockedScreenProps) {
 
           {/* CTA Button */}
           <Button
-            onClick={() => navigate(`/checkout/${PROTOCOLO_HACK_COMPLETO_ID}`)}
+            onClick={() => navigate(`/checkout/${ARSENAL_MAESTRO_HACK6_ID}`)}
             className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-bold py-6"
             size="lg"
           >
