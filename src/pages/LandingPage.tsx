@@ -631,6 +631,19 @@ const LandingPage: React.FC = () => {
                 </p>
               </div>
             </HolographicCard>
+
+            {/* CTA Button after offer */}
+            <div className="text-center mt-6 md:mt-8">
+              <NeonButton 
+                size="xl" 
+                onClick={() => navigate("/checkout/c5496a23-6acd-43f9-bb63-affd19992c3f")} 
+                className="w-full sm:w-auto text-xs sm:text-sm md:text-lg px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 whitespace-normal leading-tight"
+              >
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
+                <span className="text-center">APROVECHAR ESTA OFERTA ÚNICA</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
+              </NeonButton>
+            </div>
           </div>
         </div>
       </section>
