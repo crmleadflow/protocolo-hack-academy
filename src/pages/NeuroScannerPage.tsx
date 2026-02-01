@@ -13,10 +13,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Brain, Mic, MicOff, Play, Square, Upload, Trash2, 
   TrendingUp, AlertTriangle, Sparkles, Clock, Zap,
-  ChevronDown, ChevronRight, BarChart3, Target, Volume2, ArrowLeft
+  ChevronDown, ChevronRight, BarChart3, Target, Volume2, ArrowLeft, Loader2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useNeuroScanner, NeuroScan } from "@/hooks/useNeuroScanner";
+import { useBonusAccess } from "@/hooks/useBonusAccess";
+import { BonusLockedScreen } from "@/components/bonuses/BonusLockedScreen";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -65,8 +67,10 @@ declare global {
 
 export default function NeuroScannerPage() {
   const navigate = useNavigate();
+  const { hasNeuroScannerAccess, isLoading: isLoadingAccess } = useBonusAccess();
   const { scans, isLoadingScans, isAnalyzing, averageScore, bestScore, analyze, deleteScan } = useNeuroScanner();
   
+  // All hooks must be called before any conditional returns
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
@@ -77,6 +81,10 @@ export default function NeuroScannerPage() {
   const [micError, setMicError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
   const [isNavOpen, setIsNavOpen] = useState(true);
+  
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isRecordingRef = useRef(false);
 
   // Cambiar de pestaña debe ocultar el menú (Grabar/Resultados/Historial)
   const goToTab = (tab: string) => {
@@ -92,10 +100,6 @@ export default function NeuroScannerPage() {
   const handleProgramClick = () => {
     setIsNavOpen(false);
   };
-  
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const isRecordingRef = useRef(false);
 
   // Initialize speech recognition once on mount
   useEffect(() => {
@@ -184,6 +188,22 @@ export default function NeuroScannerPage() {
       }
     };
   }, []);
+
+  // Early returns AFTER all hooks
+  if (isLoadingAccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Verificando acceso...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasNeuroScannerAccess) {
+    return <BonusLockedScreen bonusType="neuro-scanner" />;
+  }
 
   const startRecording = async () => {
     // Al usar cualquier función, ocultar el menú

@@ -4,10 +4,30 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { MentorChatInterface } from "@/components/mentor/MentorChatInterface";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { Sparkles, ArrowLeft, Loader2 } from "lucide-react";
+import { useBonusAccess } from "@/hooks/useBonusAccess";
+import { BonusLockedScreen } from "@/components/bonuses/BonusLockedScreen";
 
 const MentorPage: React.FC = () => {
   const navigate = useNavigate();
+  const { hasMentorAccess, isLoading } = useBonusAccess();
+
+  // Mostrar loading mientras verifica acceso
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Verificando acceso...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si no tiene acceso, mostrar pantalla de bloqueo
+  if (!hasMentorAccess) {
+    return <BonusLockedScreen bonusType="mentor" />;
+  }
 
   return (
     <SidebarProvider>
