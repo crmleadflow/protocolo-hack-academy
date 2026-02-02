@@ -7,7 +7,7 @@ import {
   Link2, FileText, DollarSign
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { UnifiedSidebar } from "@/components/layout/UnifiedSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
@@ -494,7 +494,7 @@ const ProducerCourseEditPage: React.FC = () => {
     return (
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-background">
-          <ProducerSidebar />
+          <UnifiedSidebar />
           <main className="flex-1 flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </main>
@@ -507,7 +507,7 @@ const ProducerCourseEditPage: React.FC = () => {
     return (
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-background">
-          <ProducerSidebar />
+          <UnifiedSidebar />
           <main className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <Video className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
@@ -532,7 +532,7 @@ const ProducerCourseEditPage: React.FC = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <ProducerSidebar />
+        <UnifiedSidebar />
         <FloatingSidebarTrigger />
 
         <main className="flex-1 overflow-auto">

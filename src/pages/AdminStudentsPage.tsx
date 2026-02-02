@@ -3,7 +3,7 @@ import {
   Users, Search, Loader2, CheckCircle2, GraduationCap, BookOpen
 } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { UnifiedSidebar } from "@/components/layout/UnifiedSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -351,7 +351,7 @@ const AdminStudentsPage: React.FC = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <ProducerSidebar />
+        <UnifiedSidebar />
         <FloatingSidebarTrigger />
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
