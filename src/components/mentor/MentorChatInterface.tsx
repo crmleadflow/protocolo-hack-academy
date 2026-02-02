@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { GlassInput } from "@/components/ui/glass-input";
 import { useMentorChat, useMentorSettings } from "@/hooks/useMentor";
+import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
+import { VoiceControls } from "@/components/mentor/VoiceControls";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import mentorAvatar from "@/assets/hector-galensky-mentor-avatar.png";
@@ -20,6 +22,37 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
   const { messages, isLoading, sendMessage, clearConversation } = useMentorChat();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
+
+  const {
+    spanishVoices,
+    selectedVoice,
+    selectVoice,
+    speak,
+    pause,
+    resume,
+    stop,
+    isSpeaking,
+    isPaused,
+    isSupported,
+  } = useSpeechSynthesis();
+
+  const handleSpeak = (content: string, index: number) => {
+    if (speakingMessageIndex === index && isSpeaking) {
+      stop();
+      setSpeakingMessageIndex(null);
+    } else {
+      setSpeakingMessageIndex(index);
+      speak(content);
+    }
+  };
+
+  // Reset speaking index when speech ends
+  useEffect(() => {
+    if (!isSpeaking && !isPaused) {
+      setSpeakingMessageIndex(null);
+    }
+  }, [isSpeaking, isPaused]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -189,18 +222,39 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
               >
                 <div
                   className={cn(
-                    "inline-block p-3 rounded-2xl",
+                    "inline-block rounded-2xl",
                     msg.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-tr-md"
+                      ? "bg-primary text-primary-foreground rounded-tr-md p-3"
                       : "glass rounded-tl-md"
                   )}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="prose prose-sm prose-invert max-w-none">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <div className="p-3 pb-2">
+                      <div className="prose prose-sm prose-invert max-w-none">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
+                      {isSupported && (
+                        <div className="flex justify-end mt-2 pt-2 border-t border-border/30">
+                          <VoiceControls
+                            spanishVoices={spanishVoices}
+                            selectedVoice={selectedVoice}
+                            selectVoice={selectVoice}
+                            isSpeaking={speakingMessageIndex === index && isSpeaking}
+                            isPaused={speakingMessageIndex === index && isPaused}
+                            isSupported={isSupported}
+                            onSpeak={() => handleSpeak(msg.content, index)}
+                            onPause={pause}
+                            onResume={resume}
+                            onStop={() => {
+                              stop();
+                              setSpeakingMessageIndex(null);
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <p className="text-sm">{msg.content}</p>
+                    <p className="text-sm p-3">{msg.content}</p>
                   )}
                 </div>
 
