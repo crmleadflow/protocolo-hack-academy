@@ -44,8 +44,9 @@ const secondaryItems = [
 ];
 
 export function AppSidebar() {
-  const { state, setOpenMobile, toggleSidebar } = useSidebar();
-  const collapsed = state === "collapsed";
+  const { state, setOpenMobile, toggleSidebar, isMobile: isMobileSidebar } = useSidebar();
+  // En móvil, el sidebar siempre debe mostrarse expandido (sheet), no colapsado
+  const collapsed = isMobileSidebar ? false : state === "collapsed";
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
