@@ -448,6 +448,46 @@ const CheckoutPage: React.FC = () => {
                 </h1>
               </div>
 
+              {/* Arsenal Maestro Includes - Only show for this specific program */}
+              {program.id === "c5496a23-6acd-43f9-bb63-affd19992c3f" && (
+                <HolographicCard variant="gradient" className="p-4">
+                  <h3 className="font-heading font-semibold text-sm mb-3 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    Tu compra incluye:
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span>Protocolo Hack</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span>Neuro Talk</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span>IA Business Lab</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span>Video Magnet</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span>Fast Brand Accelerator</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span>Product Creator Pro</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm pt-3 mt-3 border-t border-border/50">
+                    <Zap className="w-4 h-4 text-secondary flex-shrink-0" />
+                    <span className="text-secondary font-medium">+ Bonos de IA exclusivos</span>
+                  </div>
+                </HolographicCard>
+              )}
+
               {/* Payment Methods */}
               <div className="space-y-3">
                 {paymentMethods.map((method) => (
