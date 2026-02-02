@@ -4,7 +4,10 @@ project_id = "mvyroxrmhqxtzljoryzi"
 verify_jwt = false
 
 [functions.community-mentor-answer]
-verify_jwt = true
+verify_jwt = false
+
+[functions.community-mentor-chat]
+verify_jwt = false
 
 [functions.community-scheduled-content]
 verify_jwt = false
