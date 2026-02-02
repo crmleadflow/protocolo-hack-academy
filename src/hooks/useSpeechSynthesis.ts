@@ -38,14 +38,30 @@ export function useSpeechSynthesis() {
       const spanish = formattedVoices.filter(
         (v) => v.lang.startsWith("es") || v.lang.includes("ES")
       );
-      setSpanishVoices(spanish);
 
-      // Set default Spanish voice if available
-      if (spanish.length > 0 && !selectedVoice) {
-        // Prefer voices from Spain or Mexico
-        const preferredVoice = spanish.find(
+      // Common male Spanish voice name patterns
+      const maleNamePatterns = [
+        "jorge", "diego", "pablo", "carlos", "juan", "miguel", 
+        "andrés", "andres", "antonio", "enrique", "rodrigo",
+        "male", "hombre", "masculino", "man", "guy"
+      ];
+
+      // Filter for male voices based on name patterns
+      const maleSpanish = spanish.filter((v) => {
+        const nameLower = v.name.toLowerCase();
+        return maleNamePatterns.some((pattern) => nameLower.includes(pattern));
+      });
+
+      // Use male voices if available, otherwise show all Spanish voices
+      const voicesToUse = maleSpanish.length > 0 ? maleSpanish : spanish;
+      setSpanishVoices(voicesToUse);
+
+      // Set default Spanish male voice if available
+      if (voicesToUse.length > 0 && !selectedVoice) {
+        // Prefer male voices from Spain or Mexico
+        const preferredVoice = voicesToUse.find(
           (v) => v.lang === "es-ES" || v.lang === "es-MX"
-        ) || spanish[0];
+        ) || voicesToUse[0];
         setSelectedVoice(preferredVoice);
       }
     };
