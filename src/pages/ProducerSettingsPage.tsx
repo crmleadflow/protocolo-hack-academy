@@ -6,7 +6,7 @@ import {
   Mail, Link2, FileText, Lock, Eye, EyeOff
 } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { ProducerSidebar } from "@/components/dashboard/ProducerSidebar";
+import { UnifiedSidebar } from "@/components/layout/UnifiedSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
 import { ProducerCollapsibleNav } from "@/components/dashboard/ProducerCollapsibleNav";
 import { HolographicCard } from "@/components/ui/holographic-card";
@@ -154,7 +154,7 @@ const ProducerSettingsPage: React.FC = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <ProducerSidebar />
+        <UnifiedSidebar />
         <FloatingSidebarTrigger />
         
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
