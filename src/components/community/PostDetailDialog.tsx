@@ -225,7 +225,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
   canMarkAccepted,
   onMarkAccepted,
 }) => {
-  const isMentorResponse = comment.content.includes("🤖 **") && comment.content.includes("(Mentor IA)**");
+  // Detectar respuestas del mentor IA por la firma característica
+  const isMentorResponse = comment.content.includes('💡 _¿Necesitas más ayuda? Escríbeme en "Mi Mentor"');
 
   return (
     <div
