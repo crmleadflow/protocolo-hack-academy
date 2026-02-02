@@ -19,6 +19,7 @@ import { PostDetailDialog } from "@/components/community/PostDetailDialog";
 import { QuickPostInput } from "@/components/community/QuickPostInput";
 import { useCommunityPosts, CommunityPost, ContentType } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
+import { useEnrollment } from "@/hooks/useEnrollment";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -29,13 +30,25 @@ type TabType = "discussions" | "questions" | "chat";
 const CommunityPage: React.FC = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
-  const { programs, isLoading: programsLoading } = useStudentPrograms();
+  const { programs: allPrograms, isLoading: programsLoading } = useStudentPrograms();
+  const { enrollments } = useEnrollment();
   
   const [activeTab, setActiveTab] = useState<TabType>("discussions");
   const [selectedProgramId, setSelectedProgramId] = useState<string>("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
   const [postDetailOpen, setPostDetailOpen] = useState(false);
+
+  // Filter programs to only show those with active enrollments (or all for admins)
+  const programs = React.useMemo(() => {
+    if (isAdmin) return allPrograms;
+    
+    return allPrograms.filter((program) => {
+      const enrollment = enrollments.find((e) => e.program_id === program.id);
+      return enrollment?.status === "active" && 
+        (!enrollment.expires_at || new Date(enrollment.expires_at) > new Date());
+    });
+  }, [allPrograms, enrollments, isAdmin]);
 
   const { posts, isLoading: postsLoading, createPost, toggleLike, refetch } = useCommunityPosts(
     selectedProgramId || null
