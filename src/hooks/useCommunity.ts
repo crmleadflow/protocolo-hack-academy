@@ -163,18 +163,36 @@ export function useCommunityPosts(programId: string | null) {
   const requestMentorAnswer = async (postId: string, progId: string) => {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) return;
+      if (!sessionData.session?.access_token) {
+        console.error("No session token available for mentor answer");
+        return;
+      }
 
-      const response = await supabase.functions.invoke("community-mentor-answer", {
-        body: { postId, programId: progId },
-      });
+      // Llamar a la edge function con el token explícito
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/community-mentor-answer`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionData.session.access_token}`,
+          },
+          body: JSON.stringify({ postId, programId: progId }),
+        }
+      );
 
-      if (response.error) {
-        console.error("Mentor answer error:", response.error);
-      } else {
-        toast.success("El mentor ha respondido tu pregunta", {
-          description: "Revisa los comentarios",
-          icon: "🤖",
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Mentor answer error:", response.status, errorData);
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success("El Mentor IA ha respondido tu pregunta", {
+          description: "Revisa los comentarios 🤖",
+          icon: "✨",
         });
       }
     } catch (error) {
