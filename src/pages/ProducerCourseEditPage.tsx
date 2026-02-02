@@ -45,6 +45,7 @@ import {
 import { LessonResourceManager } from "@/components/lesson/LessonResourceManager";
 import { useLessonResources } from "@/hooks/useLessonResources";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LessonVideoInput } from "@/components/lesson/LessonVideoInput";
 
 const ProducerCourseEditPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -1034,73 +1035,23 @@ const ProducerCourseEditPage: React.FC = () => {
                         className="glass min-h-[60px]"
                       />
                     </div>
-                    <div>
-                      <Label>Video de la lección</Label>
-                      <input
-                        type="file"
-                        ref={videoInputRef}
-                        accept="video/mp4,video/webm,video/ogg,video/quicktime"
-                        onChange={handleVideoFileChange}
-                        className="hidden"
-                      />
-                      
-                      {videoFile ? (
-                        <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
-                          <FileVideo className="w-8 h-8 text-primary flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{videoFile.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={removeVideoFile}
-                            className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ) : lessonForm.video_url ? (
-                        <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
-                          <Play className="w-8 h-8 text-primary flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">Video actual</p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {lessonForm.video_url}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setLessonForm(prev => ({ ...prev, video_url: "" }))}
-                            className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => videoInputRef.current?.click()}
-                          className="w-full p-6 rounded-lg border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-colors flex flex-col items-center gap-2"
-                        >
-                          <Upload className="w-8 h-8 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">
-                            Haz clic para subir un video
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            MP4, WebM, OGG o MOV
-                          </span>
-                        </button>
-                      )}
-                      
-                      {isUploadingVideo && (
-                        <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Subiendo video...
-                        </div>
-                      )}
-                    </div>
+                    <LessonVideoInput
+                      videoFile={videoFile}
+                      videoUrl={lessonForm.video_url}
+                      isUploading={isUploadingVideo}
+                      onFileChange={(file) => {
+                        setVideoFile(file);
+                        if (file) {
+                          setLessonForm(prev => ({ ...prev, video_url: "" }));
+                        }
+                      }}
+                      onUrlChange={(url) => {
+                        setLessonForm(prev => ({ ...prev, video_url: url }));
+                        if (url) {
+                          setVideoFile(null);
+                        }
+                      }}
+                    />
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label>Duración</Label>
@@ -1164,56 +1115,23 @@ const ProducerCourseEditPage: React.FC = () => {
                     className="glass min-h-[60px]"
                   />
                 </div>
-                <div>
-                  <Label>Video de la lección</Label>
-                  <input
-                    type="file"
-                    ref={videoInputRef}
-                    accept="video/mp4,video/webm,video/ogg,video/quicktime"
-                    onChange={handleVideoFileChange}
-                    className="hidden"
-                  />
-                  
-                  {videoFile ? (
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/20">
-                      <FileVideo className="w-8 h-8 text-primary flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{videoFile.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={removeVideoFile}
-                        className="p-1.5 rounded-lg hover:bg-destructive/20 text-destructive transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => videoInputRef.current?.click()}
-                      className="w-full p-6 rounded-lg border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-colors flex flex-col items-center gap-2"
-                    >
-                      <Upload className="w-8 h-8 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        Haz clic para subir un video
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        MP4, WebM, OGG o MOV
-                      </span>
-                    </button>
-                  )}
-                  
-                  {isUploadingVideo && (
-                    <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Subiendo video...
-                    </div>
-                  )}
-                </div>
+                <LessonVideoInput
+                  videoFile={videoFile}
+                  videoUrl={lessonForm.video_url}
+                  isUploading={isUploadingVideo}
+                  onFileChange={(file) => {
+                    setVideoFile(file);
+                    if (file) {
+                      setLessonForm(prev => ({ ...prev, video_url: "" }));
+                    }
+                  }}
+                  onUrlChange={(url) => {
+                    setLessonForm(prev => ({ ...prev, video_url: url }));
+                    if (url) {
+                      setVideoFile(null);
+                    }
+                  }}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Duración</Label>
