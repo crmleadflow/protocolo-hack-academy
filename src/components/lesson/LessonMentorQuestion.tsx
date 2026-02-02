@@ -5,6 +5,8 @@ import { HolographicCard } from "@/components/ui/holographic-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMentorChat, useMentorSettings } from "@/hooks/useMentor";
+import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
+import { VoiceControls } from "@/components/mentor/VoiceControls";
 import ReactMarkdown from "react-markdown";
 import mentorAvatar from "@/assets/hector-galensky-mentor-avatar.png";
 
@@ -25,6 +27,37 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
+
+  const {
+    spanishVoices,
+    selectedVoice,
+    selectVoice,
+    speak,
+    pause,
+    resume,
+    stop,
+    isSpeaking,
+    isPaused,
+    isSupported,
+  } = useSpeechSynthesis();
+
+  const handleSpeak = (content: string, index: number) => {
+    if (speakingMessageIndex === index && isSpeaking) {
+      stop();
+      setSpeakingMessageIndex(null);
+    } else {
+      setSpeakingMessageIndex(index);
+      speak(content);
+    }
+  };
+
+  // Reset speaking index when speech ends
+  useEffect(() => {
+    if (!isSpeaking && !isPaused) {
+      setSpeakingMessageIndex(null);
+    }
+  }, [isSpeaking, isPaused]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -116,18 +149,40 @@ export const LessonMentorQuestion: React.FC<LessonMentorQuestionProps> = ({
               </div>
               <div
                 className={cn(
-                  "max-w-[85%] p-3 rounded-2xl text-sm",
+                  "max-w-[85%] rounded-2xl text-sm",
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground rounded-tr-md"
+                    ? "bg-primary text-primary-foreground rounded-tr-md p-3"
                     : "bg-background/60 border border-border/50 rounded-tl-md"
                 )}
               >
                 {msg.role === "assistant" ? (
-                  <div className="prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <div className="p-3 pb-1">
+                    <div className="prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                    {isSupported && (
+                      <div className="flex justify-end mt-2 pt-2 border-t border-border/30">
+                        <VoiceControls
+                          spanishVoices={spanishVoices}
+                          selectedVoice={selectedVoice}
+                          selectVoice={selectVoice}
+                          isSpeaking={speakingMessageIndex === index && isSpeaking}
+                          isPaused={speakingMessageIndex === index && isPaused}
+                          isSupported={isSupported}
+                          onSpeak={() => handleSpeak(msg.content, index)}
+                          onPause={pause}
+                          onResume={resume}
+                          onStop={() => {
+                            stop();
+                            setSpeakingMessageIndex(null);
+                          }}
+                          size="sm"
+                        />
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <p>{msg.content.replace(/\[Pregunta sobre la lección.*?\]\n\n/, "")}</p>
+                  <p className="p-3">{msg.content.replace(/\[Pregunta sobre la lección.*?\]\n\n/, "")}</p>
                 )}
               </div>
             </div>
