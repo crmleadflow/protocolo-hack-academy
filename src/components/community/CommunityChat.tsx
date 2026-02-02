@@ -324,23 +324,48 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, isAdmin, 
   const isImage = isImageFile(message.file_type);
   const isVideo = isVideoFile(message.file_type);
   const FileIcon = getFileIcon(message.file_type);
+  
+  // Detectar si es un mensaje del Mentor IA
+  const isMentorMessage = message.content.startsWith("🤖 ");
 
   return (
-    <div className={cn("flex gap-3 group", isOwn && "flex-row-reverse")}>
+    <div className={cn("flex gap-3 group", isOwn && !isMentorMessage && "flex-row-reverse")}>
       {/* Avatar */}
-      <Avatar className="w-10 h-10 flex-shrink-0 ring-2 ring-primary/20">
-        <AvatarImage src={message.author?.avatar_url || undefined} />
-        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-medium">
-          {message.author?.full_name?.charAt(0).toUpperCase() || "U"}
-        </AvatarFallback>
+      <Avatar className={cn(
+        "w-10 h-10 flex-shrink-0 ring-2",
+        isMentorMessage ? "ring-primary/50" : "ring-primary/20"
+      )}>
+        {isMentorMessage ? (
+          <>
+            <AvatarImage src="/placeholder.svg" />
+            <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground font-bold">
+              🤖
+            </AvatarFallback>
+          </>
+        ) : (
+          <>
+            <AvatarImage src={message.author?.avatar_url || undefined} />
+            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-medium">
+              {message.author?.full_name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </>
+        )}
       </Avatar>
 
       {/* Content */}
-      <div className={cn("max-w-[75%] sm:max-w-[70%]", isOwn && "text-right")}>
-        <div className={cn("flex items-center gap-2 mb-1", isOwn && "flex-row-reverse")}>
-          <span className="text-sm font-medium">
-            {message.author?.full_name || "Usuario"}
+      <div className={cn("max-w-[75%] sm:max-w-[70%]", isOwn && !isMentorMessage && "text-right")}>
+        <div className={cn("flex items-center gap-2 mb-1", isOwn && !isMentorMessage && "flex-row-reverse")}>
+          <span className={cn(
+            "text-sm font-medium",
+            isMentorMessage && "text-primary"
+          )}>
+            {isMentorMessage ? "Mentor IA" : (message.author?.full_name || "Usuario")}
           </span>
+          {isMentorMessage && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+              IA
+            </span>
+          )}
           <span className="text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(message.created_at), {
               addSuffix: true,
@@ -365,9 +390,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, isAdmin, 
         <div
           className={cn(
             "inline-block rounded-2xl overflow-hidden",
-            isOwn
-              ? "bg-primary text-primary-foreground rounded-tr-md"
-              : "bg-background/60 border border-border/50 rounded-tl-md"
+            isMentorMessage
+              ? "bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30 rounded-tl-md"
+              : isOwn
+                ? "bg-primary text-primary-foreground rounded-tr-md"
+                : "bg-background/60 border border-border/50 rounded-tl-md"
           )}
         >
           {/* File attachment */}

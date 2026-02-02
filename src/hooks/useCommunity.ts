@@ -122,6 +122,34 @@ export function useCommunityPosts(programId: string | null) {
     fetchPosts();
   }, [fetchPosts]);
 
+  // Detectar si un texto contiene una pregunta
+  const containsQuestion = (text: string): boolean => {
+    // Detectar signos de interrogación
+    if (text.includes("?") || text.includes("¿")) return true;
+    
+    // Detectar palabras clave de preguntas en español
+    const questionKeywords = [
+      /\b(cómo|como)\b/i,
+      /\b(qué|que)\b/i,
+      /\b(cuál|cual)\b/i,
+      /\b(cuándo|cuando)\b/i,
+      /\b(dónde|donde)\b/i,
+      /\b(por qué|porque|porqué)\b/i,
+      /\b(quién|quien)\b/i,
+      /\b(cuánto|cuanta|cuantos|cuantas)\b/i,
+      /\bpuedo\b/i,
+      /\bpuedes\b/i,
+      /\bse puede\b/i,
+      /\balguien sabe\b/i,
+      /\bnecesito ayuda\b/i,
+      /\bayuda con\b/i,
+      /\btengo (una |un )?duda\b/i,
+      /\bno (entiendo|sé|se)\b/i,
+    ];
+    
+    return questionKeywords.some(pattern => pattern.test(text));
+  };
+
   const createPost = async (
     title: string,
     content: string,
@@ -147,9 +175,12 @@ export function useCommunityPosts(programId: string | null) {
       toast.success("Publicación creada");
       fetchPosts();
 
-      // If it's a question, trigger mentor response
-      if (contentType === "question" && data) {
-        requestMentorAnswer(data.id, programId);
+      // El mentor responde a preguntas y discusiones que contengan preguntas
+      if (data) {
+        const fullText = `${title} ${content}`;
+        if (contentType === "question" || containsQuestion(fullText)) {
+          requestMentorAnswer(data.id, programId);
+        }
       }
 
       return data;
@@ -498,6 +529,63 @@ export function useCommunityChat(programId: string | null) {
     }
   };
 
+  // Detectar si un texto contiene una pregunta
+  const containsQuestion = (text: string): boolean => {
+    // Detectar signos de interrogación
+    if (text.includes("?") || text.includes("¿")) return true;
+    
+    // Detectar palabras clave de preguntas en español
+    const questionKeywords = [
+      /\b(cómo|como)\b/i,
+      /\b(qué|que)\b/i,
+      /\b(cuál|cual)\b/i,
+      /\b(cuándo|cuando)\b/i,
+      /\b(dónde|donde)\b/i,
+      /\b(por qué|porque|porqué)\b/i,
+      /\b(quién|quien)\b/i,
+      /\b(cuánto|cuanta|cuantos|cuantas)\b/i,
+      /\bpuedo\b/i,
+      /\bpuedes\b/i,
+      /\bse puede\b/i,
+      /\balguien sabe\b/i,
+      /\bnecesito ayuda\b/i,
+      /\bayuda con\b/i,
+      /\btengo (una |un )?duda\b/i,
+      /\bno (entiendo|sé|se)\b/i,
+    ];
+    
+    return questionKeywords.some(pattern => pattern.test(text));
+  };
+
+  const requestMentorChatAnswer = async (messageContent: string, progId: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session?.access_token) {
+        console.error("No session token available for mentor chat answer");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/community-mentor-chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionData.session.access_token}`,
+          },
+          body: JSON.stringify({ messageContent, programId: progId }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Mentor chat answer error:", response.status, errorData);
+      }
+    } catch (error) {
+      console.error("Error requesting mentor chat answer:", error);
+    }
+  };
+
   const sendMessage = async (
     content: string,
     fileData?: { url: string; name: string; size: number; type: string }
@@ -521,6 +609,15 @@ export function useCommunityChat(programId: string | null) {
         .single();
 
       if (error) throw error;
+
+      // Si el mensaje contiene una pregunta, el mentor responde
+      if (data && containsQuestion(content)) {
+        // Pequeño delay para que el mensaje del usuario aparezca primero
+        setTimeout(() => {
+          requestMentorChatAnswer(content, programId);
+        }, 1000);
+      }
+
       return data;
     } catch (error) {
       console.error("Error sending message:", error);
