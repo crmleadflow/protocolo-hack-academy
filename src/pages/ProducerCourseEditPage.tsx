@@ -9,6 +9,7 @@ import {
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { UnifiedSidebar } from "@/components/layout/UnifiedSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -580,6 +581,9 @@ const ProducerCourseEditPage: React.FC = () => {
           </header>
 
           <div className="p-4 md:p-6 space-y-6">
+            {/* Breadcrumbs */}
+            <AdminBreadcrumbs />
+            
             {/* Collapsible Configuration Section */}
             <Collapsible open={configOpen} onOpenChange={setConfigOpen}>
               <HolographicCard className="overflow-hidden">
