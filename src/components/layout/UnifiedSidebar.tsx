@@ -61,8 +61,9 @@ const accountItems = [
 ];
 
 export function UnifiedSidebar() {
-  const { state, setOpenMobile, toggleSidebar } = useSidebar();
-  const collapsed = state === "collapsed";
+  const { state, setOpenMobile, toggleSidebar, isMobile: isMobileSidebar } = useSidebar();
+  // En móvil, forzar expansión para mejor UX (no colapsar iconos)
+  const collapsed = isMobileSidebar ? false : state === "collapsed";
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();

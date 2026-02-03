@@ -207,29 +207,36 @@ export const LessonVideoInput: React.FC<LessonVideoInputProps> = ({
       {/* Link option */}
       {sourceType === "link" && (
         <div className="space-y-3">
-          <div className="flex gap-2">
+          <div className="space-y-2">
             <GlassInput
               placeholder="https://www.youtube.com/watch?v=... o enlace de Vimeo, Bunny, etc."
               value={linkInput}
               onChange={(e) => setLinkInput(e.target.value)}
-              className="flex-1"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && linkInput.trim()) {
+                  e.preventDefault();
+                  handleLinkSubmit();
+                }
+              }}
+              className="w-full"
             />
             <button
               type="button"
               onClick={handleLinkSubmit}
               disabled={!linkInput.trim()}
               className={cn(
-                "px-4 py-2 rounded-lg font-medium transition-all",
+                "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all text-sm",
                 linkInput.trim()
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "bg-muted text-muted-foreground cursor-not-allowed"
+                  ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/20"
+                  : "bg-muted/50 text-muted-foreground cursor-not-allowed border border-border/50"
               )}
             >
-              Agregar
+              <Link2 className="w-4 h-4" />
+              {linkInput.trim() ? "Agregar enlace de video" : "Pega un enlace arriba"}
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span>Soporta:</span>
+            <span>Plataformas soportadas:</span>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-muted/50">
               <Youtube className="w-3 h-3 text-red-500" />
               YouTube

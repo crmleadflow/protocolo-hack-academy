@@ -2,6 +2,7 @@ import React from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { UnifiedSidebar } from "@/components/layout/UnifiedSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
+import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +12,7 @@ interface AppLayoutProps {
   subtitle?: string;
   headerContent?: React.ReactNode;
   showHeader?: boolean;
+  showBreadcrumbs?: boolean;
 }
 
 export function AppLayout({ 
@@ -18,7 +20,8 @@ export function AppLayout({
   title, 
   subtitle, 
   headerContent,
-  showHeader = true 
+  showHeader = true,
+  showBreadcrumbs = true
 }: AppLayoutProps) {
   const location = useLocation();
   const isProducerSection = location.pathname.startsWith("/producer");
@@ -63,6 +66,8 @@ export function AppLayout({
           )}
 
           <div className="flex-1 p-4 md:p-6 lg:p-8">
+            {/* Show breadcrumbs in producer section */}
+            {showBreadcrumbs && isProducerSection && <AdminBreadcrumbs />}
             {children}
           </div>
         </main>
