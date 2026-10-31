@@ -26,14 +26,37 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 // Student menu items
-const studentMenuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Programas", url: "/catalog", icon: BookOpen },
-  { title: "Mi Mentor", url: "/mentor", icon: Sparkles },
-  { title: "Neuro Scanner", url: "/neuro-scanner", icon: Brain },
-  { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
-  { title: "Logros", url: "/achievements", icon: Trophy },
-  { title: "Comunidad", url: "/community", icon: MessageSquare },
+const studentSections = [
+  {
+    label: "Menú Principal",
+    items: [
+      { title: "Inicio", url: "/", icon: Home },
+      { title: "Mi panel", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Academia", url: "/catalog", icon: BookOpen },
+      { title: "Comunidad", url: "/community", icon: MessageSquare },
+      { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
+      { title: "Logros", url: "/achievements", icon: Trophy },
+    ],
+  },
+  {
+    label: "Marketplace",
+    items: [
+      { title: "Marketplace", url: "/marketplace", icon: DollarSign },
+      { title: "Mentorías", url: "/mentorias", icon: Users },
+      { title: "Conferencias", url: "/conferencias", icon: Users },
+      { title: "Seminarios", url: "/seminarios", icon: Users },
+      { title: "Capacitaciones", url: "/capacitaciones", icon: Users },
+      { title: "Eventos", url: "/eventos", icon: Users },
+      { title: "Bootcamp", url: "/bootcamp", icon: Users },
+    ],
+  },
+  {
+    label: "Recursos · Herramientas",
+    items: [
+      { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
+      { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
+    ],
+  },
 ];
 
 // Admin/Producer menu items
@@ -79,6 +102,7 @@ export function UnifiedSidebar() {
   const isActive = (path: string) => {
     if (path === "/producer" && location.pathname === "/producer") return true;
     if (path === "/dashboard" && location.pathname === "/dashboard") return true;
+    if (path === "/") return location.pathname === "/";
     if (path !== "/producer" && path !== "/dashboard") {
       return location.pathname.startsWith(path);
     }
@@ -233,11 +257,12 @@ export function UnifiedSidebar() {
         ) : (
           // Student Navigation
           <>
-            <SidebarGroup>
-              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Menú Principal</SidebarGroupLabel>}
+            {studentSections.map((section) => (
+            <SidebarGroup key={section.label}>
+              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">{section.label}</SidebarGroupLabel>}
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {studentMenuItems.map((item) => (
+                  {section.items.map((item: any) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
                         <NavLink 
@@ -269,6 +294,7 @@ export function UnifiedSidebar() {
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
+            ))}
 
             {/* Account Menu */}
             <SidebarGroup className="mt-auto">
