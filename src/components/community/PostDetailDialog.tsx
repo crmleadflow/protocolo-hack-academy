@@ -63,7 +63,7 @@ export const PostDetailDialog: React.FC<PostDetailDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-strong border-border/50 max-w-2xl max-h-[90vh]">
+      <DialogContent className="rounded-[2rem] bg-background border-border max-w-2xl max-h-[90vh]">
         <DialogHeader className="border-b border-border/50 pb-4">
           <div className="flex items-start gap-4">
             {/* Author Avatar */}

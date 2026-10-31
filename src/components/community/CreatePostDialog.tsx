@@ -373,7 +373,7 @@ export const CreatePostDialog: React.FC<CreatePostDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-strong border-border/50 max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="rounded-[2rem] bg-background border-border max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="font-heading text-xl">
             Nueva Publicación

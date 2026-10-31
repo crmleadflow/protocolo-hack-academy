@@ -125,27 +125,28 @@ const CommunityPage: React.FC = () => {
           <FloatingSidebarTrigger />
 
           {/* Header */}
-          <div className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-            <div className="container mx-auto px-4 py-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h1 className="font-heading text-2xl md:text-3xl font-bold">
-                    Comunidad
-                  </h1>
-                  <p className="text-muted-foreground">
-                    Conecta con otros estudiantes y comparte conocimiento
-                  </p>
-                </div>
-              </div>
+          <section className="container mx-auto px-4 pt-10 md:pt-16">
+            <p className="pill mb-6 inline-flex">Protocolo Hack</p>
+            <h1 className="display text-5xl md:text-8xl leading-[0.9]">
+              Hack <span className="serif-accent text-primary normal-case">community</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+              Aprende, ejecuta y colabora con otros miembros de tu programa.
+            </p>
+          </section>
 
+          <div className="container mx-auto px-4 mt-10">
+            <div className="dark-island rounded-[2rem] p-6 md:p-10">
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                <div><p className="display text-3xl md:text-5xl">{posts.filter(p=>p.content_type!=="question").length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Discusiones</p></div>
+                <div><p className="display text-3xl md:text-5xl">{posts.filter(p=>p.content_type==="question").length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Preguntas</p></div>
+                <div><p className="display text-3xl md:text-5xl text-primary">{posts.filter(p=>p.is_resolved).length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Resueltas</p></div>
+              </div>
               {/* Program Selector */}
               {programsLoading ? (
                 <Skeleton className="h-10 w-64" />
               ) : programs.length === 0 ? (
-                <div className="glass-card p-6 rounded-xl text-center">
+                <div className="rounded-[2rem] bg-secondary p-6 text-center">
                   <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <h3 className="font-heading font-semibold mb-2">
                     No tienes programas activos
@@ -158,12 +159,12 @@ const CommunityPage: React.FC = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <Select
                     value={selectedProgramId}
                     onValueChange={setSelectedProgramId}
                   >
-                    <SelectTrigger className="w-64 bg-background/50">
+                    <SelectTrigger className="w-full sm:w-80 rounded-full bg-background text-foreground">
                       <SelectValue placeholder="Selecciona un programa" />
                     </SelectTrigger>
                     <SelectContent>
@@ -176,7 +177,7 @@ const CommunityPage: React.FC = () => {
                   </Select>
 
                   {selectedProgram && (
-                    <Badge variant="outline" className="text-primary">
+                    <Badge variant="outline" className="rounded-full border-primary text-primary">
                       <TrendingUp className="w-3 h-3 mr-1" />
                       {posts.length} publicaciones
                     </Badge>
@@ -192,19 +193,19 @@ const CommunityPage: React.FC = () => {
               <Tabs
                 value={activeTab}
                 onValueChange={(v) => setActiveTab(v as TabType)}
-                className="space-y-6"
+                className="space-y-6 py-4"
               >
                 <div className="flex items-center justify-between flex-wrap gap-3">
-                  <TabsList className="glass h-12">
-                    <TabsTrigger value="discussions" className="gap-2 h-10 px-4">
+                  <TabsList className="h-12 rounded-full bg-secondary p-1">
+                    <TabsTrigger value="discussions" className="gap-2 h-10 px-5 rounded-full uppercase tracking-wide text-xs font-semibold data-[state=active]:bg-foreground data-[state=active]:text-background">
                       <MessageSquare className="w-4 h-4" />
                       <span className="hidden sm:inline">Discusiones</span>
                     </TabsTrigger>
-                    <TabsTrigger value="questions" className="gap-2 h-10 px-4">
+                    <TabsTrigger value="questions" className="gap-2 h-10 px-5 rounded-full uppercase tracking-wide text-xs font-semibold data-[state=active]:bg-foreground data-[state=active]:text-background">
                       <HelpCircle className="w-4 h-4" />
                       <span className="hidden sm:inline">Preguntas</span>
                     </TabsTrigger>
-                    <TabsTrigger value="chat" className="gap-2 h-10 px-4">
+                    <TabsTrigger value="chat" className="gap-2 h-10 px-5 rounded-full uppercase tracking-wide text-xs font-semibold data-[state=active]:bg-foreground data-[state=active]:text-background">
                       <MessagesSquare className="w-4 h-4" />
                       <span className="hidden sm:inline">Chat</span>
                     </TabsTrigger>
@@ -234,7 +235,7 @@ const CommunityPage: React.FC = () => {
                   {postsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <div key={i} className="glass-card p-4 rounded-xl">
+                        <div key={i} className="rounded-[2rem] bg-secondary p-4">
                           <div className="flex gap-3">
                             <Skeleton className="w-10 h-10 rounded-full" />
                             <div className="flex-1 space-y-2">
@@ -247,7 +248,7 @@ const CommunityPage: React.FC = () => {
                       ))}
                     </div>
                   ) : filteredPosts.length === 0 ? (
-                    <div className="glass-card p-8 rounded-xl text-center">
+                    <div className="rounded-[2rem] bg-secondary p-8 text-center">
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                         <MessageSquare className="w-8 h-8 text-primary" />
                       </div>
@@ -286,7 +287,7 @@ const CommunityPage: React.FC = () => {
                   {postsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <div key={i} className="glass-card p-4 rounded-xl">
+                        <div key={i} className="rounded-[2rem] bg-secondary p-4">
                           <div className="flex gap-3">
                             <Skeleton className="w-10 h-10 rounded-full" />
                             <div className="flex-1 space-y-2">
@@ -299,7 +300,7 @@ const CommunityPage: React.FC = () => {
                       ))}
                     </div>
                   ) : filteredPosts.length === 0 ? (
-                    <div className="glass-card p-8 rounded-xl text-center">
+                    <div className="rounded-[2rem] bg-secondary p-8 text-center">
                       <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
                         <HelpCircle className="w-8 h-8 text-secondary" />
                       </div>
