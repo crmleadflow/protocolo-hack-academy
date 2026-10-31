@@ -332,8 +332,8 @@ export const EventsSection: React.FC<Props> = ({ programId, isStaff, userId }) =
             </label>
             <Button
               className="w-full rounded-full"
-              disabled={form.title.trim().length < 4 || !form.starts_at}
-              onClick={handleCreate} disabled={saving}
+              disabled={saving || form.title.trim().length < 4 || !form.starts_at}
+              onClick={handleCreate}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Crear evento"}
             </Button>
