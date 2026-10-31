@@ -117,6 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = roles.includes("admin") || roles.includes("super_admin");
+  const isStaff = isAdmin || roles.includes("mentor");
 
   return (
     <AuthContext.Provider
@@ -125,6 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         isLoading,
         isAdmin,
+        isStaff,
         roles,
         signIn,
         signUp,

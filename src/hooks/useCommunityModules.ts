@@ -537,3 +537,30 @@ export function useMembers(programId: string | null) {
 
   return { members, incoming, loading, connect, respond, refresh };
 }
+
+// ---------- Nivel (mismos umbrales que el sistema de logros) ----------
+
+const LEVELS = [
+  { level: 1, xp: 0, name: "Novato" },
+  { level: 2, xp: 100, name: "Aprendiz" },
+  { level: 3, xp: 300, name: "Estudiante" },
+  { level: 4, xp: 600, name: "Conocedor" },
+  { level: 5, xp: 1000, name: "Avanzado" },
+  { level: 6, xp: 1500, name: "Experto" },
+  { level: 7, xp: 2500, name: "Maestro" },
+  { level: 8, xp: 4000, name: "Gran Maestro" },
+  { level: 9, xp: 6000, name: "Leyenda" },
+  { level: 10, xp: 10000, name: "Élite" },
+];
+
+export function levelName(xp: number) {
+  let current = LEVELS[0];
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (xp >= LEVELS[i].xp) {
+      current = LEVELS[i];
+      break;
+    }
+  }
+  return current.name;
+}
+
