@@ -60,7 +60,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
           <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto">
             <div className="mx-auto max-w-7xl grid gap-1 md:grid-cols-3 md:gap-6">
               <div>
-                {NAV.filter((n) => n.to !== "/marketplace").map((n) => (
+                {NAV.filter((n) => n.to !== "/marketplace" && n.to !== "/recursos").map((n) => (
                   <NavLink key={n.to} to={n.to} end={n.to === "/"} onClick={close}
                     className={({ isActive }) => cn(item, isActive && "bg-secondary font-medium")}>
                     {n.label}
@@ -82,6 +82,23 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
                       </span>
                     )
                   )}
+                </div>
+              </div>
+              <div className="md:col-span-2">
+                <NavLink to="/recursos" onClick={close}
+                  className={({ isActive }) => cn(item, "font-heading font-bold uppercase tracking-wide", isActive && "bg-secondary")}>
+                  Recursos
+                </NavLink>
+                <div className="pl-2 border-l-2 border-primary ml-4">
+                  <NavLink to="/herramientas" onClick={close}
+                    className={({ isActive }) => cn(item, "font-medium", isActive && "bg-secondary")}>
+                    Herramientas
+                  </NavLink>
+                  <div className="grid gap-1 pl-2 border-l-2 border-border ml-4">
+                    {TOOLS_SUB.map((t) => (
+                      <Link key={t.to} to={t.to} onClick={close} className={item}>{t.label}</Link>
+                    ))}
+                  </div>
                 </div>
               </div>
               {user && (
