@@ -9,3 +9,5 @@
 - [~] 4) Lead Flow (registro y bandeja listos; falta URL del CRM y token) CRM: intent_events + crm_outbox, POST /api/webhooks/lead/{token}, NUNCA phone (solo name/email + source/page_url/utm), pendiente sin token
 - [ ] 5) Wompi Colombia desactivado "pendiente" hasta credenciales, sin simular cobros
 - [x] 6) Estilo Apple en toda la plataforma: blanco y negro, tipografía grande, espacios limpios
+- [ ] 7) Estilo editorial NeoVision: fotos grandes B/N de cuerpo entero, titulares enormes, bloques negros intercalados, salmón único acento
+- [ ] 8) Whop en lugar de Stripe (checkout + webhook; faltan credenciales)
