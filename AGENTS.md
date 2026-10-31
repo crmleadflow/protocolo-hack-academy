@@ -1,0 +1,3 @@
+- Role/status changes go only through the `admin-members` edge function (service role); browser has no write access to user_roles, so nobody can self-escalate.
+- Marketplace prices are computed in `create-checkout` from the DB; the cart only stores product ids.
+- Lead Flow delivery goes through `crm_outbox`; the payload must never contain `phone` (enforced by a DB check constraint).
