@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ECOSYSTEM, TOOLS, MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, FAQS } from "@/components/public/content";
-import heroImg from "@/assets/home-hero-bw.jpg";
+import heroImg from "@/assets/home-hero-xlab.webp";
 import editorialImg from "@/assets/editorial-bw-2.jpg";
 import imgAcademia from "@/assets/card-academia.jpg";
 import imgMarket from "@/assets/card-marketplace.jpg";
