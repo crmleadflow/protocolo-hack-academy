@@ -1,8 +1,8 @@
 import heroBw from "@/assets/home-hero-bw.jpg";
 import editorialBw from "@/assets/editorial-bw-2.jpg";
-import { useState, ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { useState, useEffect, ReactNode } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ export const NAV = [
   { to: "/marketplace", label: "Marketplace" },
   { to: "/lead-flow", label: "Lead Flow" },
   { to: "/recursos", label: "Recursos" },
+  { to: "/herramientas", label: "Herramientas" },
   { to: "/comunidad", label: "Comunidad" },
 ];
 
@@ -26,9 +27,10 @@ export const MARKETPLACE_SUB: { to?: string; label: string }[] = [
   { to: "/bootcamp", label: "Bootcamp" },
 ];
 
-// Herramientas dentro de Recursos → Herramientas.
+// Lo que hay debajo de Herramientas.
 export const TOOLS_SUB = [
   { to: "/neuro-scanner", label: "Neuro Analyzer Pro" },
+  { to: "/mentor", label: "Mi Mentor IA" },
 ];
 
 export const PublicLayout = ({ children }: { children: ReactNode }) => {
@@ -36,6 +38,58 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
   const { user, isAdmin } = useAuth();
   const close = () => setOpen(false);
   const item = "block rounded-xl px-4 py-3 text-sm hover:bg-secondary";
+  const location = useLocation();
+
+  // Grupos desplegables del menú
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const toggleGroup = (key: string) =>
+    setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  // Abre el grupo de la pantalla en la que estás
+  useEffect(() => {
+    const next: Record<string, boolean> = {};
+    const inList = (list: { to?: string }[]) =>
+      list.some((s) => s.to && location.pathname.startsWith(s.to));
+    if (location.pathname.startsWith("/marketplace") || inList(MARKETPLACE_SUB)) {
+      next.marketplace = true;
+    }
+    if (location.pathname.startsWith("/herramientas") || inList(TOOLS_SUB)) {
+      next.herramientas = true;
+    }
+    setOpenGroups((prev) => ({ ...prev, ...next }));
+  }, [location.pathname]);
+
+  const groupHead = (key: string, to: string, label: string) => {
+    const isOpen = !!openGroups[key];
+    return (
+      <div className="flex items-center gap-1">
+        <NavLink
+          to={to}
+          onClick={close}
+          className={({ isActive }) =>
+            cn(
+              item,
+              "flex-1 font-heading font-bold uppercase tracking-wide",
+              isActive && "bg-secondary"
+            )
+          }
+        >
+          {label}
+        </NavLink>
+        <button
+          type="button"
+          onClick={() => toggleGroup(key)}
+          aria-expanded={isOpen}
+          aria-label={`${isOpen ? "Ocultar" : "Mostrar"} ${label}`}
+          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <ChevronDown
+            className={cn("h-4 w-4 transition-transform duration-200", isOpen && "rotate-180")}
+          />
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -60,7 +114,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
           <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto">
             <div className="mx-auto max-w-7xl grid gap-1 md:grid-cols-3 md:gap-6">
               <div>
-                {NAV.filter((n) => n.to !== "/marketplace" && n.to !== "/recursos").map((n) => (
+                {NAV.filter((n) => n.to !== "/marketplace" && n.to !== "/herramientas").map((n) => (
                   <NavLink key={n.to} to={n.to} end={n.to === "/"} onClick={close}
                     className={({ isActive }) => cn(item, isActive && "bg-secondary font-medium")}>
                     {n.label}
@@ -68,38 +122,30 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
                 ))}
               </div>
               <div className="md:col-span-2">
-                <NavLink to="/marketplace" onClick={close}
-                  className={({ isActive }) => cn(item, "font-heading font-bold uppercase tracking-wide", isActive && "bg-secondary")}>
-                  Marketplace
-                </NavLink>
-                <div className="grid grid-cols-2 gap-1 pl-2 border-l-2 border-primary ml-4">
-                  {MARKETPLACE_SUB.map((s) =>
-                    s.to ? (
-                      <Link key={s.label} to={s.to} onClick={close} className={item}>{s.label}</Link>
-                    ) : (
-                      <span key={s.label} className={cn(item, "text-muted-foreground cursor-default hover:bg-transparent")}>
-                        {s.label} <span className="text-xs">· próximamente</span>
-                      </span>
-                    )
-                  )}
-                </div>
+                {groupHead("marketplace", "/marketplace", "Marketplace")}
+                {openGroups["marketplace"] && (
+                  <div className="grid grid-cols-2 gap-1 pl-2 border-l-2 border-primary ml-4">
+                    {MARKETPLACE_SUB.map((s) =>
+                      s.to ? (
+                        <Link key={s.label} to={s.to} onClick={close} className={item}>{s.label}</Link>
+                      ) : (
+                        <span key={s.label} className={cn(item, "text-muted-foreground cursor-default hover:bg-transparent")}>
+                          {s.label} <span className="text-xs">· próximamente</span>
+                        </span>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
               <div className="md:col-span-2">
-                <NavLink to="/recursos" onClick={close}
-                  className={({ isActive }) => cn(item, "font-heading font-bold uppercase tracking-wide", isActive && "bg-secondary")}>
-                  Recursos
-                </NavLink>
-                <div className="pl-2 border-l-2 border-primary ml-4">
-                  <NavLink to="/herramientas" onClick={close}
-                    className={({ isActive }) => cn(item, "font-medium", isActive && "bg-secondary")}>
-                    Herramientas
-                  </NavLink>
-                  <div className="grid gap-1 pl-2 border-l-2 border-border ml-4">
+                {groupHead("herramientas", "/herramientas", "Herramientas")}
+                {openGroups["herramientas"] && (
+                  <div className="grid grid-cols-2 gap-1 pl-2 border-l-2 border-primary ml-4">
                     {TOOLS_SUB.map((t) => (
                       <Link key={t.to} to={t.to} onClick={close} className={item}>{t.label}</Link>
                     ))}
                   </div>
-                </div>
+                )}
               </div>
               {user && (
                 <div className="md:col-span-3 border-t border-border pt-2 mt-2 flex flex-wrap gap-1">

@@ -16,3 +16,4 @@
 - [ ] 11) Conectar GitHub (lo hace el usuario desde Settings → Git) para que Claude Code vea los cambios
 - [x] 12) Menú Recursos → Herramientas → Neuro Analyzer Pro (página /herramientas con las herramientas reales de la base de datos)
 - [x] 13) Páginas propias de Seminarios, Capacitaciones y Bootcamp (/seminarios, /capacitaciones, /bootcamp) con formulario de solicitud funcionando; ya no salen "próximamente"
+- [x] 14) Menú desplegable: Marketplace y Herramientas desplegables en el nivel principal; Recursos queda como opción suelta sin submenú
