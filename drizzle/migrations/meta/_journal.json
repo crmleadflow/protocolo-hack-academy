@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793454135521,
+      "tag": "0000_commercial_requests",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793456936629,
+      "tag": "0001_add_member_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793457041074,
+      "tag": "0002_members_commerce_crm",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793462998131,
+      "tag": "0003_profiles_phone",
+      "breakpoints": true
+    }
+  ]
+}

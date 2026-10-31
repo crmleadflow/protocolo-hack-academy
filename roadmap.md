@@ -1,0 +1,13 @@
+# Roadmap Protocolo Hack (según Prompt Maestro)
+- [x] 1A: diseño global negro/salmón, Space Grotesk + Inter, tipografía cinética
+- [x] 1A: navegación nueva, homepage de 12 secciones, páginas públicas
+- [x] 1A: acceso con enlace mágico (contraseña como respaldo)
+- [x] Formularios de solicitudes (conferencias, mentorías, Lead Flow, recursos, eventos)
+- [x] 1) Panel de miembros: roles super_admin/mentor/member, suspender/activar, audit_log, sin auto-cambio de rol
+- [x] 2) Rediseño (revisado con sesión: catálogo, panel, miembros, oportunidades, carrito, compras, comunidad) interno de Academia (cursos, módulos, lecciones, inscripción, progreso) — con cursos, lecciones y videos reales de la base de datos
+- [~] 3) Marketplace (carrito + precio en servidor + tablas listos; cobro con Whop pendiente de credenciales)
+- [~] 4) Lead Flow (registro y bandeja listos; falta URL del CRM y token) CRM: intent_events + crm_outbox, POST /api/webhooks/lead/{token}, NUNCA phone (solo name/email + source/page_url/utm), pendiente sin token
+- [ ] 5) Wompi Colombia desactivado "pendiente" hasta credenciales, sin simular cobros
+- [x] 6) Estilo Apple en toda la plataforma: blanco y negro, tipografía grande, espacios limpios
+- [~] 7) Estilo editorial NeoVision (portada lista; páginas internas pendientes): fotos grandes B/N de cuerpo entero, titulares enormes, bloques negros intercalados, salmón único acento
+- [~] 8) Whop en lugar de Stripe (código listo; faltan clave API, ID de empresa y secreto del webhook)

@@ -1,0 +1,301 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
+import HomePage from "./pages/HomePage";
+import { AcademiaPage, MarketplacePage, MentoriasPage, LeadFlowPage, ConferenciasPage, RecursosPage, EventosPage, ComunidadPublicPage } from "./pages/PublicPages";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import DashboardPage from "./pages/DashboardPage";
+import CatalogPage from "./pages/CatalogPage";
+import CoursePlayerPage from "./pages/CoursePlayerPage";
+import ProducerDashboardPage from "./pages/ProducerDashboardPage";
+import ProducerCoursesPage from "./pages/ProducerCoursesPage";
+import ProducerNewCoursePage from "./pages/ProducerNewCoursePage";
+import ProducerCourseEditPage from "./pages/ProducerCourseEditPage";
+import AdminStudentsPage from "./pages/AdminStudentsPage";
+import AdminMembersPage from "./pages/AdminMembersPage";
+import AdminLeadsPage from "./pages/AdminLeadsPage";
+import { CartPage, OrdersPage } from "./pages/CommercePages";
+import CheckoutPage from "./pages/CheckoutPage";
+import CryptoPaymentPage from "./pages/CryptoPaymentPage";
+import CryptoPaymentVerifyPage from "./pages/CryptoPaymentVerifyPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import PaymentCancelPage from "./pages/PaymentCancelPage";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import AchievementsPage from "./pages/AchievementsPage";
+import CommunityPage from "./pages/CommunityPage";
+import MentorPage from "./pages/MentorPage";
+import NeuroScannerPage from "./pages/NeuroScannerPage";
+import ProducerMentorPage from "./pages/ProducerMentorPage";
+import ProducerAnalyticsPage from "./pages/ProducerAnalyticsPage";
+import ProducerRevenuePage from "./pages/ProducerRevenuePage";
+import ProducerSettingsPage from "./pages/ProducerSettingsPage";
+import AdminMessagesPage from "./pages/AdminMessagesPage";
+import StudentMessagesPage from "./pages/StudentMessagesPage";
+import HelpPage from "./pages/HelpPage";
+import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/vsl" element={<LandingPage />} />
+            <Route path="/academia" element={<AcademiaPage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/mentorias" element={<MentoriasPage />} />
+            <Route path="/lead-flow" element={<LeadFlowPage />} />
+            <Route path="/conferencias" element={<ConferenciasPage />} />
+            <Route path="/recursos" element={<RecursosPage />} />
+            <Route path="/eventos" element={<EventosPage />} />
+            <Route path="/comunidad" element={<ComunidadPublicPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/catalog"
+              element={
+                <ProtectedRoute>
+                  <CatalogPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/course/:courseId"
+              element={
+                <ProtectedRoute>
+                  <CoursePlayerPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/checkout/:programId"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/crypto-payment"
+              element={
+                <ProtectedRoute>
+                  <CryptoPaymentPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/crypto-payment/verify"
+              element={
+                <ProtectedRoute>
+                  <CryptoPaymentVerifyPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment/success"
+              element={
+                <ProtectedRoute>
+                  <PaymentSuccessPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment/cancel"
+              element={
+                <ProtectedRoute>
+                  <PaymentCancelPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/achievements"
+              element={
+                <ProtectedRoute>
+                  <AchievementsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/community"
+              element={
+                <ProtectedRoute>
+                  <CommunityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mentor"
+              element={
+                <ProtectedRoute>
+                  <MentorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/neuro-scanner"
+              element={
+                <ProtectedRoute>
+                  <NeuroScannerPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* Admin/Producer Routes */}
+            <Route
+              path="/producer"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/courses"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/new-course"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerNewCoursePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/course/:courseId/edit"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerCourseEditPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/producer/members" element={<ProtectedRoute requireAdmin><AdminMembersPage /></ProtectedRoute>} />
+            <Route path="/producer/leads" element={<ProtectedRoute requireAdmin><AdminLeadsPage /></ProtectedRoute>} />
+            <Route path="/carrito" element={<CartPage />} />
+            <Route path="/mis-compras" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+            <Route
+              path="/producer/students"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminStudentsPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* Alias for /producer/upload - redirects to courses list */}
+            <Route
+              path="/producer/upload"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/mentor"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerMentorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/analytics"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerAnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/revenue"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerRevenuePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/messages"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminMessagesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/producer/settings"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <ProducerSettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <StudentMessagesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/help"
+              element={
+                <ProtectedRoute>
+                  <HelpPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
+  </QueryClientProvider>
+);
+
+export default App;

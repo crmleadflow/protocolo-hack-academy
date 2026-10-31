@@ -1,0 +1,15 @@
+project_id = "mvyroxrmhqxtzljoryzi"
+
+[functions.neuro-scanner]
+verify_jwt = false
+
+[functions.community-mentor-answer]
+verify_jwt = false
+
+[functions.community-mentor-chat]
+verify_jwt = false
+
+[functions.community-scheduled-content]
+verify_jwt = false
+[functions.whop-webhook]
+verify_jwt = false
