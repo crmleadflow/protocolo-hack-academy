@@ -17,6 +17,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   session: { strategy: "database" },
   pages: { signIn: "/login", verifyRequest: "/login/revisa-tu-correo" },
+  // Render (y la mayoría de los PaaS) ponen la app detrás de un proxy: sin
+  // esto, Auth.js rechaza el host con "UntrustedHost" aunque sea el dominio
+  // correcto. https://errors.authjs.dev/#untrustedhost
+  trustHost: true,
   events: {
     // Primer login de un correo nuevo: nace como miembro activo de una vez,
     // sin cola de aprobación (así lo pidió Hector — "que entren sin aprobar").
