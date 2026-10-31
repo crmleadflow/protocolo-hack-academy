@@ -53,10 +53,10 @@ const HomePage = () => {
       {/* 1. Hero editorial (NeoVision): blanco, foto B/N de cuerpo entero, titular gigante */}
       <section className="relative overflow-hidden bg-background">
         <img src={heroImg} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover object-[78%_center] grayscale" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent md:via-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/20 md:via-background/60" />
         <div className="relative z-10 mx-auto flex min-h-[92vh] max-h-[1100px] max-w-7xl flex-col justify-end px-5 pb-14 pt-24">
           <span className="pill kinetic-word w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Protocolo Hack · Héctor Galensky</span>
-          <h1 className="display mt-6 max-w-5xl text-[2.3rem] sm:text-6xl lg:text-[5.4rem]">
+          <h1 className="display mt-6 max-w-4xl text-[2.3rem] sm:text-6xl lg:text-[5.4rem]">
             <Kinetic text="Tres habilidades que" />
             <Kinetic text="cambiarán" delay={0.6} className="serif-accent text-primary" />
             <br />
