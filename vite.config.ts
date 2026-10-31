@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   },
   preview: {
     host: "0.0.0.0",
-    allowedHosts: true,
+    allowedHosts: ["protocolo-hack-academy.onrender.com", ".onrender.com"],
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
