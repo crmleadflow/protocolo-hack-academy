@@ -29,6 +29,13 @@
       "when": 1793462998131,
       "tag": "0003_profiles_phone",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793471538744,
+      "tag": "0004_migration",
+      "breakpoints": true
     }
   ]
 }

@@ -9,6 +9,7 @@ interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   isAdmin: boolean;
+  isStaff: boolean;
   roles: AppRole[];
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
@@ -116,6 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = roles.includes("admin") || roles.includes("super_admin");
+  const isStaff = isAdmin || roles.includes("mentor");
 
   return (
     <AuthContext.Provider
@@ -124,6 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         isLoading,
         isAdmin,
+        isStaff,
         roles,
         signIn,
         signUp,
