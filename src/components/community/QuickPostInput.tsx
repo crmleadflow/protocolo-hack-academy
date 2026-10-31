@@ -44,11 +44,12 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
   const { icon: Icon, placeholder, titlePlaceholder, buttonText, color, mentorEnabled } = config[type];
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim()) return;
+    if (!content.trim()) return;
+    const finalTitle = title.trim() || content.trim().split("\n")[0].slice(0, 100);
 
     setIsSubmitting(true);
     try {
-      await onSubmit(title, content, type);
+      await onSubmit(finalTitle, content, type);
       setTitle("");
       setContent("");
       setIsExpanded(false);
@@ -58,7 +59,7 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && e.ctrlKey && title.trim() && content.trim()) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && content.trim()) {
       handleSubmit();
     }
   };
@@ -139,7 +140,7 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
 
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>Ctrl + Enter para enviar</span>
+              <span>Ctrl/⌘ + Enter para enviar</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -157,13 +158,11 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={!title.trim() || !content.trim() || isSubmitting}
+                disabled={!content.trim() || isSubmitting}
                 size="sm"
                 className={cn(
                   "gap-2",
-                  color === "primary" 
-                    ? "bg-primary hover:bg-primary/90" 
-                    : "bg-secondary hover:bg-secondary/90"
+                  "rounded-full bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40"
                 )}
               >
                 {isSubmitting ? (
