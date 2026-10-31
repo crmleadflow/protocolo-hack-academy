@@ -449,7 +449,13 @@ export function useOpportunities(programId: string | null, isStaff: boolean) {
 
 export function useLeaderboard(programId: string | null) {
   const [rows, setRows] = useState<
-    { user_id: string; full_name: string; total_xp: number; current_level: number }[]
+    {
+      user_id: string;
+      full_name: string;
+      total_xp: number;
+      current_level: number;
+      avatar_url: string | null;
+    }[]
   >([]);
   const [mine, setMine] = useState<{ total_xp: number; current_level: number } | null>(null);
   const [loading, setLoading] = useState(true);
