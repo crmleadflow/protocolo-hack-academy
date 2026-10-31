@@ -54,7 +54,7 @@ const HomePage = () => {
     <PublicLayout>
       {/* 1. Hero editorial (NeoVision): blanco, foto B/N de cuerpo entero, titular gigante */}
       <section className="relative overflow-hidden bg-background">
-        <img src={heroImgControl} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover object-[88%_center]" />
+        <img src={heroImgControl} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-contain object-right" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40 md:via-background/85" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         <div className="relative z-10 mx-auto flex min-h-[92vh] max-h-[1100px] max-w-7xl flex-col justify-end px-5 pb-14 pt-24">
