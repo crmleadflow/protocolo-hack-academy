@@ -207,7 +207,7 @@ export function UnifiedSidebar() {
     const rowCls = cn(
       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
       entry.strong && "font-heading font-semibold uppercase tracking-wide",
-      active ? "bg-primary/20 text-primary neon-glow" : "hover:bg-white/5"
+      active ? "bg-foreground text-background font-medium" : "hover:bg-secondary"
     );
 
     if (kids.length === 0) {
@@ -261,7 +261,7 @@ export function UnifiedSidebar() {
                 onClick={() => toggleGroup(entry.title)}
                 aria-expanded={isOpen}
                 aria-label={`${isOpen ? "Ocultar" : "Mostrar"} ${entry.title}`}
-                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
               >
                 <ChevronDown
                   className={cn(
