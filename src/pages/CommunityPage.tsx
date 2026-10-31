@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MessageSquare, HelpCircle, MessagesSquare, Plus,
-  BookOpen, Users, TrendingUp, Sparkles
+  BookOpen, Users, TrendingUp, Sparkles,
+  Target, Crown, CalendarDays, Briefcase
 } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -17,6 +18,12 @@ import { CommunityChat } from "@/components/community/CommunityChat";
 import { CreatePostDialog } from "@/components/community/CreatePostDialog";
 import { PostDetailDialog } from "@/components/community/PostDetailDialog";
 import { QuickPostInput } from "@/components/community/QuickPostInput";
+import { ChallengesSection } from "@/components/community/ChallengesSection";
+import { LeaderboardSection } from "@/components/community/LeaderboardSection";
+import { EventsSection } from "@/components/community/EventsSection";
+import { OpportunitiesSection } from "@/components/community/OpportunitiesSection";
+import { MembersSection } from "@/components/community/MembersSection";
+import { useMembers } from "@/hooks/useCommunityModules";
 import { useCommunityPosts, CommunityPost, ContentType } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
@@ -25,7 +32,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type TabType = "discussions" | "questions" | "chat";
+type TabType =
+  | "discussions"
+  | "questions"
+  | "chat"
+  | "retos"
+  | "ranking"
+  | "miembros"
+  | "eventos"
+  | "oportunidades";
+
+const TAB_CLS =
+  "gap-2 h-10 px-4 rounded-full uppercase tracking-wide text-xs font-semibold data-[state=active]:bg-foreground data-[state=active]:text-background whitespace-nowrap";
 
 const CommunityPage: React.FC = () => {
   const navigate = useNavigate();

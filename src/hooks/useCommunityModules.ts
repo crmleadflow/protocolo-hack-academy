@@ -74,7 +74,7 @@ export function useChallenges(programId: string | null, isStaff: boolean) {
     }
     setLoading(true);
 
-    const [{ data: ch }, { data: parts }] = await Promise.all([
+    const [{ data: ch }, { data: parts }, { data: { user } }] = await Promise.all([
       supabase
         .from("community_challenges")
         .select("*")
@@ -82,12 +82,14 @@ export function useChallenges(programId: string | null, isStaff: boolean) {
         .order("status", { ascending: true })
         .order("created_at", { ascending: false }),
       supabase.from("challenge_participants").select("*"),
+      supabase.auth.getUser(),
     ]);
 
     setChallenges((ch as Challenge[]) || []);
     const all = (parts as Participation[]) || [];
-    setMine(all.filter((p) => p.status !== "joined" || true));
+    setMine(all.filter((p) => p.user_id === user?.id));
     setSubmissions(isStaff ? all.filter((p) => p.status === "submitted") : []);
+
     setLoading(false);
   }, [programId, isStaff]);
 
@@ -490,15 +492,28 @@ export function useMembers(programId: string | null) {
       return;
     }
     setLoading(true);
-    const [{ data: mb }, { data: inc }] = await Promise.all([
+    const [{ data: mb }, { data: inc }, { data: { user } }] = await Promise.all([
       supabase.rpc("community_members", { _program_id: programId }),
       supabase
         .from("member_connections")
-        .select("id, from_user_id, message")
+        .select("id, from_user_id, to_user_id, message")
         .eq("status", "pending"),
+      supabase.auth.getUser(),
     ]);
     setMembers((mb as MemberRow[]) || []);
-    setIncoming((inc as { id: string; from_user_id: string; message: string }[]) || []);
+    setIncoming(
+      (
+        (inc as {
+          id: string;
+          from_user_id: string;
+          to_user_id: string;
+          message: string;
+        }[]) || []
+      )
+        .filter((r) => r.to_user_id === user?.id)
+        .map((r) => ({ id: r.id, from_user_id: r.from_user_id, message: r.message }))
+    );
+
     setLoading(false);
   }, [programId]);
 
