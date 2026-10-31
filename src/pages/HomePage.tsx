@@ -1,43 +1,42 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, Download, CalendarDays } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Download, CalendarDays, Play } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PublicLayout } from "@/components/public/PublicLayout";
-import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ECOSYSTEM, TOOLS, MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, FAQS } from "@/components/public/content";
+import heroImg from "@/assets/home-hero.jpg";
+import imgAcademia from "@/assets/card-academia.jpg";
+import imgMarket from "@/assets/card-marketplace.jpg";
+import imgComunidad from "@/assets/card-comunidad.jpg";
 
 const Kinetic = ({ text, delay = 0, className = "" }: { text: string; delay?: number; className?: string }) => (
   <span className={className}>
     {text.split(" ").map((w, i) => (
-      <span key={i} className="kinetic-word mr-[0.25em]" style={{ animationDelay: `${delay + i * 0.12}s` }}>
-        {w}
-      </span>
+      <span key={i} className="kinetic-word mr-[0.22em]" style={{ animationDelay: `${delay + i * 0.1}s` }}>{w}</span>
     ))}
   </span>
 );
 
-const SectionHead = ({ kicker, title, accent, to, link }: { kicker: string; title: string; accent?: string; to?: string; link?: string }) => (
+const Head = ({ kicker, title, accent, to, link }: { kicker: string; title: string; accent?: string; to?: string; link?: string }) => (
   <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
     <div>
-      <p className="text-xs uppercase tracking-[0.2em] text-primary">{kicker}</p>
-      <h2 className="mt-3 text-3xl font-bold md:text-5xl">
+      <span className="pill">{kicker}</span>
+      <h2 className="display mt-5 text-4xl md:text-6xl">
         {title} {accent && <span className="serif-accent text-primary">{accent}</span>}
       </h2>
     </div>
     {to && (
-      <Link to={to} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        {link} <ArrowRight className="h-4 w-4" />
-      </Link>
+      <Link to={to} className="pill hover:bg-foreground/10">{link} <ArrowRight className="h-3.5 w-3.5" /></Link>
     )}
   </div>
 );
 
-const Card = ({ to, children }: { to: string; children: React.ReactNode }) => (
-  <Link to={to} className="group rounded-3xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50">
-    {children}
-  </Link>
-);
+const FEATURES = [
+  { to: "/academia", img: imgAcademia, chip: "Cursos", title: "Academia", text: "IA, neuroventas y estrategia digital paso a paso." },
+  { to: "/marketplace", img: imgMarket, chip: "Plugins", title: "Herramientas", text: "Mentor IA, analizadores y productos digitales." },
+  { to: "/comunidad", img: imgComunidad, chip: "Global", title: "Comunidad", text: "Emprendedores implementando lo mismo que tú." },
+];
 
 const HomePage = () => {
   const { data: courses = [] } = useQuery({
@@ -50,172 +49,194 @@ const HomePage = () => {
 
   return (
     <PublicLayout>
-      {/* 1. Hero */}
-      <section className="mx-auto max-w-7xl px-5 pt-20 pb-24 md:pt-32">
-        <p className="kinetic-word text-xs uppercase tracking-[0.25em] text-primary">Protocolo Hack · Héctor Galensky</p>
-        <h1 className="mt-6 text-[2.6rem] font-bold leading-[1] md:text-7xl lg:text-8xl">
-          <Kinetic text="EL CONOCIMIENTO CAMBIA TU" />
-          <Kinetic text="mente." delay={0.6} className="serif-accent text-primary normal-case" />
-          <br />
-          <Kinetic text="LA IMPLEMENTACIÓN CAMBIA TU" delay={1} />
-          <Kinetic text="negocio." delay={1.6} className="serif-accent text-primary normal-case" />
-        </h1>
-        <p className="kinetic-word mt-8 max-w-2xl text-lg text-muted-foreground" style={{ animationDelay: "1.9s" }}>
-          Aprende inteligencia artificial, neuroventas y estrategias digitales. Descubre herramientas, mentorías y
-          soluciones para llevar tu negocio al siguiente nivel.
-        </p>
-        <div className="kinetic-word mt-10 flex flex-wrap gap-3" style={{ animationDelay: "2.1s" }}>
-          <Button asChild size="lg" className="rounded-full">
-            <Link to="/academia">Explorar academia <ArrowRight className="ml-1 h-4 w-4" /></Link>
-          </Button>
-          <Button asChild size="lg" variant="outline" className="rounded-full">
-            <Link to="/marketplace">Descubrir herramientas</Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* 2. Ecosistema */}
-      <section className="border-y border-border bg-card/40 py-20">
-        <div className="mx-auto max-w-7xl px-5">
-          <SectionHead kicker="El ecosistema" title="Aprende, implementa y" accent="escala." />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {ECOSYSTEM.map(({ to, icon: Icon, title, text }) => (
-              <Card key={to} to={to}>
-                <Icon className="h-6 w-6 text-primary" />
-                <p className="mt-6 font-heading text-lg font-semibold">{title}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{text}</p>
-              </Card>
-            ))}
+      {/* 1. Hero cinematográfico */}
+      <section className="px-3 pt-3 md:px-5">
+        <div className="showcase grain group min-h-[88vh]">
+          <img src={heroImg} alt="Emprendedor iluminado en estudio oscuro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover object-[70%_center] opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
+          <div className="relative z-10 flex min-h-[88vh] flex-col justify-end p-6 md:p-14">
+            <span className="pill kinetic-word w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Protocolo Hack · Héctor Galensky</span>
+            <h1 className="display mt-6 max-w-5xl text-[2.7rem] sm:text-6xl lg:text-[6.5rem]">
+              <Kinetic text="El conocimiento cambia tu" />
+              <Kinetic text="mente." delay={0.5} className="serif-accent text-primary" />
+              <br />
+              <Kinetic text="La implementación cambia tu" delay={0.8} />
+              <Kinetic text="negocio." delay={1.3} className="serif-accent text-primary" />
+            </h1>
+            <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+              <p className="kinetic-word max-w-xl text-base text-foreground/70 md:text-lg" style={{ animationDelay: "1.6s" }}>
+                Aprende inteligencia artificial, neuroventas y estrategias digitales. Descubre herramientas, mentorías y soluciones para llevar tu negocio al siguiente nivel.
+              </p>
+              <div className="kinetic-word flex flex-wrap gap-3" style={{ animationDelay: "1.8s" }}>
+                <Link to="/academia" className="pill-solid">Explorar academia <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/marketplace" className="pill px-5 py-2.5 text-sm hover:bg-foreground/10">Descubrir herramientas</Link>
+              </div>
+            </div>
+            <div className="mt-10 hidden flex-wrap gap-2 md:flex">
+              {["Inteligencia artificial", "Neuroventas", "Automatización", "Mentorías 1:1"].map((t) => <span key={t} className="pill">{t}</span>)}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 3. Cursos */}
+      {/* 2. Tres tarjetas showcase (estilo Crypto Vault) */}
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <SectionHead kicker="Academia" title="Cursos" accent="destacados" to="/academia" link="Ver academia" />
+        <Head kicker="El ecosistema" title="Aprende, implementa y" accent="escala." />
         <div className="grid gap-4 md:grid-cols-3">
-          {(courses.length ? courses : [{ id: "x", title: "Nuevos cursos muy pronto", description: "", thumbnail_url: null }]).map((c: any) => (
-            <Card key={c.id} to="/academia">
-              <div className="aspect-video overflow-hidden rounded-2xl bg-secondary">
-                {c.thumbnail_url && <img src={c.thumbnail_url} alt={c.title} loading="lazy" className="h-full w-full object-cover transition-transform group-hover:scale-105" />}
+          {FEATURES.map((f) => (
+            <Link key={f.to} to={f.to} className="showcase group flex aspect-[4/5] flex-col justify-between p-6">
+              <img src={f.img} alt={f.title} loading="lazy" width={816} height={816} className="showcase-img" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+              <span className="pill relative z-10 w-fit">{f.chip}</span>
+              <div className="relative z-10 text-center">
+                <p className="display text-3xl">{f.title}</p>
+                <p className="mx-auto mt-2 max-w-[16rem] text-sm text-foreground/70">{f.text}</p>
               </div>
-              <p className="mt-5 font-heading text-lg font-semibold line-clamp-1">{c.title}</p>
-              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{c.description}</p>
-            </Card>
+            </Link>
+          ))}
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {ECOSYSTEM.filter((e) => !["/academia", "/marketplace", "/comunidad"].includes(e.to)).map(({ to, icon: Icon, title }) => (
+            <Link key={to} to={to} className="group flex items-center gap-3 rounded-full border border-border bg-card px-4 py-3 text-sm transition-colors hover:border-primary/50">
+              <Icon className="h-4 w-4 text-primary" /> <span className="flex-1">{title}</span>
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* 4. Herramientas */}
-      <section className="bg-foreground text-background py-20">
-        <div className="mx-auto max-w-7xl px-5">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary">Marketplace</p>
-          <h2 className="mt-3 text-3xl font-bold md:text-5xl">Plugins y <span className="serif-accent">herramientas</span></h2>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {TOOLS.map((t) => (
-              <Link key={t.name} to="/marketplace" className="rounded-3xl border border-background/15 p-6 transition-colors hover:bg-background/5">
-                <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">{t.tag}</span>
-                <p className="mt-6 font-heading text-xl font-semibold">{t.name}</p>
-                <p className="mt-1 text-sm opacity-70">{t.text}</p>
-                <p className="mt-6 font-heading font-semibold">{t.price}</p>
-              </Link>
-            ))}
+      {/* 3. Cursos */}
+      <section className="mx-auto max-w-7xl px-5 pb-20">
+        <Head kicker="Academia" title="Cursos" accent="destacados" to="/academia" link="Ver academia" />
+        <div className="grid gap-4 md:grid-cols-3">
+          {(courses.length ? courses : [{ id: "x", title: "Nuevos cursos muy pronto", description: "", thumbnail_url: null }]).map((c: any) => (
+            <Link key={c.id} to="/academia" className="group">
+              <div className="showcase aspect-video">
+                {c.thumbnail_url ? <img src={c.thumbnail_url} alt={c.title} loading="lazy" className="showcase-img opacity-100" /> : <img src={imgAcademia} alt="" loading="lazy" className="showcase-img" />}
+                <span className="absolute bottom-4 right-4 grid h-10 w-10 place-items-center rounded-full bg-foreground text-background"><Play className="h-4 w-4 fill-current" /></span>
+              </div>
+              <p className="mt-4 font-heading text-lg font-semibold line-clamp-1">{c.title}</p>
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{c.description}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Herramientas — editorial serif */}
+      <section className="px-3 md:px-5">
+        <div className="showcase grain p-8 md:p-14">
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-end">
+            <div>
+              <span className="pill">Marketplace</span>
+              <h2 className="serif-display mt-6 text-5xl md:text-7xl">Tu negocio, <br /><span className="text-primary">potenciado.</span></h2>
+              <p className="mt-4 max-w-sm text-foreground/60">Plugins y herramientas con IA para vender más con menos esfuerzo.</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {TOOLS.map((t) => (
+                <Link key={t.name} to="/marketplace" className="group rounded-3xl border border-foreground/10 bg-background/40 p-5 backdrop-blur-md transition-colors hover:border-primary/50">
+                  <span className="pill">{t.tag}</span>
+                  <p className="mt-8 font-heading text-lg font-semibold leading-tight">{t.name}</p>
+                  <p className="mt-1 text-xs text-foreground/60">{t.text}</p>
+                  <p className="mt-5 flex items-center justify-between font-heading font-semibold">{t.price} <ArrowUpRight className="h-4 w-4 text-primary" /></p>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* 5. Mentorías */}
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <SectionHead kicker="Mentorías" title="Acompañamiento" accent="personal" to="/mentorias" link="Ver mentorías" />
+        <Head kicker="Mentorías" title="Acompañamiento" accent="personal" to="/mentorias" link="Ver mentorías" />
         <div className="grid gap-4 md:grid-cols-3">
-          {MENTORSHIPS.map((m) => (
-            <Card key={m.name} to="/mentorias">
-              <p className="text-xs text-primary">{m.format}</p>
-              <p className="mt-3 font-heading text-lg font-semibold">{m.name}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{m.text}</p>
-            </Card>
+          {MENTORSHIPS.map((m, i) => (
+            <Link key={m.name} to="/mentorias" className="group rounded-[2rem] border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/50">
+              <div className="flex items-center justify-between">
+                <span className="pill">{m.format}</span>
+                <span className="font-heading text-sm text-muted-foreground">0{i + 1}</span>
+              </div>
+              <p className="mt-10 font-heading text-2xl font-semibold leading-tight">{m.name}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{m.text}</p>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* 6. Lead Flow */}
-      <section className="mx-auto max-w-7xl px-5">
-        <div className="rounded-[2rem] bg-primary p-8 text-primary-foreground md:p-14">
-          <p className="text-xs uppercase tracking-[0.2em] opacity-70">Lead Flow</p>
-          <h2 className="mt-3 max-w-3xl text-3xl font-bold md:text-5xl">Deja de perder clientes. <span className="serif-accent">Ordena tus ventas.</span></h2>
-          <p className="mt-4 max-w-xl opacity-80">El CRM para captar, seguir y cerrar oportunidades. Planes desde emprendedores hasta empresas.</p>
-          <div className="mt-8 flex flex-wrap gap-2">
-            {LEADFLOW_PLANS.map((p) => <span key={p.name} className="rounded-full border border-primary-foreground/30 px-4 py-1.5 text-sm">{p.name}</span>)}
+      {/* 6. Lead Flow — bloque claro gigante */}
+      <section className="px-3 md:px-5">
+        <div className="relative overflow-hidden rounded-[2rem] bg-foreground p-8 text-background md:p-14">
+          <p className="display pointer-events-none absolute -bottom-6 right-0 select-none text-[22vw] leading-none text-background/5 md:text-[14rem]">FLOW</p>
+          <span className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">Lead Flow CRM</span>
+          <h2 className="display mt-6 max-w-3xl text-4xl md:text-6xl">Deja de perder clientes. <span className="serif-accent text-primary">Ordena tus ventas.</span></h2>
+          <p className="mt-4 max-w-xl opacity-70">El CRM para captar, seguir y cerrar oportunidades. Planes desde emprendedores hasta empresas.</p>
+          <div className="relative mt-8 flex flex-wrap gap-2">
+            {LEADFLOW_PLANS.map((p) => <span key={p.name} className="rounded-full border border-background/20 px-4 py-1.5 text-sm">{p.name}</span>)}
           </div>
-          <Button asChild size="lg" variant="secondary" className="mt-8 rounded-full">
-            <Link to="/lead-flow">Ver planes <ArrowUpRight className="ml-1 h-4 w-4" /></Link>
-          </Button>
+          <Link to="/lead-flow" className="relative mt-8 inline-flex items-center gap-2 rounded-full bg-background px-6 py-3 text-sm font-semibold text-foreground transition-transform hover:scale-[1.03]">
+            Ver planes <ArrowUpRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
       {/* 7. Conferencias */}
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <SectionHead kicker="Empresas" title="Conferencias" accent="empresariales" to="/conferencias" link="Solicitar conferencia" />
+        <Head kicker="Empresas" title="Conferencias" accent="empresariales" to="/conferencias" link="Solicitar conferencia" />
         <div className="divide-y divide-border border-y border-border">
-          {CONFERENCES.map((c) => (
-            <Link key={c.name} to="/conferencias" className="group flex items-center justify-between gap-6 py-6">
+          {CONFERENCES.map((c, i) => (
+            <Link key={c.name} to="/conferencias" className="group grid grid-cols-[auto_1fr_auto] items-center gap-6 py-7">
+              <span className="font-heading text-sm text-muted-foreground">0{i + 1}</span>
               <div>
-                <p className="font-heading text-xl font-semibold md:text-2xl group-hover:text-primary transition-colors">{c.name}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{c.text}</p>
+                <p className="display text-2xl transition-colors group-hover:text-primary md:text-4xl">{c.name}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
               </div>
-              <ArrowUpRight className="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
+              <span className="grid h-11 w-11 place-items-center rounded-full border border-border transition-colors group-hover:bg-foreground group-hover:text-background">
+                <ArrowUpRight className="h-4 w-4" />
+              </span>
             </Link>
           ))}
         </div>
       </section>
 
       {/* 8 + 9. Recursos y eventos */}
-      <section className="mx-auto max-w-7xl px-5 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-border bg-card p-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary">Gratis</p>
-          <h3 className="mt-3 text-2xl font-bold md:text-3xl">Recursos <span className="serif-accent text-primary">gratuitos</span></h3>
-          <ul className="mt-6 space-y-3">
-            {RESOURCES.map((r) => (
-              <li key={r.name}>
-                <Link to="/recursos" className="flex items-center justify-between gap-3 rounded-2xl bg-secondary px-4 py-3 text-sm hover:bg-muted">
-                  <span>{r.name}</span><Download className="h-4 w-4 text-primary" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-3xl border border-border bg-card p-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary">En vivo</p>
-          <h3 className="mt-3 text-2xl font-bold md:text-3xl">Próximos <span className="serif-accent text-primary">eventos</span></h3>
-          <ul className="mt-6 space-y-3">
-            {EVENTS.map((e) => (
-              <li key={e.name}>
-                <Link to="/eventos" className="flex items-center gap-3 rounded-2xl bg-secondary px-4 py-3 text-sm hover:bg-muted">
-                  <CalendarDays className="h-4 w-4 text-primary" />
-                  <span className="flex-1">{e.name}</span>
-                  <span className="text-xs text-muted-foreground">{e.mode}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <section className="mx-auto grid max-w-7xl gap-4 px-5 lg:grid-cols-2">
+        {[
+          { kicker: "Gratis", title: "Recursos", accent: "gratuitos", to: "/recursos", items: RESOURCES.map((r) => ({ name: r.name, meta: r.type })), Icon: Download },
+          { kicker: "En vivo", title: "Próximos", accent: "eventos", to: "/eventos", items: EVENTS.map((e) => ({ name: e.name, meta: e.mode })), Icon: CalendarDays },
+        ].map(({ kicker, title, accent, to, items, Icon }) => (
+          <div key={to} className="showcase p-8">
+            <span className="pill">{kicker}</span>
+            <h3 className="display mt-5 text-3xl md:text-4xl">{title} <span className="serif-accent text-primary">{accent}</span></h3>
+            <ul className="mt-6 space-y-2">
+              {items.map((it) => (
+                <li key={it.name}>
+                  <Link to={to} className="flex items-center gap-3 rounded-full border border-foreground/10 bg-background/40 px-5 py-3 text-sm transition-colors hover:border-primary/50">
+                    <Icon className="h-4 w-4 text-primary" />
+                    <span className="flex-1">{it.name}</span>
+                    <span className="hidden text-xs text-muted-foreground sm:inline">{it.meta}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </section>
 
       {/* 10. Comunidad */}
-      <section className="mx-auto max-w-7xl px-5 py-20 text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-primary">Comunidad</p>
-        <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-bold md:text-5xl">No escales <span className="serif-accent text-primary">solo.</span></h2>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">Comparte avances, resuelve dudas y conecta con emprendedores que están implementando lo mismo que tú.</p>
-        <Button asChild variant="outline" size="lg" className="mt-8 rounded-full"><Link to="/comunidad">Unirme a la comunidad</Link></Button>
+      <section className="mx-auto max-w-7xl px-5 py-24 text-center">
+        <span className="pill">Comunidad</span>
+        <h2 className="serif-display mx-auto mt-6 max-w-3xl text-6xl md:text-8xl">No escales <span className="text-primary">solo.</span></h2>
+        <p className="mx-auto mt-5 max-w-xl text-muted-foreground">Comparte avances, resuelve dudas y conecta con emprendedores que están implementando lo mismo que tú.</p>
+        <Link to="/comunidad" className="pill-solid mt-8">Unirme a la comunidad <ArrowRight className="h-4 w-4" /></Link>
       </section>
 
       {/* 11. FAQ */}
       <section className="mx-auto max-w-3xl px-5 pb-20">
-        <h2 className="text-3xl font-bold md:text-4xl">Preguntas <span className="serif-accent text-primary">frecuentes</span></h2>
+        <h2 className="display text-4xl md:text-5xl">Preguntas <span className="serif-accent text-primary">frecuentes</span></h2>
         <Accordion type="single" collapsible className="mt-8">
           {FAQS.map((f, i) => (
             <AccordionItem key={i} value={`f${i}`}>
-              <AccordionTrigger className="text-left font-heading">{f.q}</AccordionTrigger>
+              <AccordionTrigger className="text-left font-heading text-base">{f.q}</AccordionTrigger>
               <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
             </AccordionItem>
           ))}
@@ -223,13 +244,16 @@ const HomePage = () => {
       </section>
 
       {/* 12. CTA */}
-      <section className="mx-auto max-w-7xl px-5">
-        <div className="rounded-[2rem] border border-border bg-card px-8 py-16 text-center md:py-24">
-          <h2 className="text-4xl font-bold md:text-6xl">Aprende. Implementa. <span className="serif-accent text-primary">Escala.</span></h2>
-          <p className="mx-auto mt-4 max-w-lg text-muted-foreground">Todo en un solo ecosistema. Empieza gratis hoy.</p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg" className="rounded-full"><Link to="/login">Crear mi cuenta</Link></Button>
-            <Button asChild size="lg" variant="outline" className="rounded-full"><Link to="/recursos">Ver recursos gratis</Link></Button>
+      <section className="px-3 md:px-5">
+        <div className="showcase grain px-6 py-20 text-center md:py-28">
+          <img src={heroImg} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+          <div className="relative">
+            <h2 className="display text-5xl md:text-8xl">Aprende. Implementa. <br /><span className="serif-accent text-primary">Escala.</span></h2>
+            <p className="mx-auto mt-5 max-w-lg text-foreground/70">Todo en un solo ecosistema. Empieza gratis hoy.</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link to="/login" className="pill-solid">Crear mi cuenta <ArrowRight className="h-4 w-4" /></Link>
+              <Link to="/recursos" className="pill px-5 py-2.5 text-sm hover:bg-foreground/10">Ver recursos gratis</Link>
+            </div>
           </div>
         </div>
       </section>

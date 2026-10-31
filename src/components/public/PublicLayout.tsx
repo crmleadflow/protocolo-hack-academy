@@ -23,10 +23,11 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
+      <header className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5">
-          <Link to="/" className="font-heading text-lg font-bold tracking-tight">
-            PROTOCOLO<span className="text-primary">HACK</span>
+          <Link to="/" className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight">
+            <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-sm text-primary-foreground">PH</span>
+            <span>protocolo<span className="serif-accent text-primary text-xl">hack</span></span>
           </Link>
           <nav className="hidden xl:flex items-center gap-1">
             {NAV.map((n) => (
@@ -51,9 +52,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
                 <Link to="/producer">Administración</Link>
               </Button>
             )}
-            <Button asChild size="sm" className="rounded-full">
-              <Link to={user ? "/dashboard" : "/login"}>{user ? "Mi cuenta" : "Entrar"}</Link>
-            </Button>
+            <Link to={user ? "/dashboard" : "/login"} className="pill-solid px-4 py-2">{user ? "Mi cuenta" : "Entrar"}</Link>
             <button
               aria-label="Abrir menú"
               className="xl:hidden rounded-full p-2 hover:bg-secondary"
@@ -112,8 +111,8 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
 
 export const PageHero = ({ kicker, title, accent, text }: { kicker: string; title: string; accent?: string; text: string }) => (
   <section className="mx-auto max-w-7xl px-5 pt-16 pb-10 md:pt-24">
-    <p className="text-xs uppercase tracking-[0.2em] text-primary">{kicker}</p>
-    <h1 className="mt-4 max-w-4xl text-4xl font-bold leading-[1.05] md:text-6xl">
+    <span className="pill"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> {kicker}</span>
+    <h1 className="display mt-6 max-w-5xl text-5xl md:text-7xl lg:text-8xl">
       {title} {accent && <span className="serif-accent text-primary">{accent}</span>}
     </h1>
     <p className="mt-5 max-w-2xl text-lg text-muted-foreground">{text}</p>
