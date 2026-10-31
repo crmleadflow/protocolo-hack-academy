@@ -37,6 +37,63 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
   const { user, isAdmin } = useAuth();
   const close = () => setOpen(false);
   const item = "block rounded-xl px-4 py-3 text-sm hover:bg-secondary";
+  const location = useLocation();
+
+  // Grupos desplegables del menú
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const toggleGroup = (key: string) =>
+    setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  // Abre el grupo de la pantalla en la que estás
+  useEffect(() => {
+    const next: Record<string, boolean> = {};
+    const inList = (list: { to?: string }[]) =>
+      list.some((s) => s.to && location.pathname.startsWith(s.to));
+    if (location.pathname.startsWith("/marketplace") || inList(MARKETPLACE_SUB)) {
+      next.marketplace = true;
+    }
+    if (
+      location.pathname.startsWith("/recursos") ||
+      location.pathname.startsWith("/herramientas") ||
+      inList(TOOLS_SUB)
+    ) {
+      next.recursos = true;
+      next.herramientas = true;
+    }
+    setOpenGroups((prev) => ({ ...prev, ...next }));
+  }, [location.pathname]);
+
+  const groupHead = (key: string, to: string, label: string) => {
+    const isOpen = !!openGroups[key];
+    return (
+      <div className="flex items-center gap-1">
+        <NavLink
+          to={to}
+          onClick={close}
+          className={({ isActive }) =>
+            cn(
+              item,
+              "flex-1 font-heading font-bold uppercase tracking-wide",
+              isActive && "bg-secondary"
+            )
+          }
+        >
+          {label}
+        </NavLink>
+        <button
+          type="button"
+          onClick={() => toggleGroup(key)}
+          aria-expanded={isOpen}
+          aria-label={`${isOpen ? "Ocultar" : "Mostrar"} ${label}`}
+          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <ChevronDown
+            className={cn("h-4 w-4 transition-transform duration-200", isOpen && "rotate-180")}
+          />
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
