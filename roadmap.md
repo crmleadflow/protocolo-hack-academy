@@ -3,8 +3,8 @@
 - [x] 1A: navegación nueva, homepage de 12 secciones, páginas públicas
 - [x] 1A: acceso con enlace mágico (contraseña como respaldo)
 - [x] Formularios de solicitudes (conferencias, mentorías, Lead Flow, recursos, eventos)
-- [ ] 1A: panel de miembros (roles super_admin/mentor/member, suspender, audit_log)
-- [ ] 1B: rediseño interno de Academia (cursos, progreso)
-- [ ] 1C: Marketplace con carrito y Stripe Checkout
-- [ ] 1D: envío seguro de oportunidades a Lead Flow CRM (necesita datos del CRM)
-- [ ] 1E: eventos reales, reservas de mentorías, adaptador Wompi (necesita credenciales)
+- [ ] 1) Panel de miembros: roles super_admin/mentor/member, suspender/activar, audit_log, sin auto-cambio de rol
+- [ ] 2) Rediseño interno de Academia (cursos, módulos, lecciones, inscripción, progreso)
+- [ ] 3) Marketplace: carrito, Stripe Checkout alojado, precio en servidor, orders/order_items/payments/entitlements, pagado solo por webhook
+- [ ] 4) Lead Flow CRM: intent_events + crm_outbox, POST /api/webhooks/lead/{token}, NUNCA phone (solo name/email + source/page_url/utm), pendiente sin token
+- [ ] 5) Wompi Colombia desactivado "pendiente" hasta credenciales, sin simular cobros

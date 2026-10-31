@@ -1324,7 +1324,7 @@ export type Database = {
     }
     Enums: {
       achievement_category: "progress" | "social" | "milestone"
-      app_role: "admin" | "student"
+      app_role: "admin" | "student" | "super_admin" | "mentor" | "member"
       billing_cycle: "monthly" | "yearly" | "one_time"
       community_content_type: "discussion" | "question" | "announcement"
       enrollment_status: "pending" | "active" | "expired" | "cancelled"
@@ -1461,7 +1461,7 @@ export const Constants = {
   public: {
     Enums: {
       achievement_category: ["progress", "social", "milestone"],
-      app_role: ["admin", "student"],
+      app_role: ["admin", "student", "super_admin", "mentor", "member"],
       billing_cycle: ["monthly", "yearly", "one_time"],
       community_content_type: ["discussion", "question", "announcement"],
       enrollment_status: ["pending", "active", "expired", "cancelled"],
