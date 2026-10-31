@@ -23,6 +23,11 @@ export default auth((req) => {
   return NextResponse.next();
 });
 
+// El middleware corre en Edge por defecto, y ahí el driver de Mongo (que usa
+// el módulo `crypto` de Node) no funciona — rompía CADA página protegida con
+// "Internal Server Error". Node.js Middleware (estable desde Next.js 15.5)
+// lo saca de ese modo.
 export const config = {
+  runtime: "nodejs",
   matcher: ["/admin/:path*", "/academia/:path*", "/cuenta/:path*"],
 };
