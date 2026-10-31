@@ -13,7 +13,8 @@ marketplace. Las intenciones de compra se mandan como leads al CRM
 - MongoDB Atlas, driver nativo (sin Mongoose). Base propia, nunca la del CRM.
 - Auth.js (NextAuth v5) con magic link por Resend, sesiones en base de datos
   (cookie httpOnly, sin localStorage).
-- Stripe para pagos (Wompi queda armado pero incompleto, ver "Pendientes").
+- Stripe (internacional) + Wompi (Colombia, en COP) para pagos. Cada oferta
+  elige su pasarela por su `currency` (USD → Stripe, COP → Wompi).
 - Deploy pensado para Render (como el CRM), dominio temporal de Render por
   ahora.
 
@@ -64,16 +65,20 @@ reales sin que Hector lo pida explícitamente.
   Hector lo autorice (dispara WhatsApp automático del lado del CRM).
 
 ## Pendientes (lo que falta para pasar de MVP a completo)
-1. **Variables reales**: `MONGODB_URI` (Atlas, base propia), `AUTH_SECRET`,
-   `AUTH_RESEND_KEY` + `EMAIL_FROM`, `STRIPE_SECRET_KEY` +
-   `STRIPE_WEBHOOK_SECRET`, `SUPER_ADMIN_EMAILS` (el correo de Hector).
+1. **Variables reales**: `MONGODB_URI` (Atlas, base propia — ✅ ya cargada),
+   `AUTH_SECRET` (✅), `AUTH_RESEND_KEY` + `EMAIL_FROM` (✅),
+   `SUPER_ADMIN_EMAILS` (✅ el correo de Hector). Faltan:
+   `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` (Hector decidió activar
+   Stripe real más adelante, dejarlo pausado por ahora), `WOMPI_PUBLIC_KEY` +
+   `WOMPI_PRIVATE_KEY` + `WOMPI_INTEGRITY_SECRET` + `WOMPI_EVENTS_SECRET`.
 2. **Token del puente al CRM**: Hector tiene que loguearse en su tenant del
    CRM y crear una integración "landing externa" llamada "Protocolo Hack" para
    generar `LEADFLOW_CRM_WEBHOOK_TOKEN`. Hasta entonces, toda intención de
    compra queda pendiente en `crm_outbox` (no se pierde, se reintenta desde
    `/admin/crm`).
-3. **Wompi**: `lib/payments/wompi.ts` tiene solo la firma de integridad.
-   Falta el widget de checkout y `/api/webhooks/wompi`.
+3. **Wompi**: checkout (`/api/checkout/wompi`) y webhook
+   (`/api/webhooks/wompi`) ya están armados, mismo patrón que Stripe. Falta
+   probarlo con llaves reales de Wompi (no existen todavía).
 4. **Mentorías**: se venden por el marketplace (Stripe), pero coordinar el
    horario con el mentor es manual (sin calendario propio todavía —
    `mentorship_programs/slots/bookings` del modelo sugerido no se llegaron a
@@ -88,3 +93,10 @@ reales sin que Hector lo pida explícitamente.
    CRM no se probaron de punta a punta — necesitan las variables del punto 1.
 7. **Deploy en Render**: no se creó el servicio todavía. Falta que Hector lo
    autorice.
+
+## Nota aparte: Whop en el CRM (no en este repo)
+
+Hector pidió agregar Whop (whop.com) como método de pago, pero DENTRO del
+Payment Hub de `~/lead-flow-crm` (no acá). Eso se hizo en una rama separada
+de ESE repo: `feature/whop-payment-gateway` (ya subida a GitHub, sin PR ni
+merge todavía). No toca nada de Protocolo Hack.

@@ -44,7 +44,14 @@ export default async function MarketplacePage() {
                   </CardHeader>
                   <CardContent className="flex flex-col gap-3">
                     <p className="font-semibold">{formatPrice(offer)}</p>
-                    {section.checkout ? (
+                    {section.checkout && offer.currency === "COP" ? (
+                      <form action="/api/checkout/wompi" method="POST">
+                        <input type="hidden" name="offerId" value={String(offer._id)} />
+                        <Button type="submit" className="w-full">
+                          Pagar con Wompi
+                        </Button>
+                      </form>
+                    ) : section.checkout ? (
                       <form action="/api/checkout/stripe" method="POST">
                         <input type="hidden" name="offerId" value={String(offer._id)} />
                         <Button type="submit" className="w-full">
