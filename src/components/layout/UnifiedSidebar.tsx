@@ -346,86 +346,32 @@ export function UnifiedSidebar() {
 
       <SidebarContent className="px-2">
         {isProducerSection ? (
-          // Admin/Producer Navigation
           <>
-            <SidebarGroup>
-              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Gestión</SidebarGroupLabel>}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {adminMenuItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink 
-                          to={item.url} 
-                          onClick={handleLinkClick}
-                          className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
-                            isActive(item.url) 
-                              ? "bg-secondary/20 text-secondary neon-glow-purple" 
-                              : "hover:bg-white/5"
-                          )}
-                        >
-                          <item.icon className="w-5 h-5 flex-shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            <SidebarGroup className="mt-4">
-              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Acciones</SidebarGroupLabel>}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {adminSecondaryItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink 
-                          to={item.url} 
-                          onClick={handleLinkClick}
-                          className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
-                            isActive(item.url) 
-                              ? "bg-secondary/20 text-secondary" 
-                              : "hover:bg-white/5"
-                          )}
-                        >
-                          <item.icon className="w-5 h-5 flex-shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            {adminSections.map((section) => (
+              <SidebarGroup key={section.label}>
+                {!collapsed && (
+                  <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                    {section.label}
+                  </SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  <SidebarMenu>{section.items.map((item) => renderEntry(item, 0))}</SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            ))}
           </>
         ) : (
-          // Student Navigation
           <>
             {studentSections.map((section) => (
               <SidebarGroup key={section.label}>
-                {!collapsed && !section.url && (
-                  <SidebarGroupLabel className="text-muted-foreground">
+                {!collapsed && (
+                  <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-muted-foreground">
                     {section.label}
                   </SidebarGroupLabel>
                 )}
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {section.url && section.icon
-                      ? renderEntry(
-                          {
-                            title: section.label,
-                            url: section.url,
-                            icon: section.icon,
-                            strong: true,
-                            children: section.items,
-                          },
-                          0
-                        )
-                      : section.items.map((item) => renderEntry(item, 0))}
+                    {section.items.map((item) => renderEntry(item, 0))}
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
