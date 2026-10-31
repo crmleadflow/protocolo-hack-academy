@@ -1,25 +1,37 @@
-// Whop — checkout hospedado (Checkout Configurations API, modo "plan inline").
-// Fuente: docs.whop.com (api-reference/checkout-configurations,
-// developer/guides/webhooks, developer/api/getting-started) — leído el
-// 30/10/2026. Mismo gateway que se agregó al Payment Hub del CRM
-// (~/lead-flow-crm, rama feature/whop-payment-gateway), pero reimplementado
-// acá porque Protocolo Hack tiene su propio catálogo de ofertas (no son
-// planes fijos como en el CRM): en vez de pedirle a Hector que cree un
-// "Plan" en Whop por cada curso/mentoría, se manda un "plan inline" armado
-// al vuelo con el título y precio de la oferta.
+// Whop — checkout hospedado (Checkout Configurations API, "variant inline").
+// Probado de verdad el 30/10/2026 con una llave real (cuenta
+// "Leadflowneurosophia", biz_a1KWFty4Um4YxD): la documentación pública de
+// Whop estaba desactualizada en dos puntos importantes, corregidos acá
+// después de probar contra la API real:
+//   1. El body NO lleva `plan` (eso da "variant_id is required for payment
+//      mode") — lleva `variant: { title, billing_type: "one_time",
+//      initial_price, currency }`. No hace falta mandar `company_id`: la
+//      cuenta sale sola de la llave.
+//   2. `purchase_url` viene ABSOLUTA (ej. "https://whop.com/checkout/ch_.../"),
+//      confirmado con una llamada real — igual se cubre el caso relativo por
+//      las dudas.
+//   3. `redirect_url` tiene que empezar con "https://" — un
+//      "http://localhost:3000/..." lo rechaza. En desarrollo local, probar
+//      este botón no va a andar hasta que el sitio esté en un dominio https.
 //
-// AVISOS (sin confirmar con una llave real todavía):
-//   1. `purchase_url` puede venir absoluta o relativa — se cubren los dos casos.
-//   2. Para identificar al comprador en el webhook hace falta el correo
-//      (`data.user.email`), que la API de Whop devuelve null salvo que la
-//      llave tenga el permiso `member:email:read`. Al crear la llave en el
-//      dashboard de Whop, hay que marcar ese permiso — si no, no se puede
-//      inscribir a nadie automáticamente.
+// Mismo gateway que se agregó al Payment Hub del CRM (~/lead-flow-crm, rama
+// feature/whop-payment-gateway), pero reimplementado acá porque Protocolo
+// Hack tiene su propio catálogo de ofertas (no son planes fijos como en el
+// CRM): en vez de pedirle a Hector que cree un "Plan" en Whop por cada
+// curso/mentoría, se manda una variante armada al vuelo con el título y
+// precio de la oferta.
+//
+// AVISO sin confirmar todavía: para identificar al comprador en el webhook
+// hace falta su correo (`data.user.email`), que la API de Whop devuelve null
+// salvo que la llave tenga el permiso `member:email:read`. La llave actual
+// se creó con el rol "Propietario" (todos los permisos), así que debería
+// venir — falta un pago real de prueba para confirmarlo.
 //
 // Env vars:
-//   WHOP_API_KEY       — whop_xxxxxxxxxxxxxxxxx (Company API Key)
-//   WHOP_COMPANY_ID    — biz_xxxxxxxxxxxxxx
-//   WHOP_WEBHOOK_SECRET — ws_xxxxxxxxxxxxxxxxx
+//   WHOP_API_KEY        — apik_xxxxxxxxxxxxxxxxx (Company API Key)
+//   WHOP_COMPANY_ID      — biz_xxxxxxxxxxxxxx (solo como referencia, no se
+//                          manda en el checkout)
+//   WHOP_WEBHOOK_SECRET  — ws_xxxxxxxxxxxxxxxxx
 
 import crypto from "crypto";
 
@@ -30,7 +42,11 @@ function apiBase(): string {
 }
 
 export function isWhopConfigured(): boolean {
-  return !!process.env.WHOP_API_KEY && !!process.env.WHOP_COMPANY_ID;
+  // El prefijo real de las llaves que genera el dashboard de Whop es
+  // "apik_" (la documentación pública mostraba "whop_", desactualizada).
+  // WHOP_COMPANY_ID no hace falta para el checkout (la cuenta sale de la
+  // llave) — queda como dato de referencia, no se exige acá.
+  return !!process.env.WHOP_API_KEY && process.env.WHOP_API_KEY.startsWith("apik_");
 }
 
 async function whopFetch(path: string, options: RequestInit = {}) {
@@ -58,22 +74,15 @@ export async function createWhopCheckout(params: {
   currency: "USD" | "COP";
   successUrl: string;
 }): Promise<{ url: string; checkoutConfigurationId?: string }> {
-  const companyId = process.env.WHOP_COMPANY_ID;
-  if (!companyId) throw new Error("Falta WHOP_COMPANY_ID");
-
   const data = await whopFetch("/checkout_configurations", {
     method: "POST",
     body: JSON.stringify({
       mode: "payment",
-      plan: {
-        company_id: companyId,
-        currency: params.currency.toLowerCase(),
+      variant: {
+        title: params.title,
+        billing_type: "one_time",
         initial_price: params.priceCents / 100,
-        product: {
-          external_identifier: params.offerId,
-          title: params.title,
-          ...(params.description && { description: params.description }),
-        },
+        currency: params.currency.toLowerCase(),
       },
       metadata: { offer_id: params.offerId },
       redirect_url: params.successUrl,
