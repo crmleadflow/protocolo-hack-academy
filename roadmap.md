@@ -4,7 +4,7 @@
 - [x] 1A: acceso con enlace mágico (contraseña como respaldo)
 - [x] Formularios de solicitudes (conferencias, mentorías, Lead Flow, recursos, eventos)
 - [x] 1) Panel de miembros: roles super_admin/mentor/member, suspender/activar, audit_log, sin auto-cambio de rol
-- [~] 2) Rediseño (estilo aplicado a tarjetas y títulos; revisión pantalla por pantalla pendiente) interno de Academia (cursos, módulos, lecciones, inscripción, progreso) — con cursos, lecciones y videos reales de la base de datos
+- [x] 2) Rediseño (revisado con sesión: catálogo, panel, miembros, oportunidades, carrito, compras, comunidad) interno de Academia (cursos, módulos, lecciones, inscripción, progreso) — con cursos, lecciones y videos reales de la base de datos
 - [~] 3) Marketplace (carrito + precio en servidor + tablas listos; cobro con Whop pendiente de credenciales)
 - [~] 4) Lead Flow (registro y bandeja listos; falta URL del CRM y token) CRM: intent_events + crm_outbox, POST /api/webhooks/lead/{token}, NUNCA phone (solo name/email + source/page_url/utm), pendiente sin token
 - [ ] 5) Wompi Colombia desactivado "pendiente" hasta credenciales, sin simular cobros

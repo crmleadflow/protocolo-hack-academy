@@ -58,16 +58,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
-          // Defer role fetching to avoid blocking
+          setIsLoading(true);
+          // Defer role fetching to avoid blocking; keep loading until roles arrive
           setTimeout(async () => {
             const userRoles = await fetchRoles(currentSession.user.id);
             setRoles(userRoles);
+            setIsLoading(false);
           }, 0);
         } else {
           setRoles([]);
+          setIsLoading(false);
         }
-
-        setIsLoading(false);
       }
     );
 
