@@ -42,10 +42,10 @@ type NavSection = {
   items: NavEntry[];
 };
 
-// Student menu items. Secciones con `url` se muestran como desplegables.
+// Menú del alumno: 3 bloques claros. Entradas con `children` son desplegables.
 const studentSections: NavSection[] = [
   {
-    label: "Menú Principal",
+    label: "Mi espacio",
     items: [
       { title: "Inicio", url: "/", icon: Home },
       { title: "Métricas", url: "/dashboard", icon: LayoutDashboard },
@@ -56,52 +56,66 @@ const studentSections: NavSection[] = [
     ],
   },
   {
-    label: "Marketplace",
-    url: "/marketplace",
-    icon: DollarSign,
+    label: "Explorar",
     items: [
-      { title: "Mentorías", url: "/mentorias", icon: Users },
-      { title: "Conferencias", url: "/conferencias", icon: Users },
-      { title: "Seminarios", url: "/seminarios", icon: Users },
-      { title: "Capacitaciones", url: "/capacitaciones", icon: Users },
-      { title: "Eventos", url: "/eventos", icon: Users },
-      { title: "Bootcamp", url: "/bootcamp", icon: Users },
+      {
+        title: "Marketplace",
+        url: "/marketplace",
+        icon: DollarSign,
+        children: [
+          { title: "Mentorías", url: "/mentorias", icon: Users },
+          { title: "Conferencias", url: "/conferencias", icon: Users },
+          { title: "Seminarios", url: "/seminarios", icon: Users },
+          { title: "Capacitaciones", url: "/capacitaciones", icon: Users },
+          { title: "Eventos", url: "/eventos", icon: Users },
+          { title: "Bootcamp", url: "/bootcamp", icon: Users },
+        ],
+      },
+      {
+        title: "Herramientas",
+        url: "/herramientas",
+        icon: Wrench,
+        children: [
+          { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
+          { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
+        ],
+      },
+      { title: "Recursos", url: "/recursos", icon: Gift },
     ],
-  },
-  {
-    label: "Herramientas",
-    url: "/herramientas",
-    icon: Wrench,
-    items: [
-      { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
-      { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
-    ],
-  },
-  {
-    label: "Recursos",
-    url: "/recursos",
-    icon: Gift,
-    items: [],
   },
 ];
 
-// Admin/Producer menu items
-const adminMenuItems = [
-  { title: "Dashboard", url: "/producer", icon: LayoutDashboard },
-  { title: "Mis Programas", url: "/producer/courses", icon: BookOpen },
-  { title: "Alumnos", url: "/producer/students", icon: Users },
-  { title: "Miembros", url: "/producer/members", icon: Users },
-  { title: "Oportunidades", url: "/producer/leads", icon: BarChart3 },
-  { title: "Analytics", url: "/producer/analytics", icon: BarChart3 },
-  { title: "Ingresos", url: "/producer/revenue", icon: DollarSign },
-];
-
-// Admin secondary items
-const adminSecondaryItems = [
-  { title: "Crear Programa", url: "/producer/new-course", icon: Plus },
-  { title: "Mi Mentor IA", url: "/producer/mentor", icon: Sparkles },
-  { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
-  { title: "Configuración", url: "/producer/settings", icon: Settings },
+// Menú de administración agrupado por tarea
+const adminSections: { label: string; items: NavEntry[] }[] = [
+  {
+    label: "Resumen",
+    items: [
+      { title: "Dashboard", url: "/producer", icon: LayoutDashboard },
+      { title: "Analytics", url: "/producer/analytics", icon: BarChart3 },
+      { title: "Ingresos", url: "/producer/revenue", icon: DollarSign },
+    ],
+  },
+  {
+    label: "Contenido",
+    items: [
+      { title: "Mis Programas", url: "/producer/courses", icon: BookOpen },
+      { title: "Crear Programa", url: "/producer/new-course", icon: Plus },
+      { title: "Mi Mentor IA", url: "/producer/mentor", icon: Sparkles },
+    ],
+  },
+  {
+    label: "Personas",
+    items: [
+      { title: "Miembros", url: "/producer/members", icon: Users },
+      { title: "Alumnos", url: "/producer/students", icon: Users },
+      { title: "Oportunidades", url: "/producer/leads", icon: BarChart3 },
+      { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
+    ],
+  },
+  {
+    label: "Sistema",
+    items: [{ title: "Configuración", url: "/producer/settings", icon: Settings }],
+  },
 ];
 
 // Account items (shared)
