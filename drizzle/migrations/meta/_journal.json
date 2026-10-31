@@ -22,6 +22,13 @@
       "when": 1793457041074,
       "tag": "0002_members_commerce_crm",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793462998131,
+      "tag": "0003_profiles_phone",
+      "breakpoints": true
     }
   ]
 }
