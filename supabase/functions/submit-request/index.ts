@@ -3,7 +3,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3";
 
 const Body = z.object({
-  request_type: z.enum(["conferencia", "mentoria", "leadflow", "recurso", "evento", "contacto"]),
+  request_type: z.enum(["conferencia", "mentoria", "leadflow", "recurso", "evento", "contacto", "seminario", "capacitacion", "bootcamp"]),
   name: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(255),
   phone: z.string().trim().max(40).optional().nullable(),

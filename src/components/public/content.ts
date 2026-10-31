@@ -1,4 +1,4 @@
-import { GraduationCap, Puzzle, Users, Workflow, Mic, Gift, MessagesSquare, CalendarDays } from "lucide-react";
+import { GraduationCap, Puzzle, Users, Workflow, Mic, Gift, MessagesSquare, CalendarDays, Wrench } from "lucide-react";
 
 export const ECOSYSTEM = [
   { to: "/academia", icon: GraduationCap, title: "Academia", text: "Cursos de IA, neuroventas y estrategia digital." },
@@ -6,7 +6,8 @@ export const ECOSYSTEM = [
   { to: "/mentorias", icon: Users, title: "Mentorías", text: "Sesiones individuales y grupales." },
   { to: "/lead-flow", icon: Workflow, title: "Lead Flow", text: "El CRM para captar y cerrar más ventas." },
   { to: "/conferencias", icon: Mic, title: "Conferencias", text: "Formación para equipos y empresas." },
-  { to: "/recursos", icon: Gift, title: "Recursos gratis", text: "Guías, plantillas y clases sin costo." },
+  { to: "/recursos", icon: Gift, title: "Recursos", text: "Guías, plantillas y clases sin costo." },
+  { to: "/herramientas", icon: Wrench, title: "Herramientas", text: "Neuro Analyzer Pro y Mi Mentor IA." },
   { to: "/comunidad", icon: MessagesSquare, title: "Comunidad", text: "Conversa con otros emprendedores." },
   { to: "/eventos", icon: CalendarDays, title: "Eventos", text: "Webinars y clases en vivo." },
 ];
