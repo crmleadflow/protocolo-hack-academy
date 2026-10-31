@@ -20,6 +20,9 @@ import ProducerCoursesPage from "./pages/ProducerCoursesPage";
 import ProducerNewCoursePage from "./pages/ProducerNewCoursePage";
 import ProducerCourseEditPage from "./pages/ProducerCourseEditPage";
 import AdminStudentsPage from "./pages/AdminStudentsPage";
+import AdminMembersPage from "./pages/AdminMembersPage";
+import AdminLeadsPage from "./pages/AdminLeadsPage";
+import { CartPage, OrdersPage } from "./pages/CommercePages";
 import CheckoutPage from "./pages/CheckoutPage";
 import CryptoPaymentPage from "./pages/CryptoPaymentPage";
 import CryptoPaymentVerifyPage from "./pages/CryptoPaymentVerifyPage";
@@ -209,6 +212,10 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route path="/producer/members" element={<ProtectedRoute requireAdmin><AdminMembersPage /></ProtectedRoute>} />
+            <Route path="/producer/leads" element={<ProtectedRoute requireAdmin><AdminLeadsPage /></ProtectedRoute>} />
+            <Route path="/carrito" element={<CartPage />} />
+            <Route path="/mis-compras" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
             <Route
               path="/producer/students"
               element={

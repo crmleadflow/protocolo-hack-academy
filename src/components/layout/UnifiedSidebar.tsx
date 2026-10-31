@@ -41,6 +41,8 @@ const adminMenuItems = [
   { title: "Dashboard", url: "/producer", icon: LayoutDashboard },
   { title: "Mis Programas", url: "/producer/courses", icon: BookOpen },
   { title: "Alumnos", url: "/producer/students", icon: Users },
+  { title: "Miembros", url: "/producer/members", icon: Users },
+  { title: "Oportunidades", url: "/producer/leads", icon: BarChart3 },
   { title: "Analytics", url: "/producer/analytics", icon: BarChart3 },
   { title: "Ingresos", url: "/producer/revenue", icon: DollarSign },
 ];
