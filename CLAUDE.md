@@ -57,9 +57,22 @@ Corre `eslint` + `tsc --noEmit`. `npm run build` además compila todo (más
 lento, usarlo antes de un deploy).
 
 ## Rama de producción
-Todavía no hay deploy. Cuando lo haya: Render, servicio nuevo y separado del
-CRM (que vive en la rama `plan-b-render` de ese otro repo). Nada de Vercel/DNS
-reales sin que Hector lo pida explícitamente.
+`main`, desplegado en Render (servicio `protocolo-hack-academy`, plan free)
+desde https://github.com/crmleadflow/protocolo-hack-academy (repo público —
+tuvo que serlo porque Render no tenía permiso para ver repos privados de esa
+cuenta de GitHub; no hay nada sensible en el código, los secretos están solo
+en las variables de entorno de Render). Dominio temporal:
+https://protocolo-hack-academy.onrender.com — más adelante Hector apunta
+`academy.leadflowneurosophia.io`. Nada de Vercel/DNS reales sin que Hector
+lo pida explícitamente.
+
+El plan free "se duerme" sin tráfico: la primera visita después de un rato
+puede tardar ~50 segundos en responder.
+
+Mongo Atlas solo deja conectarse desde IPs en su lista blanca. Están
+agregadas las dos de Render (región Virginia): `74.220.49.0/24` y
+`74.220.57.0/24` — no se usó 0.0.0.0/0 a propósito, para no abrir la base a
+cualquier IP del mundo.
 
 ## Cosas que NO se tocan
 - `~/lead-flow-crm` — solo lectura, nunca escritura, desde este repo.
@@ -97,12 +110,12 @@ reales sin que Hector lo pida explícitamente.
    catálogo, pero no hay checkout — el botón manda la intención al CRM para
    que Hector cierre la venta a mano (no hay alta automática de cuenta en el
    CRM desde aquí, ni falta que la haya).
-6. **No probado con credenciales reales**: el build y el tipado pasan
-   (`npm run check`, `npm run build`), y la home/el login renderizan sin base
-   de datos. Pero el login con enlace mágico, los pagos y el envío real al
-   CRM no se probaron de punta a punta — necesitan las variables del punto 1.
-7. **Deploy en Render**: no se creó el servicio todavía. Falta que Hector lo
-   autorice.
+6. **Probado en producción real**: la home, marketplace, login y recursos
+   responden bien en https://protocolo-hack-academy.onrender.com (lectura y
+   escritura contra la base real confirmadas). Falta todavía: completar un
+   login con enlace mágico de punta a punta (pedirlo y hacer click en el
+   correo) y una compra real con Whop.
+7. **Deploy en Render**: ✅ listo (ver "Rama de producción" arriba).
 
 ## Nota aparte: Whop también se agregó al CRM
 
