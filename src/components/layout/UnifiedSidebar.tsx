@@ -393,42 +393,29 @@ export function UnifiedSidebar() {
           // Student Navigation
           <>
             {studentSections.map((section) => (
-            <SidebarGroup key={section.label}>
-              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">{section.label}</SidebarGroupLabel>}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {section.items.map((item: any) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink 
-                          to={item.url} 
-                          onClick={handleLinkClick}
-                          className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
-                            isActive(item.url) 
-                              ? "bg-primary/20 text-primary neon-glow" 
-                              : "hover:bg-white/5"
-                          )}
-                        >
-                          <item.icon className="w-5 h-5 flex-shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
-                          {item.hasBadge && unreadCount > 0 && (
-                            <span className={cn(
-                              "absolute flex items-center justify-center bg-destructive text-destructive-foreground text-xs font-bold rounded-full",
-                              collapsed 
-                                ? "top-0 right-0 w-4 h-4 text-[10px]" 
-                                : "ml-auto w-5 h-5"
-                            )}>
-                              {unreadCount > 9 ? "9+" : unreadCount}
-                            </span>
-                          )}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+              <SidebarGroup key={section.label}>
+                {!collapsed && !section.url && (
+                  <SidebarGroupLabel className="text-muted-foreground">
+                    {section.label}
+                  </SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {section.url && section.icon
+                      ? renderEntry(
+                          {
+                            title: section.label,
+                            url: section.url,
+                            icon: section.icon,
+                            strong: true,
+                            children: section.items,
+                          },
+                          0
+                        )
+                      : section.items.map((item) => renderEntry(item, 0))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
             ))}
 
             {/* Account Menu */}
