@@ -69,20 +69,19 @@ const studentSections: NavSection[] = [
     ],
   },
   {
+    label: "Herramientas",
+    url: "/herramientas",
+    icon: Wrench,
+    items: [
+      { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
+      { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
+    ],
+  },
+  {
     label: "Recursos",
     url: "/recursos",
     icon: Gift,
-    items: [
-      {
-        title: "Herramientas",
-        url: "/herramientas",
-        icon: Wrench,
-        children: [
-          { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
-          { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
-        ],
-      },
-    ],
+    items: [],
   },
 ];
 
