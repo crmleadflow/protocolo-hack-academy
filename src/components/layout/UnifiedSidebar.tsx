@@ -102,6 +102,7 @@ export function UnifiedSidebar() {
   const isActive = (path: string) => {
     if (path === "/producer" && location.pathname === "/producer") return true;
     if (path === "/dashboard" && location.pathname === "/dashboard") return true;
+    if (path === "/") return location.pathname === "/";
     if (path !== "/producer" && path !== "/dashboard") {
       return location.pathname.startsWith(path);
     }
