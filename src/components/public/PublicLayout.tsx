@@ -13,6 +13,7 @@ export const NAV = [
   { to: "/marketplace", label: "Marketplace" },
   { to: "/lead-flow", label: "Lead Flow" },
   { to: "/recursos", label: "Recursos" },
+  { to: "/herramientas", label: "Herramientas" },
   { to: "/comunidad", label: "Comunidad" },
 ];
 
@@ -52,12 +53,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
     if (location.pathname.startsWith("/marketplace") || inList(MARKETPLACE_SUB)) {
       next.marketplace = true;
     }
-    if (
-      location.pathname.startsWith("/recursos") ||
-      location.pathname.startsWith("/herramientas") ||
-      inList(TOOLS_SUB)
-    ) {
-      next.recursos = true;
+    if (location.pathname.startsWith("/herramientas") || inList(TOOLS_SUB)) {
       next.herramientas = true;
     }
     setOpenGroups((prev) => ({ ...prev, ...next }));
@@ -118,7 +114,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
           <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto">
             <div className="mx-auto max-w-7xl grid gap-1 md:grid-cols-3 md:gap-6">
               <div>
-                {NAV.filter((n) => n.to !== "/marketplace" && n.to !== "/recursos").map((n) => (
+                {NAV.filter((n) => n.to !== "/marketplace" && n.to !== "/herramientas").map((n) => (
                   <NavLink key={n.to} to={n.to} end={n.to === "/"} onClick={close}
                     className={({ isActive }) => cn(item, isActive && "bg-secondary font-medium")}>
                     {n.label}
@@ -142,17 +138,12 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
                 )}
               </div>
               <div className="md:col-span-2">
-                {groupHead("recursos", "/recursos", "Recursos")}
-                {openGroups["recursos"] && (
-                  <div className="pl-2 border-l-2 border-primary ml-4">
-                    {groupHead("herramientas", "/herramientas", "Herramientas")}
-                    {openGroups["herramientas"] && (
-                      <div className="grid gap-1 pl-2 border-l-2 border-border ml-4">
-                        {TOOLS_SUB.map((t) => (
-                          <Link key={t.to} to={t.to} onClick={close} className={item}>{t.label}</Link>
-                        ))}
-                      </div>
-                    )}
+                {groupHead("herramientas", "/herramientas", "Herramientas")}
+                {openGroups["herramientas"] && (
+                  <div className="grid grid-cols-2 gap-1 pl-2 border-l-2 border-primary ml-4">
+                    {TOOLS_SUB.map((t) => (
+                      <Link key={t.to} to={t.to} onClick={close} className={item}>{t.label}</Link>
+                    ))}
                   </div>
                 )}
               </div>
