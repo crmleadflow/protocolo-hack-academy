@@ -52,19 +52,21 @@ const HomePage = () => {
     <PublicLayout>
       {/* 1. Hero editorial (NeoVision): blanco, foto B/N de cuerpo entero, titular gigante */}
       <section className="relative overflow-hidden bg-background">
-        <img src={heroImg} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover object-[78%_center] grayscale" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent md:via-background/30" />
+        <img src={heroImg} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover object-[88%_center] grayscale" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40 md:via-background/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         <div className="relative z-10 mx-auto flex min-h-[92vh] max-h-[1100px] max-w-7xl flex-col justify-end px-5 pb-14 pt-24">
           <span className="pill kinetic-word w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Protocolo Hack · Héctor Galensky</span>
-          <h1 className="display mt-6 max-w-5xl text-[2.3rem] sm:text-6xl lg:text-[5.4rem]">
-            <Kinetic text="La tecnología te da" />
-            <Kinetic text="velocidad," delay={0.5} className="serif-accent text-primary" />
+          <h1 className="display mt-6 max-w-4xl text-[2.3rem] sm:text-6xl lg:text-[5.4rem]">
+            <Kinetic text="Tres habilidades que" />
+            <Kinetic text="cambiarán" delay={0.6} className="serif-accent text-primary" />
             <br />
-            <Kinetic text="la inteligencia emocional te da" delay={0.9} />
-            <Kinetic text="dirección," delay={1.4} className="serif-accent text-primary" />
+            <Kinetic text="tu forma de" delay={1.1} />
+            <Kinetic text="pensar," delay={1.5} className="serif-accent text-primary" />
+            <Kinetic text="vender" delay={1.8} className="serif-accent text-primary" />
             <br />
-            <Kinetic text="y las neuroventas te ayudan a conectar con tus" delay={1.8} />
-            <Kinetic text="clientes." delay={2.4} className="serif-accent text-primary" />
+            <Kinetic text="y hacer" delay={2.2} />
+            <Kinetic text="negocios." delay={2.5} className="serif-accent text-primary" />
           </h1>
           <div className="mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <p className="kinetic-word max-w-md text-base text-muted-foreground md:text-lg" style={{ animationDelay: "3s" }}>
