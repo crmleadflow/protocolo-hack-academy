@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Orbitron", "sans-serif"],
-        body: ["Space Grotesk", "sans-serif"],
+        heading: ["Space Grotesk", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        serif: ["Instrument Serif", "serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -68,6 +69,8 @@ export default {
         cyber: "hsl(var(--cyber-cyan))",
         "deep-space": "hsl(var(--deep-space))",
         "dark-void": "hsl(var(--dark-void))",
+        salmon: "hsl(var(--salmon))",
+        ink: "hsl(var(--ink))",
       },
       borderRadius: {
         lg: "var(--radius)",
