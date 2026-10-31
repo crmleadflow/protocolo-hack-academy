@@ -170,7 +170,7 @@ export const ComunidadPublicPage = () => {
       <section className="mx-auto max-w-7xl px-5">
         <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
           <div className="flex items-center gap-4"><MessagesSquare className="h-8 w-8 text-primary" /><p className="font-heading text-xl font-bold uppercase tracking-tight">Conversaciones por programa, con el Mentor IA respondiendo.</p></div>
-          <Button asChild className="rounded-full"><Link to={user ? "/community" : "/login"}>{user ? "Entrar a la comunidad" : "Entrar con mi correo"}</Link></Button>
+          <Button asChild className="rounded-full"><Link to={user ? "/community" : "/login"}>{user ? "Entrar a la comunidad" : "Entrar con Google"}</Link></Button>
         </Box>
       </section>
     </PublicLayout>
