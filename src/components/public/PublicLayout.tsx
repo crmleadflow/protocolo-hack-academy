@@ -1,8 +1,8 @@
 import heroBw from "@/assets/home-hero-bw.jpg";
 import editorialBw from "@/assets/editorial-bw-2.jpg";
-import { useState, ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { useState, useEffect, ReactNode } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,9 +26,10 @@ export const MARKETPLACE_SUB: { to?: string; label: string }[] = [
   { to: "/bootcamp", label: "Bootcamp" },
 ];
 
-// Herramientas dentro de Recursos → Herramientas.
+// Lo que hay debajo de Herramientas.
 export const TOOLS_SUB = [
   { to: "/neuro-scanner", label: "Neuro Analyzer Pro" },
+  { to: "/mentor", label: "Mi Mentor IA" },
 ];
 
 export const PublicLayout = ({ children }: { children: ReactNode }) => {
