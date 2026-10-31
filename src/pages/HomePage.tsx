@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ECOSYSTEM, TOOLS, MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, FAQS } from "@/components/public/content";
-import heroImg from "@/assets/home-hero.jpg";
+import heroImg from "@/assets/home-hero-bw.jpg";
+import editorialImg from "@/assets/editorial-bw-2.jpg";
 import imgAcademia from "@/assets/card-academia.jpg";
 import imgMarket from "@/assets/card-marketplace.jpg";
 import imgComunidad from "@/assets/card-comunidad.jpg";
@@ -49,36 +50,40 @@ const HomePage = () => {
 
   return (
     <PublicLayout>
-      {/* 1. Hero cinematográfico */}
-      <section className="px-3 pt-3 md:px-5">
-        <div className="showcase grain group min-h-[88vh]">
-          <img src={heroImg} alt="Emprendedor iluminado en estudio oscuro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover object-[70%_center] opacity-90" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
-          <div className="relative z-10 flex min-h-[88vh] flex-col justify-end p-6 md:p-14">
-            <span className="pill kinetic-word w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Protocolo Hack · Héctor Galensky</span>
-            <h1 className="display mt-6 max-w-6xl text-[2.15rem] sm:text-5xl lg:text-[4.9rem]">
-              <Kinetic text="La tecnología te da" />
-              <Kinetic text="velocidad," delay={0.5} className="serif-accent text-primary" />
-              <br />
-              <Kinetic text="la inteligencia emocional te da" delay={0.9} />
-              <Kinetic text="dirección," delay={1.4} className="serif-accent text-primary" />
-              <br />
-              <Kinetic text="y las neuroventas te ayudan a conectar con tus" delay={1.8} />
-              <Kinetic text="clientes." delay={2.4} className="serif-accent text-primary" />
-            </h1>
-            <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-              <p className="kinetic-word max-w-xl text-base text-foreground/70 md:text-lg" style={{ animationDelay: "3s" }}>
-                Aprende inteligencia artificial, neuroventas y estrategias digitales. Descubre herramientas, mentorías y soluciones para llevar tu negocio al siguiente nivel.
-              </p>
-              <div className="kinetic-word flex flex-wrap gap-3" style={{ animationDelay: "3.2s" }}>
-                <Link to="/academia" className="pill-solid">Explorar academia <ArrowRight className="h-4 w-4" /></Link>
-                <Link to="/marketplace" className="pill px-5 py-2.5 text-sm hover:bg-foreground/10">Descubrir herramientas</Link>
-              </div>
+      {/* 1. Hero editorial (NeoVision): blanco, foto B/N de cuerpo entero, titular gigante */}
+      <section className="relative overflow-hidden bg-background">
+        <img src={heroImg} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover object-[78%_center] grayscale" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent md:via-background/30" />
+        <div className="relative z-10 mx-auto flex min-h-[92vh] max-h-[1100px] max-w-7xl flex-col justify-end px-5 pb-14 pt-24">
+          <span className="pill kinetic-word w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Protocolo Hack · Héctor Galensky</span>
+          <h1 className="display mt-6 max-w-5xl text-[2.3rem] sm:text-6xl lg:text-[5.4rem]">
+            <Kinetic text="La tecnología te da" />
+            <Kinetic text="velocidad," delay={0.5} className="serif-accent text-primary" />
+            <br />
+            <Kinetic text="la inteligencia emocional te da" delay={0.9} />
+            <Kinetic text="dirección," delay={1.4} className="serif-accent text-primary" />
+            <br />
+            <Kinetic text="y las neuroventas te ayudan a conectar con tus" delay={1.8} />
+            <Kinetic text="clientes." delay={2.4} className="serif-accent text-primary" />
+          </h1>
+          <div className="mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+            <p className="kinetic-word max-w-md text-base text-muted-foreground md:text-lg" style={{ animationDelay: "3s" }}>
+              Aprende inteligencia artificial, neuroventas y estrategias digitales. Descubre herramientas, mentorías y soluciones para llevar tu negocio al siguiente nivel.
+            </p>
+            <div className="kinetic-word flex flex-wrap gap-3" style={{ animationDelay: "3.2s" }}>
+              <Link to="/academia" className="pill-solid">Explorar academia <ArrowRight className="h-4 w-4" /></Link>
+              <Link to="/marketplace" className="pill px-5 py-2.5 text-sm hover:bg-foreground/5">Descubrir herramientas</Link>
             </div>
-            <div className="mt-10 hidden flex-wrap gap-2 md:flex">
-              {["Inteligencia artificial", "Neuroventas", "Automatización", "Mentorías 1:1"].map((t) => <span key={t} className="pill">{t}</span>)}
-            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Bloque negro editorial intercalado */}
+      <section className="dark-island">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 md:grid-cols-2 md:py-28">
+          <h2 className="display text-5xl md:text-7xl">Conocimiento <br />que se <span className="serif-accent text-primary">implementa.</span></h2>
+          <div className="flex flex-wrap gap-2">
+            {["Inteligencia artificial", "Neuroventas", "Automatización", "Mentorías 1:1"].map((t) => <span key={t} className="pill">{t}</span>)}
           </div>
         </div>
       </section>
@@ -146,6 +151,17 @@ const HomePage = () => {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Editorial split: foto B/N + titular */}
+      <section className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 md:grid-cols-2">
+        <img src={editorialImg} alt="Emprendedora en blanco y negro" loading="lazy" width={1088} height={1440} className="aspect-[3/4] w-full object-cover grayscale" />
+        <div>
+          <span className="pill">Mentorías</span>
+          <h2 className="display mt-6 text-5xl md:text-7xl">Ejecuta con <span className="serif-accent text-primary">claridad.</span></h2>
+          <p className="mt-5 max-w-md text-muted-foreground">Trabaja directo con Héctor Galensky para destrabar tu negocio.</p>
+          <Link to="/mentorias" className="pill-solid mt-8">Ver mentorías <ArrowRight className="h-4 w-4" /></Link>
         </div>
       </section>
 

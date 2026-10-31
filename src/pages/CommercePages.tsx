@@ -77,12 +77,12 @@ export const CartPage = () => {
           <aside className="h-fit space-y-4 rounded-3xl bg-card p-6">
             <div className="flex justify-between text-sm text-muted-foreground"><span>Total estimado</span><span>{money(estimate, lines[0].currency)}</span></div>
             <Button className="w-full rounded-full" size="lg" onClick={pay} disabled={paying}>
-              {paying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Pagar con tarjeta (Stripe)
+              {paying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Pagar con Whop
             </Button>
             <Button className="w-full rounded-full" size="lg" variant="outline" disabled>
               <Lock className="mr-2 h-4 w-4" /> Wompi Colombia — pendiente
             </Button>
-            <p className="text-xs text-muted-foreground">El pago con tarjeta y Wompi todavía no están activados. No se realizará ningún cobro.</p>
+            <p className="text-xs text-muted-foreground">Whop y Wompi todavía no están activados. No se realizará ningún cobro.</p>
           </aside>
         )}
       </section>
