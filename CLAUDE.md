@@ -67,23 +67,27 @@ reales sin que Hector lo pida explícitamente.
   Hector lo autorice (dispara WhatsApp automático del lado del CRM).
 
 ## Pendientes (lo que falta para pasar de MVP a completo)
-1. **Variables reales**: `MONGODB_URI` (Atlas, base propia — ✅ ya cargada),
-   `AUTH_SECRET` (✅), `AUTH_RESEND_KEY` + `EMAIL_FROM` (✅),
-   `SUPER_ADMIN_EMAILS` (✅ el correo de Hector). Faltan:
-   `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` (Hector decidió activar
-   Stripe real más adelante, dejarlo pausado por ahora), `WOMPI_PUBLIC_KEY` +
-   `WOMPI_PRIVATE_KEY` + `WOMPI_INTEGRITY_SECRET` + `WOMPI_EVENTS_SECRET`,
-   `WHOP_API_KEY` + `WHOP_COMPANY_ID` + `WHOP_WEBHOOK_SECRET`.
+1. **Variables reales**: `MONGODB_URI` (✅), `AUTH_SECRET` (✅),
+   `AUTH_RESEND_KEY` + `EMAIL_FROM` (✅), `SUPER_ADMIN_EMAILS` (✅),
+   `WHOP_API_KEY` (✅, probada con un pago de prueba real — ver abajo).
+   Pausados a propósito, decisión de Hector (30/10/2026): `STRIPE_SECRET_KEY`
+   + `STRIPE_WEBHOOK_SECRET` (activar Stripe real más adelante) y
+   `WOMPI_PUBLIC_KEY` + `WOMPI_PRIVATE_KEY` + `WOMPI_INTEGRITY_SECRET` +
+   `WOMPI_EVENTS_SECRET` — la cuenta de Wompi que ya tiene es la misma del
+   CRM, con un solo aviso de pagos (webhook) para toda la cuenta: usarla acá
+   también apagaría el aviso que recibe el CRM. Hasta que haya una cuenta de
+   Wompi separada para Protocolo Hack, Whop es la única forma de pago
+   funcionando de verdad.
 2. **Token del puente al CRM**: Hector tiene que loguearse en su tenant del
    CRM y crear una integración "landing externa" llamada "Protocolo Hack" para
    generar `LEADFLOW_CRM_WEBHOOK_TOKEN`. Hasta entonces, toda intención de
    compra queda pendiente en `crm_outbox` (no se pierde, se reintenta desde
    `/admin/crm`).
-3. **Wompi y Whop**: checkout y webhook de las dos ya están armados, mismo
-   patrón que Stripe. Falta probarlos con llaves reales (no existen
-   todavía). Para Whop: al crear la llave en su dashboard hay que marcar el
-   permiso `member:email:read` — sin eso el webhook no sabe a quién
-   inscribir (ver el aviso en `lib/payments/whop.ts`).
+3. **Whop**: probado con un pago de prueba real (`POST
+   /checkout_configurations` devolvió 200 con una URL de pago válida).
+   Falta todavía un pago de PUNTA A PUNTA (pagar de verdad y ver que el
+   webhook inscriba al comprador) para confirmar que el correo del
+   comprador llega bien en `payment.succeeded`.
 4. **Mentorías**: se venden por el marketplace (Stripe), pero coordinar el
    horario con el mentor es manual (sin calendario propio todavía —
    `mentorship_programs/slots/bookings` del modelo sugerido no se llegaron a
