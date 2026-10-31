@@ -57,12 +57,15 @@ const HomePage = () => {
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
           <div className="relative z-10 flex min-h-[88vh] flex-col justify-end p-6 md:p-14">
             <span className="pill kinetic-word w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Protocolo Hack · Héctor Galensky</span>
-            <h1 className="display mt-6 max-w-5xl text-[2.7rem] sm:text-6xl lg:text-[6.5rem]">
-              <Kinetic text="El conocimiento cambia tu" />
-              <Kinetic text="mente." delay={0.5} className="serif-accent text-primary" />
+            <h1 className="display mt-6 max-w-6xl text-[2.15rem] sm:text-5xl lg:text-[4.9rem]">
+              <Kinetic text="La tecnología te da" />
+              <Kinetic text="velocidad," delay={0.5} className="serif-accent text-primary" />
               <br />
-              <Kinetic text="La implementación cambia tu" delay={0.8} />
-              <Kinetic text="negocio." delay={1.3} className="serif-accent text-primary" />
+              <Kinetic text="la inteligencia emocional te da" delay={0.9} />
+              <Kinetic text="dirección," delay={1.4} className="serif-accent text-primary" />
+              <br />
+              <Kinetic text="y las neuroventas te ayudan a conectar con tus" delay={1.8} />
+              <Kinetic text="clientes." delay={2.4} className="serif-accent text-primary" />
             </h1>
             <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
               <p className="kinetic-word max-w-xl text-base text-foreground/70 md:text-lg" style={{ animationDelay: "1.6s" }}>
