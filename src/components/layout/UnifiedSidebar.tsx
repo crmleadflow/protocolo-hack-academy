@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Home, BookOpen, Trophy, Settings, LogOut, User,
   Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain, PanelLeft,
-  LayoutDashboard, Users, BarChart3, DollarSign, Plus, FileVideo, Mail
+  LayoutDashboard, Users, BarChart3, DollarSign, Plus, FileVideo, Mail,
+  Gift, Wrench, ChevronDown
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -25,8 +26,24 @@ import { useDirectMessages } from "@/hooks/useDirectMessages";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
-// Student menu items
-const studentSections = [
+type NavEntry = {
+  title: string;
+  url?: string;
+  icon: React.ElementType;
+  hasBadge?: boolean;
+  strong?: boolean;
+  children?: NavEntry[];
+};
+
+type NavSection = {
+  label: string;
+  url?: string;
+  icon?: React.ElementType;
+  items: NavEntry[];
+};
+
+// Student menu items. Secciones con `url` se muestran como desplegables.
+const studentSections: NavSection[] = [
   {
     label: "Menú Principal",
     items: [
@@ -40,8 +57,9 @@ const studentSections = [
   },
   {
     label: "Marketplace",
+    url: "/marketplace",
+    icon: DollarSign,
     items: [
-      { title: "Marketplace", url: "/marketplace", icon: DollarSign },
       { title: "Mentorías", url: "/mentorias", icon: Users },
       { title: "Conferencias", url: "/conferencias", icon: Users },
       { title: "Seminarios", url: "/seminarios", icon: Users },
@@ -51,10 +69,19 @@ const studentSections = [
     ],
   },
   {
-    label: "Recursos · Herramientas",
+    label: "Recursos",
+    url: "/recursos",
+    icon: Gift,
     items: [
-      { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
-      { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
+      {
+        title: "Herramientas",
+        url: "/herramientas",
+        icon: Wrench,
+        children: [
+          { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
+          { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
+        ],
+      },
     ],
   },
 ];
