@@ -18,7 +18,7 @@ const HolographicCard = React.forwardRef<HTMLDivElement, HolographicCardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-xl p-6",
+          "rounded-3xl p-6 transition-shadow",
           variants[variant],
           hover && "hover-lift cursor-pointer",
           className

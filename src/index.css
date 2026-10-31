@@ -21,24 +21,24 @@
     --deep-space: 0 0% 3%;
     --dark-void: 0 0% 8%;
 
-    --background: 0 0% 3%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 6 93% 71%;
-    --primary-foreground: 0 0% 3%;
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 64%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 240 5% 96%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 6 78% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 93%;
+    --secondary-foreground: 0 0% 4%;
+    --muted: 240 5% 94%;
+    --muted-foreground: 240 3% 40%;
     --accent: 6 93% 71%;
     --accent-foreground: 0 0% 3%;
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
+    --border: 240 5% 88%;
+    --input: 240 5% 88%;
     --ring: 6 93% 71%;
     --radius: 1rem;
 
@@ -66,9 +66,9 @@
 }
 
 @layer components {
-  .glass { @apply border border-border bg-card; }
+  .glass { @apply border border-transparent bg-card; }
   .glass-strong { @apply border border-border bg-card; }
-  .neon-glow { box-shadow: var(--shadow-neon); }
+  .neon-glow { box-shadow: 0 20px 40px -24px hsl(0 0% 0% / 0.25); }
   .neon-glow-purple { box-shadow: var(--shadow-card); }
   .neon-text, .neon-text-purple { text-shadow: none; }
   .holographic-border { position: relative; }
@@ -160,3 +160,15 @@
 
 @keyframes kinetic-in { to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .kinetic-word { animation: none; opacity: 1; transform: none; } }
+
+/* Apple-style: dark islands keep the black palette for their children */
+.showcase, .dark-island {
+  --background: 0 0% 3%; --foreground: 0 0% 100%;
+  --card: 0 0% 8%; --card-foreground: 0 0% 100%;
+  --muted: 0 0% 14%; --muted-foreground: 0 0% 68%;
+  --secondary: 0 0% 14%; --secondary-foreground: 0 0% 100%;
+  --border: 0 0% 18%; --primary: 6 93% 71%; --primary-foreground: 0 0% 3%;
+  color: hsl(var(--foreground));
+}
+.dark-island { background: hsl(var(--background)); }
+body { letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }

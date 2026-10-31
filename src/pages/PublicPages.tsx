@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Check, ArrowRight, Download, CalendarDays, MessagesSquare, Loader2 } from "lucide-react";
+import { ShoppingBag, Check, ArrowRight, Download, CalendarDays, MessagesSquare, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { PublicLayout, PageHero } from "@/components/public/PublicLayout";
 import { RequestForm } from "@/components/public/RequestForm";
 import { Button } from "@/components/ui/button";
-import { TOOLS, MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS } from "@/components/public/content";
+import { useCatalog } from "@/pages/CommercePages";
+import { cart, useCart } from "@/lib/cart";
+import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS } from "@/components/public/content";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -58,24 +60,39 @@ export const AcademiaPage = () => {
   );
 };
 
-export const MarketplacePage = () => (
-  <PublicLayout>
-    <PageHero kicker="Marketplace" title="Herramientas para" accent="vender más." text="Plugins, herramientas de IA, cursos y paquetes digitales del ecosistema Protocolo Hack." />
-    <Grid>
-      {TOOLS.map((t) => (
-        <Box key={t.name} className="flex flex-col">
-          <span className="w-fit rounded-full bg-secondary px-3 py-1 text-xs text-primary">{t.tag}</span>
-          <p className="mt-6 font-heading text-xl font-semibold">{t.name}</p>
-          <p className="mt-1 flex-1 text-sm text-muted-foreground">{t.text}</p>
-          <div className="mt-6 flex items-center justify-between">
-            <p className="font-heading text-lg font-semibold">{t.price}</p>
-            <Button asChild size="sm" className="rounded-full"><Link to="/catalog">Obtener</Link></Button>
-          </div>
-        </Box>
-      ))}
-    </Grid>
-  </PublicLayout>
-);
+export const MarketplacePage = () => {
+  const { data = [], isLoading } = useCatalog();
+  const items = useCart();
+  return (
+    <PublicLayout>
+      <PageHero kicker="Marketplace" title="Herramientas para" accent="vender más." text="Cursos y herramientas del ecosistema Protocolo Hack." />
+      <div className="mx-auto mb-6 flex max-w-7xl justify-end px-5">
+        <Button asChild variant="outline" className="rounded-full"><Link to="/carrito"><ShoppingBag className="mr-2 h-4 w-4" />Carrito ({items.length})</Link></Button>
+      </div>
+      {isLoading ? <Loader2 className="mx-auto animate-spin" /> : (
+        <Grid>
+          {data.map((t) => {
+            const inCart = items.some((i) => i.type === t.type && i.id === t.id);
+            return (
+              <Box key={t.type + t.id} className="flex flex-col">
+                {t.image && <img src={t.image} alt={t.title} className="mb-5 aspect-video w-full rounded-2xl object-cover" />}
+                <span className="w-fit rounded-full bg-secondary px-3 py-1 text-xs">{t.type === "program" ? "Curso" : "Herramienta"}</span>
+                <p className="mt-4 font-heading text-xl font-semibold">{t.title}</p>
+                <p className="mt-1 line-clamp-3 flex-1 text-sm text-muted-foreground">{t.description}</p>
+                <div className="mt-6 flex items-center justify-between">
+                  <p className="font-heading text-lg font-semibold">{t.price > 0 ? `USD ${t.price}` : "Incluida"}</p>
+                  <Button size="sm" className="rounded-full" variant={inCart ? "outline" : "default"} disabled={inCart || t.price <= 0} onClick={() => cart.add({ type: t.type, id: t.id })}>
+                    {inCart ? "En el carrito" : t.price > 0 ? "Agregar" : "Con tu programa"}
+                  </Button>
+                </div>
+              </Box>
+            );
+          })}
+        </Grid>
+      )}
+    </PublicLayout>
+  );
+};
 
 export const MentoriasPage = () => (
   <PublicLayout>

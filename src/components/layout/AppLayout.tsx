@@ -34,17 +34,15 @@ export function AppLayout({
         <main className="flex-1 overflow-auto flex flex-col">
           {showHeader && (title || headerContent) && (
             <header className={cn(
-              "sticky top-0 z-40 border-b border-border/50",
-              isProducerSection ? "glass" : "glass-strong"
+              "sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl"
             )}>
-              <div className="flex items-center justify-between px-4 md:px-6 py-4">
+              <div className="flex items-center justify-between px-4 md:px-8 py-5 md:py-7">
                 <div className="flex items-center gap-4">
                   <SidebarTrigger className="md:hidden" />
                   {title && (
                     <div>
                       <h1 className={cn(
-                        "text-xl md:text-2xl font-heading font-bold",
-                        isProducerSection ? "text-gradient" : ""
+                        "text-2xl md:text-4xl font-heading font-bold tracking-tight"
                       )}>
                         {title}
                       </h1>

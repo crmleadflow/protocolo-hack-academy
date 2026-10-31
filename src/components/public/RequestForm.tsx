@@ -38,15 +38,20 @@ export const RequestForm = ({ type, title, cta = "Enviar solicitud", showCompany
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("commercial_requests").insert({
-      request_type: type,
-      name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone || null,
-      company: parsed.data.company || null,
-      message: [context, parsed.data.message].filter(Boolean).join(" — ") || null,
-      source_page: window.location.pathname,
-      user_id: user?.id ?? null,
+    const sp = new URLSearchParams(window.location.search);
+    const utm: Record<string, string> = {};
+    ["utm_source", "utm_medium", "utm_campaign", "utm_content"].forEach((k) => { const v = sp.get(k); if (v) utm[k] = v; });
+    const { error } = await supabase.functions.invoke("submit-request", {
+      body: {
+        request_type: type,
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone || null,
+        company: parsed.data.company || null,
+        message: [context, parsed.data.message].filter(Boolean).join(" — ") || null,
+        page_url: window.location.href.split("#")[0],
+        utm,
+      },
     });
     setLoading(false);
     if (error) {
@@ -64,7 +69,7 @@ export const RequestForm = ({ type, title, cta = "Enviar solicitud", showCompany
           <Check />
         </div>
         <p className="mt-4 font-heading text-xl font-semibold">Solicitud enviada</p>
-        <p className="mt-1 text-sm text-muted-foreground">Nuestro equipo te escribirá en menos de 48 horas.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Guardamos tu solicitud. Nuestro equipo la revisará.</p>
       </div>
     );
 
