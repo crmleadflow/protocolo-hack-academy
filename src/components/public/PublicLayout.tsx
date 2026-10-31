@@ -126,38 +126,35 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
                 ))}
               </div>
               <div className="md:col-span-2">
-                <NavLink to="/marketplace" onClick={close}
-                  className={({ isActive }) => cn(item, "font-heading font-bold uppercase tracking-wide", isActive && "bg-secondary")}>
-                  Marketplace
-                </NavLink>
-                <div className="grid grid-cols-2 gap-1 pl-2 border-l-2 border-primary ml-4">
-                  {MARKETPLACE_SUB.map((s) =>
-                    s.to ? (
-                      <Link key={s.label} to={s.to} onClick={close} className={item}>{s.label}</Link>
-                    ) : (
-                      <span key={s.label} className={cn(item, "text-muted-foreground cursor-default hover:bg-transparent")}>
-                        {s.label} <span className="text-xs">· próximamente</span>
-                      </span>
-                    )
-                  )}
-                </div>
+                {groupHead("marketplace", "/marketplace", "Marketplace")}
+                {openGroups["marketplace"] && (
+                  <div className="grid grid-cols-2 gap-1 pl-2 border-l-2 border-primary ml-4">
+                    {MARKETPLACE_SUB.map((s) =>
+                      s.to ? (
+                        <Link key={s.label} to={s.to} onClick={close} className={item}>{s.label}</Link>
+                      ) : (
+                        <span key={s.label} className={cn(item, "text-muted-foreground cursor-default hover:bg-transparent")}>
+                          {s.label} <span className="text-xs">· próximamente</span>
+                        </span>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
               <div className="md:col-span-2">
-                <NavLink to="/recursos" onClick={close}
-                  className={({ isActive }) => cn(item, "font-heading font-bold uppercase tracking-wide", isActive && "bg-secondary")}>
-                  Recursos
-                </NavLink>
-                <div className="pl-2 border-l-2 border-primary ml-4">
-                  <NavLink to="/herramientas" onClick={close}
-                    className={({ isActive }) => cn(item, "font-medium", isActive && "bg-secondary")}>
-                    Herramientas
-                  </NavLink>
-                  <div className="grid gap-1 pl-2 border-l-2 border-border ml-4">
-                    {TOOLS_SUB.map((t) => (
-                      <Link key={t.to} to={t.to} onClick={close} className={item}>{t.label}</Link>
-                    ))}
+                {groupHead("recursos", "/recursos", "Recursos")}
+                {openGroups["recursos"] && (
+                  <div className="pl-2 border-l-2 border-primary ml-4">
+                    {groupHead("herramientas", "/herramientas", "Herramientas")}
+                    {openGroups["herramientas"] && (
+                      <div className="grid gap-1 pl-2 border-l-2 border-border ml-4">
+                        {TOOLS_SUB.map((t) => (
+                          <Link key={t.to} to={t.to} onClick={close} className={item}>{t.label}</Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
               </div>
               {user && (
                 <div className="md:col-span-3 border-t border-border pt-2 mt-2 flex flex-wrap gap-1">
