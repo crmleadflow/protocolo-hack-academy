@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import HomePage from "./pages/HomePage";
-import { AcademiaPage, MarketplacePage, MentoriasPage, LeadFlowPage, ConferenciasPage, RecursosPage, EventosPage, ComunidadPublicPage } from "./pages/PublicPages";
+import { AcademiaPage, MarketplacePage, MentoriasPage, LeadFlowPage, ConferenciasPage, RecursosPage, EventosPage, ComunidadPublicPage, HerramientasPage, SeminariosPage, CapacitacionesPage, BootcampPage } from "./pages/PublicPages";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -61,6 +61,10 @@ const App = () => (
             <Route path="/lead-flow" element={<LeadFlowPage />} />
             <Route path="/conferencias" element={<ConferenciasPage />} />
             <Route path="/recursos" element={<RecursosPage />} />
+            <Route path="/herramientas" element={<HerramientasPage />} />
+            <Route path="/seminarios" element={<SeminariosPage />} />
+            <Route path="/capacitaciones" element={<CapacitacionesPage />} />
+            <Route path="/bootcamp" element={<BootcampPage />} />
             <Route path="/eventos" element={<EventosPage />} />
             <Route path="/comunidad" element={<ComunidadPublicPage />} />
             <Route path="/login" element={<LoginPage />} />

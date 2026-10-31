@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Home, BookOpen, Trophy, Settings, LogOut, User,
   Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain, PanelLeft,
-  LayoutDashboard, Users, BarChart3, DollarSign, Plus, FileVideo, Mail
+  LayoutDashboard, Users, BarChart3, DollarSign, Plus, FileVideo, Mail,
+  Gift, Wrench, ChevronDown
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -25,34 +26,96 @@ import { useDirectMessages } from "@/hooks/useDirectMessages";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
-// Student menu items
-const studentMenuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Programas", url: "/catalog", icon: BookOpen },
-  { title: "Mi Mentor", url: "/mentor", icon: Sparkles },
-  { title: "Neuro Scanner", url: "/neuro-scanner", icon: Brain },
-  { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
-  { title: "Logros", url: "/achievements", icon: Trophy },
-  { title: "Comunidad", url: "/community", icon: MessageSquare },
+type NavEntry = {
+  title: string;
+  url?: string;
+  icon: React.ElementType;
+  hasBadge?: boolean;
+  strong?: boolean;
+  children?: NavEntry[];
+};
+
+type NavSection = {
+  label: string;
+  url?: string;
+  icon?: React.ElementType;
+  items: NavEntry[];
+};
+
+// Menú del alumno: 3 bloques claros. Entradas con `children` son desplegables.
+const studentSections: NavSection[] = [
+  {
+    label: "Mi espacio",
+    items: [
+      { title: "Inicio", url: "/", icon: Home },
+      { title: "Métricas", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Academia", url: "/catalog", icon: BookOpen },
+      { title: "Comunidad", url: "/community", icon: MessageSquare },
+      { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },
+      { title: "Logros", url: "/achievements", icon: Trophy },
+    ],
+  },
+  {
+    label: "Explorar",
+    items: [
+      {
+        title: "Marketplace",
+        url: "/marketplace",
+        icon: DollarSign,
+        children: [
+          { title: "Mentorías", url: "/mentorias", icon: Users },
+          { title: "Conferencias", url: "/conferencias", icon: Users },
+          { title: "Seminarios", url: "/seminarios", icon: Users },
+          { title: "Capacitaciones", url: "/capacitaciones", icon: Users },
+          { title: "Eventos", url: "/eventos", icon: Users },
+          { title: "Bootcamp", url: "/bootcamp", icon: Users },
+        ],
+      },
+      {
+        title: "Herramientas",
+        url: "/herramientas",
+        icon: Wrench,
+        children: [
+          { title: "Neuro Analyzer Pro", url: "/neuro-scanner", icon: Brain },
+          { title: "Mi Mentor IA", url: "/mentor", icon: Sparkles },
+        ],
+      },
+      { title: "Recursos", url: "/recursos", icon: Gift },
+    ],
+  },
 ];
 
-// Admin/Producer menu items
-const adminMenuItems = [
-  { title: "Dashboard", url: "/producer", icon: LayoutDashboard },
-  { title: "Mis Programas", url: "/producer/courses", icon: BookOpen },
-  { title: "Alumnos", url: "/producer/students", icon: Users },
-  { title: "Miembros", url: "/producer/members", icon: Users },
-  { title: "Oportunidades", url: "/producer/leads", icon: BarChart3 },
-  { title: "Analytics", url: "/producer/analytics", icon: BarChart3 },
-  { title: "Ingresos", url: "/producer/revenue", icon: DollarSign },
-];
-
-// Admin secondary items
-const adminSecondaryItems = [
-  { title: "Crear Programa", url: "/producer/new-course", icon: Plus },
-  { title: "Mi Mentor IA", url: "/producer/mentor", icon: Sparkles },
-  { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
-  { title: "Configuración", url: "/producer/settings", icon: Settings },
+// Menú de administración agrupado por tarea
+const adminSections: { label: string; items: NavEntry[] }[] = [
+  {
+    label: "Resumen",
+    items: [
+      { title: "Dashboard", url: "/producer", icon: LayoutDashboard },
+      { title: "Analytics", url: "/producer/analytics", icon: BarChart3 },
+      { title: "Ingresos", url: "/producer/revenue", icon: DollarSign },
+    ],
+  },
+  {
+    label: "Contenido",
+    items: [
+      { title: "Mis Programas", url: "/producer/courses", icon: BookOpen },
+      { title: "Crear Programa", url: "/producer/new-course", icon: Plus },
+      { title: "Mi Mentor IA", url: "/producer/mentor", icon: Sparkles },
+    ],
+  },
+  {
+    label: "Personas",
+    items: [
+      { title: "Miembros", url: "/producer/members", icon: Users },
+      { title: "Alumnos", url: "/producer/students", icon: Users },
+      { title: "Oportunidades", url: "/producer/leads", icon: BarChart3 },
+      { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
+    ],
+  },
+  {
+    label: "Sistema",
+    items: [{ title: "Configuración", url: "/producer/settings", icon: Settings }],
+  },
 ];
 
 // Account items (shared)
@@ -79,6 +142,7 @@ export function UnifiedSidebar() {
   const isActive = (path: string) => {
     if (path === "/producer" && location.pathname === "/producer") return true;
     if (path === "/dashboard" && location.pathname === "/dashboard") return true;
+    if (path === "/") return location.pathname === "/";
     if (path !== "/producer" && path !== "/dashboard") {
       return location.pathname.startsWith(path);
     }
@@ -104,6 +168,114 @@ export function UnifiedSidebar() {
     } else {
       navigate("/producer");
     }
+  };
+
+  // Grupos desplegables: clave = título del grupo
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const toggleGroup = (key: string) =>
+    setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  // Al cambiar de pantalla, abre los grupos que contienen la ruta activa
+  useEffect(() => {
+    const toOpen: string[] = [];
+    studentSections.forEach((section) => {
+      if (section.url && isActive(section.url)) toOpen.push(section.label);
+      section.items.forEach((item) => {
+        if (item.url && isActive(item.url)) toOpen.push(section.label);
+        item.children?.forEach((child) => {
+          if (child.url && isActive(child.url)) toOpen.push(section.label, item.title);
+        });
+      });
+    });
+    if (toOpen.length) {
+      setOpenGroups((prev) => {
+        const next = { ...prev };
+        toOpen.forEach((key) => {
+          next[key] = true;
+        });
+        return next;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  const renderEntry = (entry: NavEntry, depth: number): React.ReactNode => {
+    const Icon = entry.icon;
+    const kids = entry.children ?? [];
+    const isOpen = !!openGroups[entry.title];
+    const active = entry.url ? isActive(entry.url) : false;
+    const rowCls = cn(
+      "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
+      entry.strong && "font-heading font-semibold uppercase tracking-wide",
+      active ? "bg-foreground text-background font-medium" : "hover:bg-secondary"
+    );
+
+    if (kids.length === 0) {
+      return (
+        <SidebarMenuItem key={entry.title}>
+          <SidebarMenuButton asChild>
+            <NavLink
+              to={entry.url ?? "/"}
+              onClick={handleLinkClick}
+              className={cn(rowCls, depth > 0 && "ml-4")}
+            >
+              <Icon className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && <span>{entry.title}</span>}
+              {entry.hasBadge && unreadCount > 0 && (
+                <span
+                  className={cn(
+                    "absolute flex items-center justify-center bg-destructive text-destructive-foreground text-xs font-bold rounded-full",
+                    collapsed
+                      ? "top-0 right-0 w-4 h-4 text-[10px]"
+                      : "ml-auto w-5 h-5"
+                  )}
+                >
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </NavLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      );
+    }
+
+    return (
+      <React.Fragment key={entry.title}>
+        <SidebarMenuItem>
+          <div className={cn("flex items-center gap-1", depth > 0 && "ml-4")}>
+            <div className="min-w-0 flex-1">
+              <SidebarMenuButton asChild>
+                <NavLink
+                  to={entry.url ?? "/"}
+                  onClick={handleLinkClick}
+                  className={rowCls}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  {!collapsed && <span>{entry.title}</span>}
+                </NavLink>
+              </SidebarMenuButton>
+            </div>
+            {!collapsed && (
+              <button
+                type="button"
+                onClick={() => toggleGroup(entry.title)}
+                aria-expanded={isOpen}
+                aria-label={`${isOpen ? "Ocultar" : "Mostrar"} ${entry.title}`}
+                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 transition-transform duration-200",
+                    isOpen && "rotate-180"
+                  )}
+                />
+              </button>
+            )}
+          </div>
+        </SidebarMenuItem>
+        {(isOpen || collapsed) && kids.map((kid) => renderEntry(kid, depth + 1))}
+      </React.Fragment>
+    );
   };
 
   return (
@@ -174,101 +346,36 @@ export function UnifiedSidebar() {
 
       <SidebarContent className="px-2">
         {isProducerSection ? (
-          // Admin/Producer Navigation
           <>
-            <SidebarGroup>
-              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Gestión</SidebarGroupLabel>}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {adminMenuItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink 
-                          to={item.url} 
-                          onClick={handleLinkClick}
-                          className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
-                            isActive(item.url) 
-                              ? "bg-secondary/20 text-secondary neon-glow-purple" 
-                              : "hover:bg-white/5"
-                          )}
-                        >
-                          <item.icon className="w-5 h-5 flex-shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            <SidebarGroup className="mt-4">
-              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Acciones</SidebarGroupLabel>}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {adminSecondaryItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink 
-                          to={item.url} 
-                          onClick={handleLinkClick}
-                          className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
-                            isActive(item.url) 
-                              ? "bg-secondary/20 text-secondary" 
-                              : "hover:bg-white/5"
-                          )}
-                        >
-                          <item.icon className="w-5 h-5 flex-shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            {adminSections.map((section) => (
+              <SidebarGroup key={section.label}>
+                {!collapsed && (
+                  <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                    {section.label}
+                  </SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  <SidebarMenu>{section.items.map((item) => renderEntry(item, 0))}</SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            ))}
           </>
         ) : (
-          // Student Navigation
           <>
-            <SidebarGroup>
-              {!collapsed && <SidebarGroupLabel className="text-muted-foreground">Menú Principal</SidebarGroupLabel>}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {studentMenuItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <NavLink 
-                          to={item.url} 
-                          onClick={handleLinkClick}
-                          className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all relative",
-                            isActive(item.url) 
-                              ? "bg-primary/20 text-primary neon-glow" 
-                              : "hover:bg-white/5"
-                          )}
-                        >
-                          <item.icon className="w-5 h-5 flex-shrink-0" />
-                          {!collapsed && <span>{item.title}</span>}
-                          {item.hasBadge && unreadCount > 0 && (
-                            <span className={cn(
-                              "absolute flex items-center justify-center bg-destructive text-destructive-foreground text-xs font-bold rounded-full",
-                              collapsed 
-                                ? "top-0 right-0 w-4 h-4 text-[10px]" 
-                                : "ml-auto w-5 h-5"
-                            )}>
-                              {unreadCount > 9 ? "9+" : unreadCount}
-                            </span>
-                          )}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            {studentSections.map((section) => (
+              <SidebarGroup key={section.label}>
+                {!collapsed && (
+                  <SidebarGroupLabel className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                    {section.label}
+                  </SidebarGroupLabel>
+                )}
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {section.items.map((item) => renderEntry(item, 0))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            ))}
 
             {/* Account Menu */}
             <SidebarGroup className="mt-auto">

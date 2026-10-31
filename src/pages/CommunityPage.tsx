@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MessageSquare, HelpCircle, MessagesSquare, Plus,
-  BookOpen, Users, TrendingUp, Sparkles
+  BookOpen, Users, TrendingUp, Sparkles,
+  Target, Crown, CalendarDays, Briefcase
 } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -17,6 +18,12 @@ import { CommunityChat } from "@/components/community/CommunityChat";
 import { CreatePostDialog } from "@/components/community/CreatePostDialog";
 import { PostDetailDialog } from "@/components/community/PostDetailDialog";
 import { QuickPostInput } from "@/components/community/QuickPostInput";
+import { ChallengesSection } from "@/components/community/ChallengesSection";
+import { LeaderboardSection } from "@/components/community/LeaderboardSection";
+import { EventsSection } from "@/components/community/EventsSection";
+import { OpportunitiesSection } from "@/components/community/OpportunitiesSection";
+import { MembersSection } from "@/components/community/MembersSection";
+import { useMembers } from "@/hooks/useCommunityModules";
 import { useCommunityPosts, CommunityPost, ContentType } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
@@ -25,11 +32,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type TabType = "discussions" | "questions" | "chat";
+type TabType =
+  | "discussions"
+  | "questions"
+  | "chat"
+  | "retos"
+  | "ranking"
+  | "miembros"
+  | "eventos"
+  | "oportunidades";
+
+const TAB_CLS =
+  "gap-2 h-10 px-4 rounded-full uppercase tracking-wide text-xs font-semibold data-[state=active]:bg-foreground data-[state=active]:text-background whitespace-nowrap";
 
 const CommunityPage: React.FC = () => {
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isStaff, user } = useAuth();
   const { programs: allPrograms, isLoading: programsLoading } = useStudentPrograms();
   const { enrollments } = useEnrollment();
   
@@ -52,6 +70,15 @@ const CommunityPage: React.FC = () => {
 
   const { posts, isLoading: postsLoading, createPost, toggleLike, refetch } = useCommunityPosts(
     selectedProgramId || null
+  );
+
+  const membersData = useMembers(selectedProgramId || null);
+  const nameFor = React.useCallback(
+    (id: string) =>
+      id === user?.id
+        ? "Tú"
+        : membersData.members.find((m) => m.user_id === id)?.full_name || "Miembro",
+    [membersData.members, user?.id]
   );
 
   // Set initial program when loaded
@@ -125,27 +152,28 @@ const CommunityPage: React.FC = () => {
           <FloatingSidebarTrigger />
 
           {/* Header */}
-          <div className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-            <div className="container mx-auto px-4 py-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h1 className="font-heading text-2xl md:text-3xl font-bold">
-                    Comunidad
-                  </h1>
-                  <p className="text-muted-foreground">
-                    Conecta con otros estudiantes y comparte conocimiento
-                  </p>
-                </div>
-              </div>
+          <section className="container mx-auto px-4 pt-10 md:pt-16">
+            <p className="pill mb-6 inline-flex">Protocolo Hack</p>
+            <h1 className="display text-5xl md:text-8xl leading-[0.9]">
+              Hack <span className="serif-accent text-primary normal-case">community</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+              Aprende, ejecuta y colabora con otros miembros de tu programa.
+            </p>
+          </section>
 
+          <div className="container mx-auto px-4 mt-10">
+            <div className="dark-island rounded-[2rem] p-6 md:p-10">
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                <div><p className="display text-3xl md:text-5xl">{posts.filter(p=>p.content_type!=="question").length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Discusiones</p></div>
+                <div><p className="display text-3xl md:text-5xl">{posts.filter(p=>p.content_type==="question").length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Preguntas</p></div>
+                <div><p className="display text-3xl md:text-5xl text-primary">{posts.filter(p=>p.is_resolved).length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Resueltas</p></div>
+              </div>
               {/* Program Selector */}
               {programsLoading ? (
                 <Skeleton className="h-10 w-64" />
               ) : programs.length === 0 ? (
-                <div className="glass-card p-6 rounded-xl text-center">
+                <div className="rounded-[2rem] bg-secondary p-6 text-center">
                   <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <h3 className="font-heading font-semibold mb-2">
                     No tienes programas activos
@@ -158,12 +186,12 @@ const CommunityPage: React.FC = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <Select
                     value={selectedProgramId}
                     onValueChange={setSelectedProgramId}
                   >
-                    <SelectTrigger className="w-64 bg-background/50">
+                    <SelectTrigger className="w-full sm:w-80 rounded-full bg-background text-foreground">
                       <SelectValue placeholder="Selecciona un programa" />
                     </SelectTrigger>
                     <SelectContent>
@@ -176,7 +204,7 @@ const CommunityPage: React.FC = () => {
                   </Select>
 
                   {selectedProgram && (
-                    <Badge variant="outline" className="text-primary">
+                    <Badge variant="outline" className="rounded-full border-primary text-primary">
                       <TrendingUp className="w-3 h-3 mr-1" />
                       {posts.length} publicaciones
                     </Badge>
@@ -192,25 +220,47 @@ const CommunityPage: React.FC = () => {
               <Tabs
                 value={activeTab}
                 onValueChange={(v) => setActiveTab(v as TabType)}
-                className="space-y-6"
+                className="space-y-6 py-4"
               >
                 <div className="flex items-center justify-between flex-wrap gap-3">
-                  <TabsList className="glass h-12">
-                    <TabsTrigger value="discussions" className="gap-2 h-10 px-4">
-                      <MessageSquare className="w-4 h-4" />
-                      <span className="hidden sm:inline">Discusiones</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="questions" className="gap-2 h-10 px-4">
-                      <HelpCircle className="w-4 h-4" />
-                      <span className="hidden sm:inline">Preguntas</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="chat" className="gap-2 h-10 px-4">
-                      <MessagesSquare className="w-4 h-4" />
-                      <span className="hidden sm:inline">Chat</span>
-                    </TabsTrigger>
-                  </TabsList>
+                  <div className="overflow-x-auto">
+                    <TabsList className="h-12 rounded-full bg-secondary p-1 flex-nowrap">
+                      <TabsTrigger value="discussions" className={TAB_CLS}>
+                        <MessageSquare className="w-4 h-4" />
+                        <span className="hidden sm:inline">Discusiones</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="questions" className={TAB_CLS}>
+                        <HelpCircle className="w-4 h-4" />
+                        <span className="hidden sm:inline">Preguntas</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="chat" className={TAB_CLS}>
+                        <MessagesSquare className="w-4 h-4" />
+                        <span className="hidden sm:inline">Chat</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="retos" className={TAB_CLS}>
+                        <Target className="w-4 h-4" />
+                        <span className="hidden sm:inline">Retos</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="ranking" className={TAB_CLS}>
+                        <Crown className="w-4 h-4" />
+                        <span className="hidden sm:inline">Ranking</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="miembros" className={TAB_CLS}>
+                        <Users className="w-4 h-4" />
+                        <span className="hidden sm:inline">Miembros</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="eventos" className={TAB_CLS}>
+                        <CalendarDays className="w-4 h-4" />
+                        <span className="hidden sm:inline">Eventos</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="oportunidades" className={TAB_CLS}>
+                        <Briefcase className="w-4 h-4" />
+                        <span className="hidden sm:inline">Oportunidades</span>
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
 
-                  {activeTab !== "chat" && (
+                  {(activeTab === "discussions" || activeTab === "questions") && (
                     <Button
                       onClick={() => setCreateDialogOpen(true)}
                       variant="outline"
@@ -234,7 +284,7 @@ const CommunityPage: React.FC = () => {
                   {postsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <div key={i} className="glass-card p-4 rounded-xl">
+                        <div key={i} className="rounded-[2rem] bg-secondary p-4">
                           <div className="flex gap-3">
                             <Skeleton className="w-10 h-10 rounded-full" />
                             <div className="flex-1 space-y-2">
@@ -247,7 +297,7 @@ const CommunityPage: React.FC = () => {
                       ))}
                     </div>
                   ) : filteredPosts.length === 0 ? (
-                    <div className="glass-card p-8 rounded-xl text-center">
+                    <div className="rounded-[2rem] bg-secondary p-8 text-center">
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                         <MessageSquare className="w-8 h-8 text-primary" />
                       </div>
@@ -286,7 +336,7 @@ const CommunityPage: React.FC = () => {
                   {postsLoading ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <div key={i} className="glass-card p-4 rounded-xl">
+                        <div key={i} className="rounded-[2rem] bg-secondary p-4">
                           <div className="flex gap-3">
                             <Skeleton className="w-10 h-10 rounded-full" />
                             <div className="flex-1 space-y-2">
@@ -299,7 +349,7 @@ const CommunityPage: React.FC = () => {
                       ))}
                     </div>
                   ) : filteredPosts.length === 0 ? (
-                    <div className="glass-card p-8 rounded-xl text-center">
+                    <div className="rounded-[2rem] bg-secondary p-8 text-center">
                       <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
                         <HelpCircle className="w-8 h-8 text-secondary" />
                       </div>
@@ -334,6 +384,52 @@ const CommunityPage: React.FC = () => {
                       programTitle={selectedProgram.title}
                     />
                   )}
+                </TabsContent>
+
+                {/* Retos Tab */}
+                <TabsContent value="retos">
+                  <ChallengesSection
+                    programId={selectedProgramId}
+                    isStaff={isStaff}
+                    userId={user?.id}
+                    nameFor={nameFor}
+                  />
+                </TabsContent>
+
+                {/* Ranking Tab */}
+                <TabsContent value="ranking">
+                  <LeaderboardSection programId={selectedProgramId} userId={user?.id} />
+                </TabsContent>
+
+                {/* Miembros Tab */}
+                <TabsContent value="miembros">
+                  <MembersSection
+                    members={membersData.members}
+                    incoming={membersData.incoming}
+                    loading={membersData.loading}
+                    userId={user?.id}
+                    connect={membersData.connect}
+                    respond={membersData.respond}
+                    nameFor={nameFor}
+                  />
+                </TabsContent>
+
+                {/* Eventos Tab */}
+                <TabsContent value="eventos">
+                  <EventsSection
+                    programId={selectedProgramId}
+                    isStaff={isStaff}
+                    userId={user?.id}
+                  />
+                </TabsContent>
+
+                {/* Oportunidades Tab */}
+                <TabsContent value="oportunidades">
+                  <OpportunitiesSection
+                    programId={selectedProgramId}
+                    isStaff={isStaff}
+                    userId={user?.id}
+                  />
                 </TabsContent>
               </Tabs>
             </div>

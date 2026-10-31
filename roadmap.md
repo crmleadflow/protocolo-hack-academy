@@ -11,3 +11,10 @@
 - [x] 6) Estilo Apple en toda la plataforma: blanco y negro, tipografía grande, espacios limpios
 - [~] 7) Estilo editorial NeoVision (portada lista; páginas internas pendientes): fotos grandes B/N de cuerpo entero, titulares enormes, bloques negros intercalados, salmón único acento
 - [~] 8) Whop en lugar de Stripe (código listo; faltan clave API, ID de empresa y secreto del webhook)
+- [x] 9) HACK COMMUNITY 2.0: retos, ranking, miembros/networking, eventos y oportunidades dentro de Comunidad (mismo estilo editorial). Probado de punta a punta.
+- [ ] 10) Membresías y experiencias exclusivas: pendiente hasta tener pasarela activa (Whop/Wompi)
+- [ ] 11) Conectar GitHub (lo hace el usuario desde Settings → Git) para que Claude Code vea los cambios
+- [x] 12) Menú Recursos → Herramientas → Neuro Analyzer Pro (página /herramientas con las herramientas reales de la base de datos)
+- [x] 13) Páginas propias de Seminarios, Capacitaciones y Bootcamp (/seminarios, /capacitaciones, /bootcamp) con formulario de solicitud funcionando; ya no salen "próximamente"
+- [x] 14) Menú desplegable: Marketplace y Herramientas desplegables en el nivel principal; Recursos queda como opción suelta sin submenú
+- [x] 15) "Mi panel" renombrado a "Métricas" (menú lateral interno y menú de la portada)

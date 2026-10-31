@@ -17,7 +17,7 @@ const schema = z.object({
 });
 
 type Props = {
-  type: "conferencia" | "mentoria" | "leadflow" | "recurso" | "evento" | "contacto";
+  type: "conferencia" | "mentoria" | "leadflow" | "recurso" | "evento" | "contacto" | "seminario" | "capacitacion" | "bootcamp";
   title: string;
   cta?: string;
   showCompany?: boolean;

@@ -1,4 +1,4 @@
-import { GraduationCap, Puzzle, Users, Workflow, Mic, Gift, MessagesSquare, CalendarDays } from "lucide-react";
+import { GraduationCap, Puzzle, Users, Workflow, Mic, Gift, MessagesSquare, CalendarDays, Wrench } from "lucide-react";
 
 export const ECOSYSTEM = [
   { to: "/academia", icon: GraduationCap, title: "Academia", text: "Cursos de IA, neuroventas y estrategia digital." },
@@ -6,7 +6,8 @@ export const ECOSYSTEM = [
   { to: "/mentorias", icon: Users, title: "Mentorías", text: "Sesiones individuales y grupales." },
   { to: "/lead-flow", icon: Workflow, title: "Lead Flow", text: "El CRM para captar y cerrar más ventas." },
   { to: "/conferencias", icon: Mic, title: "Conferencias", text: "Formación para equipos y empresas." },
-  { to: "/recursos", icon: Gift, title: "Recursos gratis", text: "Guías, plantillas y clases sin costo." },
+  { to: "/recursos", icon: Gift, title: "Recursos", text: "Guías, plantillas y clases sin costo." },
+  { to: "/herramientas", icon: Wrench, title: "Herramientas", text: "Neuro Analyzer Pro y Mi Mentor IA." },
   { to: "/comunidad", icon: MessagesSquare, title: "Comunidad", text: "Conversa con otros emprendedores." },
   { to: "/eventos", icon: CalendarDays, title: "Eventos", text: "Webinars y clases en vivo." },
 ];
@@ -54,4 +55,23 @@ export const FAQS = [
   { q: "¿Cómo accedo a mis cursos?", a: "Entra con tu correo y verás todos tus cursos y compras en Mi cuenta." },
   { q: "¿Puedo contratar una conferencia para mi empresa?", a: "Sí. Completa el formulario en Conferencias y te enviamos una propuesta." },
   { q: "¿Qué métodos de pago aceptan?", a: "Pagos internacionales con tarjeta y criptomonedas. Pronto pagos locales en Colombia." },
+];
+
+export const SEMINARS = [
+  { name: "Neuroventas: el lenguaje del cliente", text: "Qué pasa en la mente del cliente antes de comprar y cómo hablarle para que decida.", mode: "Sesión en vivo · online" },
+  { name: "IA aplicada a las ventas", text: "Qué tareas de tu proceso comercial puedes automatizar desde hoy, con ejemplos reales.", mode: "Sesión en vivo · online" },
+  { name: "Automatiza tu operación", text: "Delega el trabajo repetitivo a la inteligencia artificial y recupera tiempo para vender.", mode: "Sesión en vivo · online" },
+];
+
+export const CAPACITATIONS = [
+  { name: "Equipo comercial", format: "A medida · presencial u online", text: "Neuroventas y uso práctico de la IA en el día a día de tu fuerza de ventas." },
+  { name: "Líderes y gerencia", format: "Jornada intensiva", text: "Priorizar, decidir y delegar con apoyo de inteligencia artificial." },
+  { name: "Estándar de conversación", format: "4 sesiones", text: "Guiones y criterios comunes para que todo el equipo venda con el mismo nivel." },
+];
+
+export const BOOTCAMP_WEEKS = [
+  { week: "Semana 1", name: "Diagnóstico", text: "Medimos dónde está tu negocio hoy y definimos una meta concreta de ventas." },
+  { week: "Semana 2", name: "Comunicación que cierra", text: "Guiones y gatillos mentales: cómo hablar al cerebro emocional del cliente." },
+  { week: "Semana 3", name: "Operación con IA", text: "Automatizas las tareas repetitivas y delegas el trabajo operativo en inteligencia artificial." },
+  { week: "Semana 4", name: "Ejecución y resultados", text: "Montas tu embudo con acompañamiento y revisamos los primeros números." },
 ];
