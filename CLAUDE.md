@@ -88,10 +88,11 @@ reales sin que Hector lo pida explícitamente.
    Falta todavía un pago de PUNTA A PUNTA (pagar de verdad y ver que el
    webhook inscriba al comprador) para confirmar que el correo del
    comprador llega bien en `payment.succeeded`.
-4. **Mentorías**: se venden por el marketplace (Stripe), pero coordinar el
-   horario con el mentor es manual (sin calendario propio todavía —
-   `mentorship_programs/slots/bookings` del modelo sugerido no se llegaron a
-   construir en esta primera etapa).
+4. **Mentorías**: ✅ ya tiene calendario propio (`/admin/mentorias` para
+   cargar horarios, `/mentorias` para reservarlos). La compra (marketplace)
+   y la reserva del horario son dos pasos separados — no se exige haber
+   comprado para reservar, a propósito, para no sobre-diseñar esta primera
+   etapa.
 5. **Planes de Lead Flow CRM y plugins**: se muestran en el marketplace como
    catálogo, pero no hay checkout — el botón manda la intención al CRM para
    que Hector cierre la venta a mano (no hay alta automática de cuenta en el
