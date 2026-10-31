@@ -12,7 +12,7 @@ export const NAV = [
   { to: "/academia", label: "Academia" },
   { to: "/marketplace", label: "Marketplace" },
   { to: "/lead-flow", label: "Lead Flow" },
-  { to: "/recursos", label: "Recursos gratis" },
+  { to: "/recursos", label: "Recursos" },
   { to: "/comunidad", label: "Comunidad" },
 ];
 
@@ -20,10 +20,15 @@ export const NAV = [
 export const MARKETPLACE_SUB: { to?: string; label: string }[] = [
   { to: "/mentorias", label: "Mentorías" },
   { to: "/conferencias", label: "Conferencias" },
-  { label: "Seminarios" },
-  { label: "Capacitaciones" },
+  { to: "/seminarios", label: "Seminarios" },
+  { to: "/capacitaciones", label: "Capacitaciones" },
   { to: "/eventos", label: "Eventos" },
-  { label: "Bootcamp" },
+  { to: "/bootcamp", label: "Bootcamp" },
+];
+
+// Herramientas dentro de Recursos → Herramientas.
+export const TOOLS_SUB = [
+  { to: "/neuro-scanner", label: "Neuro Analyzer Pro" },
 ];
 
 export const PublicLayout = ({ children }: { children: ReactNode }) => {
