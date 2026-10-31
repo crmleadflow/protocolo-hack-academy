@@ -8,6 +8,7 @@ const adminLinks = [
   { href: "/admin/cursos", label: "Cursos" },
   { href: "/admin/recursos", label: "Recursos" },
   { href: "/admin/eventos", label: "Eventos" },
+  { href: "/admin/mentorias", label: "Mentorías" },
   { href: "/admin/ofertas", label: "Ofertas" },
   { href: "/admin/crm", label: "Puente CRM" },
 ];
