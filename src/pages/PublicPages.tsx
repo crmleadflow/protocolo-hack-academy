@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ShoppingBag, Check, ArrowRight, Download, CalendarDays, MessagesSquare, Loader2 } from "lucide-react";
+import { ShoppingBag, Check, ArrowRight, Download, CalendarDays, MessagesSquare, Loader2, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { PublicLayout, PageHero } from "@/components/public/PublicLayout";
@@ -8,7 +8,8 @@ import { RequestForm } from "@/components/public/RequestForm";
 import { Button } from "@/components/ui/button";
 import { useCatalog } from "@/pages/CommercePages";
 import { cart, useCart } from "@/lib/cart";
-import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS } from "@/components/public/content";
+import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, SEMINARS, CAPACITATIONS, BOOTCAMP_WEEKS } from "@/components/public/content";
+import { NEURO_SCANNER_TOOL_ID, MENTOR_IA_TOOL_ID } from "@/hooks/useBonusAccess";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -140,12 +141,105 @@ export const ConferenciasPage = () => (
 
 export const RecursosPage = () => (
   <PublicLayout>
-    <PageHero kicker="Recursos gratis" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te enviamos el recurso." />
+    <PageHero kicker="Recursos" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te enviamos el recurso." />
     <TwoCol
       left={<div className="grid gap-3 sm:grid-cols-2">{RESOURCES.map((r) => (
         <Box key={r.name}><Download className="h-5 w-5 text-primary" /><p className="mt-4 font-heading font-semibold">{r.name}</p><p className="text-xs text-muted-foreground">{r.type}</p></Box>
       ))}</div>}
       right={<RequestForm type="recurso" title="Recibe los recursos gratis" cta="Enviármelos" />}
+    />
+    <section className="mx-auto max-w-7xl px-5">
+      <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
+        <div className="flex items-center gap-4">
+          <Wrench className="h-8 w-8 text-primary" />
+          <div>
+            <p className="font-heading text-xl font-bold uppercase tracking-tight">Herramientas</p>
+            <p className="mt-1 text-sm text-muted-foreground">Neuro Analyzer Pro y Mi Mentor IA, disponibles dentro de tu cuenta.</p>
+          </div>
+        </div>
+        <Button asChild className="rounded-full"><Link to="/herramientas">Ver herramientas <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+      </Box>
+    </section>
+  </PublicLayout>
+);
+
+const TOOL_LINKS: Record<string, { to: string; name: string }> = {
+  [NEURO_SCANNER_TOOL_ID]: { to: "/neuro-scanner", name: "Neuro Analyzer Pro" },
+  [MENTOR_IA_TOOL_ID]: { to: "/mentor", name: "Mi Mentor IA" },
+};
+
+export const HerramientasPage = () => {
+  const { user } = useAuth();
+  const { data = [], isLoading } = useCatalog();
+  const tools = data.filter((t) => t.type === "tool");
+  return (
+    <PublicLayout>
+      <PageHero kicker="Herramientas" title="Tu equipo de" accent="inteligencia artificial." text="Analiza tu forma de vender y consulta a tu mentor cuando lo necesites. Se activan desde tu cuenta." />
+      {isLoading ? (
+        <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" /></div>
+      ) : (
+        <Grid>
+          {tools.map((t) => {
+            const link = TOOL_LINKS[t.id];
+            return (
+              <Box key={t.id} className="flex flex-col">
+                <span className="w-fit rounded-full bg-secondary px-3 py-1 text-xs">Herramienta</span>
+                <p className="mt-4 font-heading text-xl font-bold uppercase tracking-tight">{link?.name ?? t.title}</p>
+                <p className="mt-1 flex-1 text-sm text-muted-foreground">{t.description}</p>
+                <div className="mt-6 flex items-center justify-between gap-3">
+                  <p className="font-heading text-lg font-semibold">{t.price > 0 ? `USD ${t.price}` : "Con tu programa"}</p>
+                  <Button asChild size="sm" className="rounded-full">
+                    <Link to={user && link ? link.to : "/login"}>{user ? "Abrir" : "Entrar con Google"} <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                  </Button>
+                </div>
+              </Box>
+            );
+          })}
+          {!tools.length && <p className="text-muted-foreground">Pronto publicaremos nuevas herramientas.</p>}
+        </Grid>
+      )}
+    </PublicLayout>
+  );
+};
+
+export const SeminariosPage = () => (
+  <PublicLayout>
+    <PageHero kicker="Seminarios" title="Un tema, una sesión," accent="cero relleno." text="Sesiones intensas en vivo: entiendes el concepto y sales con acciones concretas para tu negocio." />
+    <TwoCol
+      left={<div className="grid gap-4">{SEMINARS.map((s) => (
+        <Box key={s.name}><p className="text-xs text-primary">{s.mode}</p><p className="mt-2 font-heading text-xl font-bold uppercase tracking-tight">{s.name}</p><p className="mt-1 text-sm text-muted-foreground">{s.text}</p></Box>
+      ))}</div>}
+      right={<RequestForm type="seminario" title="Reserva tu cupo" cta="Quiero mi cupo" />}
+    />
+  </PublicLayout>
+);
+
+export const CapacitacionesPage = () => (
+  <PublicLayout>
+    <PageHero kicker="Capacitaciones" title="Tu equipo," accent="al mismo nivel." text="Programas a medida para empresas: mismo estándar de conversación, mismas herramientas, mismos criterios." />
+    <TwoCol
+      left={<div className="grid gap-4">{CAPACITATIONS.map((c) => (
+        <Box key={c.name}><p className="text-xs text-primary">{c.format}</p><p className="mt-2 font-heading text-xl font-bold uppercase tracking-tight">{c.name}</p><p className="mt-1 text-sm text-muted-foreground">{c.text}</p></Box>
+      ))}</div>}
+      right={<RequestForm type="capacitacion" title="Cuéntanos qué necesita tu equipo" showCompany cta="Solicitar propuesta" />}
+    />
+  </PublicLayout>
+);
+
+export const BootcampPage = () => (
+  <PublicLayout>
+    <PageHero kicker="Bootcamp" title="Cuatro semanas," accent="implementando." text="Un recorrido intensivo y guiado: de la idea al primer resultado, con acompañamiento cada semana." />
+    <TwoCol
+      left={<div className="grid gap-3">{BOOTCAMP_WEEKS.map((w) => (
+        <Box key={w.week} className="flex items-start gap-4">
+          <span className="pill shrink-0">{w.week}</span>
+          <div className="flex-1">
+            <p className="font-heading text-lg font-bold uppercase tracking-tight">{w.name}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{w.text}</p>
+          </div>
+        </Box>
+      ))}</div>}
+      right={<RequestForm type="bootcamp" title="Reserva tu cupo en el próximo bootcamp" cta="Quiero mi cupo" />}
     />
   </PublicLayout>
 );
