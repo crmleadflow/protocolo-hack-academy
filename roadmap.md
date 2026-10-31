@@ -14,3 +14,5 @@
 - [x] 9) HACK COMMUNITY 2.0: retos, ranking, miembros/networking, eventos y oportunidades dentro de Comunidad (mismo estilo editorial). Probado de punta a punta.
 - [ ] 10) Membresías y experiencias exclusivas: pendiente hasta tener pasarela activa (Whop/Wompi)
 - [ ] 11) Conectar GitHub (lo hace el usuario desde Settings → Git) para que Claude Code vea los cambios
+- [ ] 12) Menú Recursos → Herramientas → Neuro Analyzer Pro
+- [ ] 13) Páginas propias de Seminarios, Capacitaciones y Bootcamp (ya no "próximamente")
