@@ -44,20 +44,24 @@ export default async function MarketplacePage() {
                   </CardHeader>
                   <CardContent className="flex flex-col gap-3">
                     <p className="font-semibold">{formatPrice(offer)}</p>
-                    {section.checkout && offer.currency === "COP" ? (
-                      <form action="/api/checkout/wompi" method="POST">
-                        <input type="hidden" name="offerId" value={String(offer._id)} />
-                        <Button type="submit" className="w-full">
-                          Pagar con Wompi
-                        </Button>
-                      </form>
-                    ) : section.checkout ? (
-                      <form action="/api/checkout/stripe" method="POST">
-                        <input type="hidden" name="offerId" value={String(offer._id)} />
-                        <Button type="submit" className="w-full">
-                          Comprar
-                        </Button>
-                      </form>
+                    {section.checkout ? (
+                      <div className="flex flex-col gap-2">
+                        <form
+                          action={offer.currency === "COP" ? "/api/checkout/wompi" : "/api/checkout/stripe"}
+                          method="POST"
+                        >
+                          <input type="hidden" name="offerId" value={String(offer._id)} />
+                          <Button type="submit" className="w-full">
+                            {offer.currency === "COP" ? "Pagar con Wompi" : "Comprar"}
+                          </Button>
+                        </form>
+                        <form action="/api/checkout/whop" method="POST">
+                          <input type="hidden" name="offerId" value={String(offer._id)} />
+                          <Button type="submit" variant="outline" className="w-full">
+                            Pagar con Whop
+                          </Button>
+                        </form>
+                      </div>
                     ) : (
                       <form action={requestOfferInfo} className="flex flex-col gap-2">
                         <input type="hidden" name="offerId" value={String(offer._id)} />

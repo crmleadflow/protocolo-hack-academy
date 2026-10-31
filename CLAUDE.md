@@ -13,8 +13,10 @@ marketplace. Las intenciones de compra se mandan como leads al CRM
 - MongoDB Atlas, driver nativo (sin Mongoose). Base propia, nunca la del CRM.
 - Auth.js (NextAuth v5) con magic link por Resend, sesiones en base de datos
   (cookie httpOnly, sin localStorage).
-- Stripe (internacional) + Wompi (Colombia, en COP) para pagos. Cada oferta
-  elige su pasarela por su `currency` (USD → Stripe, COP → Wompi).
+- Stripe (internacional) + Wompi (Colombia, en COP) + Whop (checkout
+  hospedado, alternativa) para pagos. Cada oferta muestra Stripe o Wompi
+  según su `currency` (USD → Stripe, COP → Wompi), y Whop siempre como
+  segunda opción.
 - Deploy pensado para Render (como el CRM), dominio temporal de Render por
   ahora.
 
@@ -33,7 +35,7 @@ marketplace. Las intenciones de compra se mandan como leads al CRM
   CRM. A propósito NUNCA manda `phone` (ver comentario en el archivo: ese
   endpoint dispara WhatsApp automático via Sophia, y eso está apagado hasta
   que Hector lo pida).
-- `lib/payments/stripe.ts` / `lib/payments/wompi.ts` — pasarelas.
+- `lib/payments/stripe.ts` / `lib/payments/wompi.ts` / `lib/payments/whop.ts` — pasarelas.
 - `auth.ts` — configuración de Auth.js. El primer login de un correo nuevo
   crea el `member` activo de una (sin cola de aprobación). `SUPER_ADMIN_EMAILS`
   decide quién entra como admin desde el primer login.
@@ -70,15 +72,18 @@ reales sin que Hector lo pida explícitamente.
    `SUPER_ADMIN_EMAILS` (✅ el correo de Hector). Faltan:
    `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` (Hector decidió activar
    Stripe real más adelante, dejarlo pausado por ahora), `WOMPI_PUBLIC_KEY` +
-   `WOMPI_PRIVATE_KEY` + `WOMPI_INTEGRITY_SECRET` + `WOMPI_EVENTS_SECRET`.
+   `WOMPI_PRIVATE_KEY` + `WOMPI_INTEGRITY_SECRET` + `WOMPI_EVENTS_SECRET`,
+   `WHOP_API_KEY` + `WHOP_COMPANY_ID` + `WHOP_WEBHOOK_SECRET`.
 2. **Token del puente al CRM**: Hector tiene que loguearse en su tenant del
    CRM y crear una integración "landing externa" llamada "Protocolo Hack" para
    generar `LEADFLOW_CRM_WEBHOOK_TOKEN`. Hasta entonces, toda intención de
    compra queda pendiente en `crm_outbox` (no se pierde, se reintenta desde
    `/admin/crm`).
-3. **Wompi**: checkout (`/api/checkout/wompi`) y webhook
-   (`/api/webhooks/wompi`) ya están armados, mismo patrón que Stripe. Falta
-   probarlo con llaves reales de Wompi (no existen todavía).
+3. **Wompi y Whop**: checkout y webhook de las dos ya están armados, mismo
+   patrón que Stripe. Falta probarlos con llaves reales (no existen
+   todavía). Para Whop: al crear la llave en su dashboard hay que marcar el
+   permiso `member:email:read` — sin eso el webhook no sabe a quién
+   inscribir (ver el aviso en `lib/payments/whop.ts`).
 4. **Mentorías**: se venden por el marketplace (Stripe), pero coordinar el
    horario con el mentor es manual (sin calendario propio todavía —
    `mentorship_programs/slots/bookings` del modelo sugerido no se llegaron a
@@ -94,9 +99,11 @@ reales sin que Hector lo pida explícitamente.
 7. **Deploy en Render**: no se creó el servicio todavía. Falta que Hector lo
    autorice.
 
-## Nota aparte: Whop en el CRM (no en este repo)
+## Nota aparte: Whop también se agregó al CRM
 
-Hector pidió agregar Whop (whop.com) como método de pago, pero DENTRO del
-Payment Hub de `~/lead-flow-crm` (no acá). Eso se hizo en una rama separada
-de ESE repo: `feature/whop-payment-gateway` (ya subida a GitHub, sin PR ni
-merge todavía). No toca nada de Protocolo Hack.
+Además de acá, Whop se agregó por separado al Payment Hub de
+`~/lead-flow-crm`, en una rama de ESE repo (`feature/whop-payment-gateway`,
+ya subida a GitHub, sin PR ni merge todavía). Son dos integraciones de Whop
+independientes — no comparten código ni credenciales — porque Hector decidió
+mantener Protocolo Hack y el CRM con cobros separados (ver conversación del
+30/10/2026: "cuál preferís" → "a", separado).

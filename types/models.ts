@@ -175,7 +175,7 @@ export interface Purchase {
   _id?: ObjectId;
   memberId: ObjectId;
   offerId: ObjectId;
-  provider: "stripe" | "wompi";
+  provider: "stripe" | "wompi" | "whop";
   providerRef: string; // checkout/session id del proveedor
   status: "pending" | "paid" | "failed";
   amountCents: number;
