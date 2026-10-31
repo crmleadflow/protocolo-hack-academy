@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_status: {
+        Row: {
+          reason: string | null
+          status: string
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          reason?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          reason?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       achievements: {
         Row: {
           category: Database["public"]["Enums"]["achievement_category"]
@@ -56,6 +80,33 @@ export type Database = {
           sort_order?: number
           updated_at?: string
           xp_reward?: number
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id?: string | null
         }
         Relationships: []
       }
@@ -326,6 +377,50 @@ export type Database = {
           },
         ]
       }
+      crm_outbox: {
+        Row: {
+          attempts: number
+          created_at: string
+          destination: string
+          id: string
+          intent_event_id: string | null
+          last_error: string | null
+          payload: Json
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          destination?: string
+          id?: string
+          intent_event_id?: string | null
+          last_error?: string | null
+          payload: Json
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          destination?: string
+          id?: string
+          intent_event_id?: string | null
+          last_error?: string | null
+          payload?: Json
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_outbox_intent_event_id_fkey"
+            columns: ["intent_event_id"]
+            isOneToOne: false
+            referencedRelation: "intent_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       direct_messages: {
         Row: {
           content: string
@@ -415,6 +510,74 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      entitlements: {
+        Row: {
+          granted_at: string
+          id: string
+          order_id: string | null
+          product_id: string
+          product_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          id?: string
+          order_id?: string | null
+          product_id: string
+          product_type: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          id?: string
+          order_id?: string | null
+          product_id?: string
+          product_type?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entitlements_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intent_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          page_url: string | null
+          request_id: string | null
+          user_id: string | null
+          utm: Json
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          page_url?: string | null
+          request_id?: string | null
+          user_id?: string | null
+          utm?: Json
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          page_url?: string | null
+          request_id?: string | null
+          user_id?: string | null
+          utm?: Json
+        }
+        Relationships: []
       }
       lesson_comments: {
         Row: {
@@ -909,16 +1072,99 @@ export type Database = {
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string
+          product_type: string
+          quantity: number
+          title: string
+          unit_amount: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id: string
+          product_type: string
+          quantity?: number
+          title: string
+          unit_amount: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string
+          product_type?: string
+          quantity?: number
+          title?: string
+          unit_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          checkout_session_id: string | null
+          created_at: string
+          currency: string
+          id: string
+          paid_at: string | null
+          provider: string
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checkout_session_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          provider?: string
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checkout_session_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          provider?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
           created_at: string
           currency: string
           id: string
+          order_id: string | null
           payment_data: Json | null
           paypal_order_id: string | null
           paypal_payer_id: string | null
-          program_id: string
+          program_id: string | null
+          provider: string
+          provider_reference: string | null
           status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
           user_id: string
@@ -928,10 +1174,13 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          order_id?: string | null
           payment_data?: Json | null
           paypal_order_id?: string | null
           paypal_payer_id?: string | null
-          program_id: string
+          program_id?: string | null
+          provider?: string
+          provider_reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
           user_id: string
@@ -941,15 +1190,25 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          order_id?: string | null
           payment_data?: Json | null
           paypal_order_id?: string | null
           paypal_payer_id?: string | null
-          program_id?: string
+          program_id?: string | null
+          provider?: string
+          provider_reference?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "payments_program_id_fkey"
             columns: ["program_id"]
