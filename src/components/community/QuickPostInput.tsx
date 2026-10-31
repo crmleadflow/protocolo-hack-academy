@@ -66,7 +66,7 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
   return (
     <div
       className={cn(
-        "glass-card rounded-2xl overflow-hidden transition-all duration-300",
+        "rounded-[2rem] bg-secondary overflow-hidden transition-all duration-300",
         isExpanded ? "p-5" : "p-4"
       )}
     >

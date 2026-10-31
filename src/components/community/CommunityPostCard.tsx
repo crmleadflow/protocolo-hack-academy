@@ -52,7 +52,7 @@ export const CommunityPostCard: React.FC<CommunityPostCardProps> = ({
     <div
       onClick={onClick}
       className={cn(
-        "glass-card p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.01] hover:border-primary/30",
+        "rounded-[1.75rem] bg-secondary p-5 md:p-6 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg border border-transparent hover:border-primary/40",
         post.is_pinned && "border-primary/50 bg-primary/5"
       )}
     >

@@ -153,7 +153,7 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-[500px] md:h-[600px] glass-card rounded-2xl p-4">
+      <div className="flex flex-col h-[500px] md:h-[600px] rounded-[2rem] bg-secondary p-4">
         <div className="flex-1 space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex gap-3">
@@ -170,7 +170,7 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-[500px] md:h-[600px] glass-card rounded-2xl overflow-hidden">
+    <div className="flex flex-col h-[500px] md:h-[600px] rounded-[2rem] bg-secondary overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-border/50 bg-background/50">
         <div className="flex items-center gap-3">
