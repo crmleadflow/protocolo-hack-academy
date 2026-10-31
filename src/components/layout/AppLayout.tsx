@@ -42,12 +42,12 @@ export function AppLayout({
                   {title && (
                     <div>
                       <h1 className={cn(
-                        "text-2xl md:text-4xl font-heading font-bold tracking-tight"
+                        "display text-3xl md:text-6xl"
                       )}>
                         {title}
                       </h1>
                       {subtitle && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="mt-2 text-sm md:text-base text-muted-foreground">
                           {subtitle}
                         </p>
                       )}
