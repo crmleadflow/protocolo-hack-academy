@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
+import HomePage from "./pages/HomePage";
+import { AcademiaPage, MarketplacePage, MentoriasPage, LeadFlowPage, ConferenciasPage, RecursosPage, EventosPage, ComunidadPublicPage } from "./pages/PublicPages";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -48,7 +50,16 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/vsl" element={<LandingPage />} />
+            <Route path="/academia" element={<AcademiaPage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/mentorias" element={<MentoriasPage />} />
+            <Route path="/lead-flow" element={<LeadFlowPage />} />
+            <Route path="/conferencias" element={<ConferenciasPage />} />
+            <Route path="/recursos" element={<RecursosPage />} />
+            <Route path="/eventos" element={<EventosPage />} />
+            <Route path="/comunidad" element={<ComunidadPublicPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
