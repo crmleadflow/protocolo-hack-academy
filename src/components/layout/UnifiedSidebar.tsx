@@ -48,7 +48,7 @@ const studentSections: NavSection[] = [
     label: "Menú Principal",
     items: [
       { title: "Inicio", url: "/", icon: Home },
-      { title: "Mi panel", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Métricas", url: "/dashboard", icon: LayoutDashboard },
       { title: "Academia", url: "/catalog", icon: BookOpen },
       { title: "Comunidad", url: "/community", icon: MessageSquare },
       { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },

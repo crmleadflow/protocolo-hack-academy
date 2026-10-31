@@ -149,7 +149,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
               </div>
               {user && (
                 <div className="md:col-span-3 border-t border-border pt-2 mt-2 flex flex-wrap gap-1">
-                  <Link to="/dashboard" onClick={close} className={item}>Mi panel</Link>
+                  <Link to="/dashboard" onClick={close} className={item}>Métricas</Link>
                   {isAdmin && <Link to="/producer" onClick={close} className={cn(item, "text-primary")}>Administración</Link>}
                 </div>
               )}
