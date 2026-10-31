@@ -300,9 +300,11 @@ export type Database = {
           created_by: string | null
           description: string
           ends_at: string | null
+          flyer_url: string
           id: string
           meeting_url: string
           program_id: string | null
+          social_url: string
           starts_at: string
           status: string
           title: string
@@ -313,9 +315,11 @@ export type Database = {
           created_by?: string | null
           description?: string
           ends_at?: string | null
+          flyer_url?: string
           id?: string
           meeting_url?: string
           program_id?: string | null
+          social_url?: string
           starts_at: string
           status?: string
           title: string
@@ -326,9 +330,11 @@ export type Database = {
           created_by?: string | null
           description?: string
           ends_at?: string | null
+          flyer_url?: string
           id?: string
           meeting_url?: string
           program_id?: string | null
+          social_url?: string
           starts_at?: string
           status?: string
           title?: string

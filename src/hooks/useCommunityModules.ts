@@ -33,6 +33,8 @@ export interface CommunityEvent {
   starts_at: string;
   ends_at: string | null;
   meeting_url: string;
+  flyer_url: string;
+  social_url: string;
   status: "scheduled" | "cancelled" | "done";
   created_at: string;
 }
@@ -277,9 +279,13 @@ export function useEvents(programId: string | null, isStaff: boolean) {
       description: string;
       starts_at: string;
       meeting_url: string;
+      flyer_url?: string;
+      social_url?: string;
       global: boolean;
     }) => {
       const { error } = await supabase.from("community_events").insert({
+        flyer_url: input.flyer_url ?? "",
+        social_url: input.social_url ?? "",
         program_id: input.global ? null : programId,
         title: input.title,
         description: input.description,

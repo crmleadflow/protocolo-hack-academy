@@ -8,6 +8,9 @@ import {
   Ban,
   Users,
   MapPin,
+  ImagePlus,
+  Share2,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +25,8 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEvents } from "@/hooks/useCommunityModules";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Props {
   programId: string;
@@ -56,19 +61,49 @@ export const EventsSection: React.FC<Props> = ({ programId, isStaff, userId }) =
     description: "",
     starts_at: "",
     meeting_url: "",
+    social_url: "",
     global: false,
   });
+  const [flyer, setFlyer] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const handleCreate = async () => {
     if (form.title.trim().length < 4 || !form.starts_at) return;
+    const social = form.social_url.trim();
+    if (social && !/^https?:\/\//i.test(social)) {
+      toast.error("El enlace de redes debe empezar por https://");
+      return;
+    }
+    setSaving(true);
+    let flyer_url = "";
+    if (flyer) {
+      if (!flyer.type.startsWith("image/") || flyer.size > 10 * 1024 * 1024) {
+        toast.error("La pieza debe ser una imagen de máximo 10 MB");
+        setSaving(false);
+        return;
+      }
+      const ext = flyer.name.split(".").pop() || "jpg";
+      const path = `${userId}/events/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("community-files").upload(path, flyer, { contentType: flyer.type });
+      if (error) {
+        toast.error("No se pudo subir la pieza: " + error.message);
+        setSaving(false);
+        return;
+      }
+      flyer_url = supabase.storage.from("community-files").getPublicUrl(path).data.publicUrl;
+    }
     await create({
+      flyer_url,
+      social_url: social,
       title: form.title.trim(),
       description: form.description.trim(),
       starts_at: new Date(form.starts_at).toISOString(),
       meeting_url: form.meeting_url.trim(),
       global: form.global,
     });
-    setForm({ title: "", description: "", starts_at: "", meeting_url: "", global: false });
+    setForm({ title: "", description: "", starts_at: "", meeting_url: "", social_url: "", global: false });
+    setFlyer(null);
+    setSaving(false);
     setOpen(false);
   };
 
@@ -121,6 +156,11 @@ export const EventsSection: React.FC<Props> = ({ programId, isStaff, userId }) =
                 const going = userId ? attending(e.id, userId) : false;
                 return (
                   <div key={e.id} className="rounded-[2rem] bg-secondary p-6">
+                    {e.flyer_url && (
+                      <a href={e.flyer_url} target="_blank" rel="noopener noreferrer">
+                        <img src={e.flyer_url} alt={`Pieza gráfica de ${e.title}`} className="w-full max-h-[480px] object-contain rounded-[1.5rem] bg-background mb-5" loading="lazy" />
+                      </a>
+                    )}
                     <div className="flex items-start justify-between gap-4 flex-wrap">
                       <div>
                         <h3 className="font-heading text-lg md:text-xl font-semibold uppercase">
@@ -183,6 +223,11 @@ export const EventsSection: React.FC<Props> = ({ programId, isStaff, userId }) =
                           className="pill inline-flex items-center gap-1.5"
                         >
                           <Video className="w-3.5 h-3.5" /> Enlace de la sala
+                        </a>
+                      )}
+                      {e.social_url && (
+                        <a href={e.social_url} target="_blank" rel="noopener noreferrer" className="pill inline-flex items-center gap-1.5">
+                          <Share2 className="w-3.5 h-3.5" /> Ver publicación
                         </a>
                       )}
                       {isStaff && (
@@ -258,6 +303,26 @@ export const EventsSection: React.FC<Props> = ({ programId, isStaff, userId }) =
                 />
               </div>
             </div>
+            <div>
+              <Label className="text-xs uppercase tracking-widest">Pieza gráfica (flyer, banner, promo)</Label>
+              <label className="mt-1 flex items-center gap-3 rounded-2xl border border-dashed border-border p-4 cursor-pointer hover:bg-secondary">
+                {flyer ? (
+                  <img src={URL.createObjectURL(flyer)} alt="Vista previa" className="h-16 w-16 object-cover rounded-xl" />
+                ) : (
+                  <ImagePlus className="w-6 h-6 text-muted-foreground" />
+                )}
+                <span className="text-sm text-muted-foreground truncate">{flyer ? flyer.name : "Subir imagen (JPG, PNG, WEBP · máx. 10 MB)"}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={(ev) => setFlyer(ev.target.files?.[0] ?? null)} />
+              </label>
+            </div>
+            <div>
+              <Label className="text-xs uppercase tracking-widest">Enlace de publicación en redes</Label>
+              <Input
+                value={form.social_url}
+                onChange={(e) => setForm({ ...form, social_url: e.target.value })}
+                placeholder="https://instagram.com/p/..."
+              />
+            </div>
             <label className="flex items-center gap-2 text-sm">
               <Checkbox
                 checked={form.global}
@@ -267,10 +332,10 @@ export const EventsSection: React.FC<Props> = ({ programId, isStaff, userId }) =
             </label>
             <Button
               className="w-full rounded-full"
-              disabled={form.title.trim().length < 4 || !form.starts_at}
+              disabled={saving || form.title.trim().length < 4 || !form.starts_at}
               onClick={handleCreate}
             >
-              Crear evento
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Crear evento"}
             </Button>
           </div>
         </DialogContent>
