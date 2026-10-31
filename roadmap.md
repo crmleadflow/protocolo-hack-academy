@@ -5,6 +5,7 @@
 - [x] Formularios de solicitudes (conferencias, mentorías, Lead Flow, recursos, eventos)
 - [ ] 1) Panel de miembros: roles super_admin/mentor/member, suspender/activar, audit_log, sin auto-cambio de rol
 - [ ] 2) Rediseño interno de Academia (cursos, módulos, lecciones, inscripción, progreso)
-- [ ] 3) Marketplace: carrito, Stripe Checkout alojado, precio en servidor, orders/order_items/payments/entitlements, pagado solo por webhook
+- [ ] 3) Marketplace: carrito, Stripe Checkout alojado, precio en servidor, orders/order_items/payments/entitlements, pagado solo por webhook (Stripe: activación falló, país no soportado)
 - [ ] 4) Lead Flow CRM: intent_events + crm_outbox, POST /api/webhooks/lead/{token}, NUNCA phone (solo name/email + source/page_url/utm), pendiente sin token
 - [ ] 5) Wompi Colombia desactivado "pendiente" hasta credenciales, sin simular cobros
+- [ ] 6) Estilo Apple en toda la plataforma: blanco y negro, tipografía grande, espacios limpios
