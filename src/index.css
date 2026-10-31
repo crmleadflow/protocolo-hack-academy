@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -11,176 +11,81 @@
 
 @layer base {
   :root {
-    /* Core Holographic Colors (HSL) */
-    --electric-blue: 189 100% 50%;
-    --neon-purple: 276 100% 57%;
-    --cyber-cyan: 176 100% 50%;
-    --deep-space: 230 60% 10%;
-    --dark-void: 230 37% 16%;
-    
-    /* Semantic tokens */
-    --background: 230 60% 10%;
-    --foreground: 210 40% 98%;
+    /* Protocolo Hack — negro #080808, salmón #FA8072, blanco */
+    --salmon: 6 93% 71%;
+    --ink: 0 0% 3%;
+    /* legacy aliases (re-mapped to the new palette) */
+    --electric-blue: 6 93% 71%;
+    --neon-purple: 6 70% 62%;
+    --cyber-cyan: 6 93% 78%;
+    --deep-space: 0 0% 3%;
+    --dark-void: 0 0% 8%;
 
-    --card: 230 37% 16%;
-    --card-foreground: 210 40% 98%;
+    --background: 0 0% 3%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 6 93% 71%;
+    --primary-foreground: 0 0% 3%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 6 93% 71%;
+    --accent-foreground: 0 0% 3%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 6 93% 71%;
+    --radius: 1rem;
 
-    --popover: 230 37% 16%;
-    --popover-foreground: 210 40% 98%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 6 93% 71%;
+    --sidebar-primary-foreground: 0 0% 3%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 6 93% 71%;
 
-    --primary: 189 100% 50%;
-    --primary-foreground: 230 60% 10%;
-
-    --secondary: 276 100% 57%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 230 30% 25%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 176 100% 50%;
-    --accent-foreground: 230 60% 10%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 230 30% 25%;
-    --input: 230 30% 20%;
-    --ring: 189 100% 50%;
-
-    --radius: 0.75rem;
-
-    /* Sidebar */
-    --sidebar-background: 230 50% 8%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 189 100% 50%;
-    --sidebar-primary-foreground: 230 60% 10%;
-    --sidebar-accent: 230 37% 16%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 230 30% 20%;
-    --sidebar-ring: 189 100% 50%;
-
-    /* Gradients */
-    --gradient-holographic: linear-gradient(135deg, hsl(189 100% 50%), hsl(276 100% 57%), hsl(176 100% 50%));
-    --gradient-glow: linear-gradient(180deg, hsl(189 100% 50% / 0.2), transparent);
-    --gradient-card: linear-gradient(135deg, hsl(230 37% 16% / 0.8), hsl(230 50% 12% / 0.9));
-    
-    /* Shadows */
-    --shadow-neon: 0 0 20px hsl(189 100% 50% / 0.4), 0 0 40px hsl(189 100% 50% / 0.2);
-    --shadow-purple: 0 0 20px hsl(276 100% 57% / 0.4), 0 0 40px hsl(276 100% 57% / 0.2);
-    --shadow-card: 0 8px 32px hsl(230 60% 5% / 0.5);
+    --gradient-holographic: linear-gradient(135deg, hsl(6 93% 71%), hsl(6 93% 80%));
+    --gradient-glow: linear-gradient(180deg, hsl(6 93% 71% / 0.08), transparent);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 8%), hsl(0 0% 6%));
+    --shadow-neon: 0 10px 30px -12px hsl(6 93% 71% / 0.35);
+    --shadow-purple: 0 10px 30px -12px hsl(0 0% 0% / 0.6);
+    --shadow-card: 0 8px 24px -12px hsl(0 0% 0% / 0.6);
   }
 
-  /* Force dark mode always */
-  html {
-    color-scheme: dark;
-  }
-
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground font-body antialiased;
-    background: linear-gradient(180deg, hsl(var(--deep-space)), hsl(230 60% 6%));
-    min-height: 100vh;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
-  }
+  html { color-scheme: dark; scroll-behavior: smooth; }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground font-body antialiased; min-height: 100vh; }
+  h1, h2, h3, h4, h5, h6 { @apply font-heading tracking-tight; }
 }
 
 @layer components {
-  /* Glassmorphism effect */
-  .glass {
-    @apply backdrop-blur-xl border border-white/10;
-    background: linear-gradient(135deg, hsl(var(--card) / 0.6), hsl(var(--card) / 0.3));
-  }
+  .glass { @apply border border-border bg-card; }
+  .glass-strong { @apply border border-border bg-card; }
+  .neon-glow { box-shadow: var(--shadow-neon); }
+  .neon-glow-purple { box-shadow: var(--shadow-card); }
+  .neon-text, .neon-text-purple { text-shadow: none; }
+  .holographic-border { position: relative; }
+  .gradient-animated { background: hsl(var(--background)); }
+  .hover-lift { @apply transition-all duration-300; }
+  .hover-lift:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+  .scrollbar-holographic::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-holographic::-webkit-scrollbar-thumb { background: hsl(var(--muted)); border-radius: 4px; }
 
-  .glass-strong {
-    @apply backdrop-blur-2xl border border-white/20;
-    background: linear-gradient(135deg, hsl(var(--card) / 0.8), hsl(var(--card) / 0.5));
-  }
-
-  /* Neon glow effects */
-  .neon-glow {
-    box-shadow: var(--shadow-neon);
-  }
-
-  .neon-glow-purple {
-    box-shadow: var(--shadow-purple);
-  }
-
-  .neon-text {
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.8), 0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3);
-  }
-
-  .neon-text-purple {
-    text-shadow: 0 0 10px hsl(var(--secondary) / 0.8), 0 0 20px hsl(var(--secondary) / 0.5), 0 0 40px hsl(var(--secondary) / 0.3);
-  }
-
-  /* Holographic border */
-  .holographic-border {
-    position: relative;
-  }
-
-  .holographic-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: var(--gradient-holographic);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  /* Animated gradient background */
-  .gradient-animated {
-    background: linear-gradient(-45deg, hsl(var(--deep-space)), hsl(var(--dark-void)), hsl(276 100% 15%), hsl(189 100% 15%));
-    background-size: 400% 400%;
-    animation: gradient-shift 15s ease infinite;
-  }
-
-  /* Hover card effect */
-  .hover-lift {
-    @apply transition-all duration-300;
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-neon);
-  }
-
-  /* Scrollbar styling */
-  .scrollbar-holographic::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .scrollbar-holographic::-webkit-scrollbar-track {
-    background: hsl(var(--deep-space));
-    border-radius: 4px;
-  }
-
-  .scrollbar-holographic::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--secondary)));
-    border-radius: 4px;
-  }
-
-  .scrollbar-holographic::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary));
-  }
+  /* Kinetic typography (una frase, una escena) */
+  .kinetic-word { display: inline-block; opacity: 0; transform: translateY(0.4em) scale(0.96); animation: kinetic-in .6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .serif-accent { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; letter-spacing: 0; }
 }
 
 @layer utilities {
   /* Text gradient */
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-holographic);
-  }
+  .text-gradient { color: hsl(var(--primary)); }
 
   /* Pulse animation for notifications/badges */
   .pulse-glow {
@@ -243,3 +148,6 @@
 .animate-particle {
   animation: particle-float 8s ease-in-out infinite;
 }
+
+@keyframes kinetic-in { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .kinetic-word { animation: none; opacity: 1; transform: none; } }
