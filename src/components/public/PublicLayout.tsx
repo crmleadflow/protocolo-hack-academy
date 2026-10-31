@@ -11,17 +11,26 @@ export const NAV = [
   { to: "/", label: "Inicio" },
   { to: "/academia", label: "Academia" },
   { to: "/marketplace", label: "Marketplace" },
-  { to: "/mentorias", label: "Mentorías" },
   { to: "/lead-flow", label: "Lead Flow" },
-  { to: "/conferencias", label: "Conferencias" },
   { to: "/recursos", label: "Recursos gratis" },
   { to: "/comunidad", label: "Comunidad" },
+];
+
+// Sub-secciones agrupadas dentro de Marketplace. Sin `to` = aún no existe la página.
+export const MARKETPLACE_SUB: { to?: string; label: string }[] = [
+  { to: "/mentorias", label: "Mentorías" },
+  { to: "/conferencias", label: "Conferencias" },
+  { label: "Seminarios" },
+  { label: "Capacitaciones" },
   { to: "/eventos", label: "Eventos" },
+  { label: "Bootcamp" },
 ];
 
 export const PublicLayout = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
   const { user, isAdmin } = useAuth();
+  const close = () => setOpen(false);
+  const item = "block rounded-xl px-4 py-3 text-sm hover:bg-secondary";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -31,33 +40,11 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
             <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-sm text-primary-foreground">PH</span>
             <span>protocolo<span className="serif-accent text-primary text-xl">hack</span></span>
           </Link>
-          <nav className="hidden xl:flex items-center gap-1">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.to === "/"}
-                className={({ isActive }) =>
-                  cn(
-                    "rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                    isActive && "bg-secondary text-foreground"
-                  )
-                }
-              >
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
           <div className="flex items-center gap-2">
-            {isAdmin && (
-              <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
-                <Link to="/producer">Administración</Link>
-              </Button>
-            )}
-            <Link to={user ? "/dashboard" : "/login"} className="pill-solid px-4 py-2">{user ? "Mi cuenta" : "Entrar"}</Link>
+            {!user && <Link to="/login" className="pill-solid px-4 py-2">Entrar</Link>}
             <button
               aria-label="Abrir menú"
-              className="xl:hidden rounded-full p-2 hover:bg-secondary"
+              className="rounded-full p-2 hover:bg-secondary"
               onClick={() => setOpen(!open)}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -65,22 +52,40 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
         {open && (
-          <nav className="xl:hidden border-t border-border px-5 py-4 grid grid-cols-2 gap-2">
-            {NAV.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                onClick={() => setOpen(false)}
-                className="rounded-xl bg-card px-4 py-3 text-sm hover:bg-secondary"
-              >
-                {n.label}
-              </Link>
-            ))}
-            {isAdmin && (
-              <Link to="/producer" className="rounded-xl bg-card px-4 py-3 text-sm text-primary">
-                Administración
-              </Link>
-            )}
+          <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto">
+            <div className="mx-auto max-w-7xl grid gap-1 md:grid-cols-3 md:gap-6">
+              <div>
+                {NAV.filter((n) => n.to !== "/marketplace").map((n) => (
+                  <NavLink key={n.to} to={n.to} end={n.to === "/"} onClick={close}
+                    className={({ isActive }) => cn(item, isActive && "bg-secondary font-medium")}>
+                    {n.label}
+                  </NavLink>
+                ))}
+              </div>
+              <div className="md:col-span-2">
+                <NavLink to="/marketplace" onClick={close}
+                  className={({ isActive }) => cn(item, "font-heading font-bold uppercase tracking-wide", isActive && "bg-secondary")}>
+                  Marketplace
+                </NavLink>
+                <div className="grid grid-cols-2 gap-1 pl-2 border-l-2 border-primary ml-4">
+                  {MARKETPLACE_SUB.map((s) =>
+                    s.to ? (
+                      <Link key={s.label} to={s.to} onClick={close} className={item}>{s.label}</Link>
+                    ) : (
+                      <span key={s.label} className={cn(item, "text-muted-foreground cursor-default hover:bg-transparent")}>
+                        {s.label} <span className="text-xs">· próximamente</span>
+                      </span>
+                    )
+                  )}
+                </div>
+              </div>
+              {user && (
+                <div className="md:col-span-3 border-t border-border pt-2 mt-2 flex flex-wrap gap-1">
+                  <Link to="/dashboard" onClick={close} className={item}>Mi panel</Link>
+                  {isAdmin && <Link to="/producer" onClick={close} className={cn(item, "text-primary")}>Administración</Link>}
+                </div>
+              )}
+            </div>
           </nav>
         )}
       </header>
