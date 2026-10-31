@@ -66,9 +66,9 @@
 }
 
 @layer components {
-  .glass { @apply border border-border bg-card; }
+  .glass { @apply border border-transparent bg-card; }
   .glass-strong { @apply border border-border bg-card; }
-  .neon-glow { box-shadow: var(--shadow-neon); }
+  .neon-glow { box-shadow: 0 20px 40px -24px hsl(0 0% 0% / 0.25); }
   .neon-glow-purple { box-shadow: var(--shadow-card); }
   .neon-text, .neon-text-purple { text-shadow: none; }
   .holographic-border { position: relative; }
