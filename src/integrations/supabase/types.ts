@@ -59,6 +59,48 @@ export type Database = {
         }
         Relationships: []
       }
+      commercial_requests: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          request_type: string
+          source_page: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          request_type: string
+          source_page?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          request_type?: string
+          source_page?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       community_comments: {
         Row: {
           content: string
