@@ -36,14 +36,45 @@ Deno.serve(async (req) => {
     if (lines.length !== unique.length) return json({ error: "Algún producto ya no está disponible" }, 400);
     const total = lines.reduce((s, l) => s + l.unit_amount, 0);
 
-    const STRIPE_READY = false; // Stripe activation pending (setup failed: seller country not supported)
-    if (!STRIPE_READY) {
-      return json({ error: "pagos_pendientes", message: "El pago con tarjeta todavía no está activado.", total, currency: lines[0].currency }, 503);
+    const WHOP_API_KEY = Deno.env.get("WHOP_API_KEY");
+    const WHOP_COMPANY_ID = Deno.env.get("WHOP_COMPANY_ID");
+    if (!WHOP_API_KEY || !WHOP_COMPANY_ID) {
+      return json({ error: "pagos_pendientes", message: "El pago con Whop todavía no está activado.", total }, 503);
     }
+    if (total <= 0) return json({ error: "Total inválido" }, 400);
 
-    const { data: order } = await admin.from("orders").insert({ user_id: u.user.id, total_amount: total, currency: lines[0].currency, provider: "stripe" }).select("id").single();
-    await admin.from("order_items").insert(lines.map(({ currency: _c, ...l }) => ({ ...l, order_id: order!.id })));
-    return json({ order_id: order!.id });
+    const { data: order, error: oErr } = await admin.from("orders").insert({ user_id: u.user.id, total_amount: total, currency: "USD", provider: "whop" }).select("id").single();
+    if (oErr || !order) return json({ error: "No se pudo crear el pedido" }, 500);
+    await admin.from("order_items").insert(lines.map(({ currency: _c, ...l }) => ({ ...l, order_id: order.id })));
+
+    const origin = req.headers.get("origin") ?? "https://desafiosummit.shop";
+    const title = lines.length === 1 ? lines[0].title : `Protocolo Hack · ${lines.length} productos`;
+    const res = await fetch("https://api.whop.com/api/v1/checkout_configurations", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${WHOP_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: "payment",
+        plan: {
+          company_id: WHOP_COMPANY_ID,
+          plan_type: "one_time",
+          currency: "usd",
+          initial_price: total,
+          title,
+          product: { external_identifier: `ph-order-${order.id}`, title },
+        },
+        metadata: { order_id: order.id, user_id: u.user.id },
+        redirect_url: `${origin}/mis-compras?pedido=${order.id}`,
+      }),
+    });
+    const body = await res.text();
+    if (!res.ok) {
+      console.error(`Whop checkout failed [${res.status}]: ${body}`);
+      await admin.from("orders").update({ status: "failed" }).eq("id", order.id);
+      return json({ error: "Whop rechazó el pago", status: res.status, details: body }, 502);
+    }
+    const cfg = JSON.parse(body);
+    await admin.from("orders").update({ checkout_session_id: cfg.id }).eq("id", order.id);
+    return json({ order_id: order.id, url: cfg.purchase_url });
   } catch (e) {
     console.error(e);
     return json({ error: "Error interno" }, 500);
