@@ -179,7 +179,7 @@ export const HerramientasPage = () => {
   const tools = data.filter((t) => t.type === "tool");
   return (
     <PublicLayout>
-      <PageHero kicker="Herramientas" title="Tres poderes de IA para" accent="vender más." text="Analiza tu negocio, automatiza tareas y cierra más ventas con el equipo de herramientas de Protocolo Hack." image={herramientasHeroImg} />
+      <PageHero kicker="Herramientas" title="Inteligencia artificial, neuroventas e" accent="inteligencia emocional." text="Tu caja de herramientas: inteligencia artificial, neuroventas e inteligencia emocional." image={herramientasHeroImg} />
       {isLoading ? (
         <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" /></div>
       ) : (
