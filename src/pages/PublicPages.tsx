@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingBag, Check, ArrowRight, Download, CalendarDays, MessagesSquare, Loader2, Wrench } from "lucide-react";
@@ -18,6 +19,7 @@ import marketplaceCard1 from "@/assets/marketplace-card-1.jpg";
 import marketplaceCard2 from "@/assets/marketplace-card-2.jpg";
 import marketplaceCard3 from "@/assets/marketplace-card-3.jpg";
 import marketplaceCard4 from "@/assets/marketplace-card-4.jpg";
+import marketplaceShopCart from "@/assets/marketplace-shop-cart.webp";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -70,7 +72,6 @@ export const AcademiaPage = () => {
 };
 
 export const MarketplacePage = () => {
-  const { data = [], isLoading } = useCatalog();
   const items = useCart();
   return (
     <PublicLayout>
@@ -78,27 +79,119 @@ export const MarketplacePage = () => {
       <div className="mx-auto mb-6 flex max-w-7xl justify-end px-5">
         <Button asChild variant="outline" className="rounded-full"><Link to="/carrito"><ShoppingBag className="mr-2 h-4 w-4" />Carrito ({items.length})</Link></Button>
       </div>
-      {isLoading ? <Loader2 className="mx-auto animate-spin" /> : (
-        <Grid>
-          {data.map((t) => {
-            const inCart = items.some((i) => i.type === t.type && i.id === t.id);
-            return (
-              <Box key={t.type + t.id} className="flex flex-col">
-                {t.image && <img src={t.image} alt={t.title} className="mb-5 aspect-video w-full rounded-2xl object-cover" />}
-                <span className="w-fit rounded-full bg-secondary px-3 py-1 text-xs">{t.type === "program" ? "Curso" : "Herramienta"}</span>
-                <p className="mt-4 font-heading text-xl font-bold uppercase tracking-tight">{t.title}</p>
-                <p className="mt-1 line-clamp-3 flex-1 text-sm text-muted-foreground">{t.description}</p>
-                <div className="mt-6 flex items-center justify-between">
-                  <p className="font-heading text-lg font-semibold">{t.price > 0 ? `USD ${t.price}` : "Incluida"}</p>
-                  <Button size="sm" className="rounded-full" variant={inCart ? "outline" : "default"} disabled={inCart || t.price <= 0} onClick={() => cart.add({ type: t.type, id: t.id })}>
-                    {inCart ? "En el carrito" : t.price > 0 ? "Agregar" : "Con tu programa"}
-                  </Button>
-                </div>
-              </Box>
-            );
-          })}
-        </Grid>
-      )}
+      <section className="mx-auto flex max-w-7xl flex-col items-center px-5 py-10 text-center">
+        <Link to="/marketplace/tienda" className="group block">
+          <img src={marketplaceShopCart} alt="Entrar a la tienda" className="w-full max-w-sm transition-transform duration-300 group-hover:-translate-y-2" />
+          <span className="pill-solid mt-6 inline-flex">Entrar a la tienda <ArrowRight className="ml-1 h-4 w-4" /></span>
+        </Link>
+      </section>
+    </PublicLayout>
+  );
+};
+
+const TIENDA_TABS = [
+  { key: "cursos", label: "Cursos" },
+  { key: "mentorias", label: "Mentorías" },
+  { key: "recursos", label: "Recursos" },
+  { key: "eventos", label: "Eventos" },
+] as const;
+
+type TiendaTab = (typeof TIENDA_TABS)[number]["key"];
+
+type CatalogItem = { type: "program" | "tool"; id: string; title: string; description: string; image: string; price: number; currency: string };
+
+const CatalogCard = ({ t, inCart }: { t: CatalogItem; inCart: boolean }) => (
+  <Box className="flex flex-col">
+    {t.image && <img src={t.image} alt={t.title} className="mb-5 aspect-video w-full rounded-2xl object-cover" />}
+    <span className="w-fit rounded-full bg-background px-3 py-1 text-xs">{t.type === "program" ? "Curso" : "Herramienta"}</span>
+    <p className="mt-4 font-heading text-xl font-bold uppercase tracking-tight">{t.title}</p>
+    <p className="mt-1 line-clamp-3 flex-1 text-sm text-muted-foreground">{t.description}</p>
+    <div className="mt-6 flex items-center justify-between">
+      <p className="font-heading text-lg font-semibold">{t.price > 0 ? `USD ${t.price}` : "Incluida"}</p>
+      <Button size="sm" className="rounded-full" variant={inCart ? "outline" : "default"} disabled={inCart || t.price <= 0} onClick={() => cart.add({ type: t.type, id: t.id })}>
+        {inCart ? "En el carrito" : t.price > 0 ? "Agregar" : "Con tu programa"}
+      </Button>
+    </div>
+  </Box>
+);
+
+export const TiendaPage = () => {
+  const { data = [], isLoading } = useCatalog();
+  const items = useCart();
+  const [tab, setTab] = useState<TiendaTab>("cursos");
+  const cursos = data.filter((t) => t.type === "program");
+  const herramientas = data.filter((t) => t.type === "tool");
+  return (
+    <PublicLayout>
+      <section className="mx-auto max-w-7xl px-5 pt-10 text-center">
+        <p className="font-heading text-3xl font-bold uppercase tracking-tight md:text-5xl">Elige qué quieres ver</p>
+        <div className="relative mt-8 inline-flex flex-wrap justify-center gap-1 rounded-full border border-foreground/10 bg-secondary p-1">
+          {TIENDA_TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
+                tab === t.key ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <div key={tab} className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+        {tab === "cursos" && (
+          isLoading ? <Loader2 className="mx-auto mt-10 animate-spin" /> : (
+            <Grid>
+              {cursos.map((t) => <CatalogCard key={t.id} t={t} inCart={items.some((i) => i.type === t.type && i.id === t.id)} />)}
+              {!cursos.length && <p className="text-muted-foreground">Pronto publicaremos nuevos cursos.</p>}
+            </Grid>
+          )
+        )}
+        {tab === "mentorias" && (
+          <section className="mx-auto max-w-7xl px-5">
+            <div className="grid gap-4 md:grid-cols-3">
+              {MENTORSHIPS.map((m) => (
+                <Box key={m.name}><p className="text-xs text-primary">{m.format}</p><p className="mt-2 font-heading text-xl font-bold uppercase tracking-tight">{m.name}</p><p className="mt-1 text-sm text-muted-foreground">{m.text}</p></Box>
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Button asChild className="rounded-full"><Link to="/mentorias">Reservar mentoría <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+            </div>
+          </section>
+        )}
+        {tab === "recursos" && (
+          <section className="mx-auto max-w-7xl px-5">
+            {!!herramientas.length && (
+              <>
+                <p className="mb-4 font-heading text-lg font-semibold uppercase tracking-tight">Herramientas</p>
+                <Grid>
+                  {herramientas.map((t) => <CatalogCard key={t.id} t={t} inCart={items.some((i) => i.type === t.type && i.id === t.id)} />)}
+                </Grid>
+              </>
+            )}
+            <p className="mb-4 mt-10 font-heading text-lg font-semibold uppercase tracking-tight">Guías gratuitas</p>
+            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+              {RESOURCES.map((r) => (
+                <Box key={r.name}><Download className="h-5 w-5 text-primary" /><p className="mt-4 font-heading font-semibold">{r.name}</p><p className="text-xs text-muted-foreground">{r.type}</p></Box>
+              ))}
+            </div>
+          </section>
+        )}
+        {tab === "eventos" && (
+          <section className="mx-auto max-w-7xl px-5">
+            <div className="grid gap-3">
+              {EVENTS.map((e) => (
+                <Box key={e.name} className="flex items-center gap-4"><CalendarDays className="h-6 w-6 text-primary" /><div className="flex-1"><p className="font-heading font-semibold">{e.name}</p><p className="text-xs text-muted-foreground">{e.mode}</p></div><span className="text-xs text-muted-foreground">{e.date}</span></Box>
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Button asChild className="rounded-full"><Link to="/eventos">Reservar mi lugar <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
+            </div>
+          </section>
+        )}
+      </div>
     </PublicLayout>
   );
 };

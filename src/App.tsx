@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import HomePage from "./pages/HomePage";
-import { AcademiaPage, MarketplacePage, MentoriasPage, LeadFlowPage, ConferenciasPage, RecursosPage, EventosPage, ComunidadPublicPage, HerramientasPage, SeminariosPage, CapacitacionesPage, BootcampPage } from "./pages/PublicPages";
+import { AcademiaPage, MarketplacePage, TiendaPage, MentoriasPage, LeadFlowPage, ConferenciasPage, RecursosPage, EventosPage, ComunidadPublicPage, HerramientasPage, SeminariosPage, CapacitacionesPage, BootcampPage } from "./pages/PublicPages";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -57,6 +57,7 @@ const App = () => (
             <Route path="/vsl" element={<LandingPage />} />
             <Route path="/academia" element={<AcademiaPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/marketplace/tienda" element={<TiendaPage />} />
             <Route path="/mentorias" element={<MentoriasPage />} />
             <Route path="/lead-flow" element={<LeadFlowPage />} />
             <Route path="/conferencias" element={<ConferenciasPage />} />
