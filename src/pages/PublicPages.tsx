@@ -79,10 +79,10 @@ export const MarketplacePage = () => {
       <div className="mx-auto mb-6 flex max-w-7xl justify-end px-5">
         <Button asChild variant="outline" className="rounded-full"><Link to="/carrito"><ShoppingBag className="mr-2 h-4 w-4" />Carrito ({items.length})</Link></Button>
       </div>
-      <section className="mx-auto flex max-w-7xl flex-col items-center px-5 py-10 text-center">
-        <Link to="/marketplace/tienda" className="group block">
+      <section className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 px-5 py-10 md:flex-row md:justify-start">
+        <Link to="/marketplace/tienda" className="pill-solid order-2 md:order-1">Entrar a la tienda <ArrowRight className="ml-1 h-4 w-4" /></Link>
+        <Link to="/marketplace/tienda" className="group order-1 block md:order-2">
           <img src={marketplaceShopCart} alt="Entrar a la tienda" className="w-full max-w-sm transition-transform duration-300 group-hover:-translate-y-2" />
-          <span className="pill-solid mt-6 inline-flex">Entrar a la tienda <ArrowRight className="ml-1 h-4 w-4" /></span>
         </Link>
       </section>
     </PublicLayout>
