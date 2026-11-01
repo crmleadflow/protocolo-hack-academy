@@ -8,7 +8,7 @@ import { ECOSYSTEM, TOOLS, MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, 
 import heroImg from "@/assets/home-hero-xlab.webp";
 import heroImgMono from "@/assets/home-hero-xlab-mono.webp";
 import heroImgControl from "@/assets/home-hero-control.webp";
-import editorialImg from "@/assets/editorial-bw-2.jpg";
+import mentoriasImg from "@/assets/mentorias-focus.webp";
 import imgAcademia from "@/assets/card-academia.jpg";
 import imgMarket from "@/assets/card-marketplace.jpg";
 import imgComunidad from "@/assets/card-comunidad.jpg";
@@ -160,7 +160,7 @@ const HomePage = () => {
 
       {/* Editorial split: foto B/N + titular */}
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-20 md:grid-cols-2">
-        <img src={editorialImg} alt="Emprendedora en blanco y negro" loading="lazy" width={1088} height={1440} className="aspect-[3/4] w-full object-cover grayscale" />
+        <img src={mentoriasImg} alt="Emprendedora en blanco y negro" loading="lazy" width={1088} height={1440} className="aspect-[3/4] w-full object-contain" />
         <div>
           <span className="pill">Mentorías</span>
           <h2 className="display mt-6 text-5xl md:text-7xl">Ejecuta con <span className="serif-accent text-primary">claridad.</span></h2>
