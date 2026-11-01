@@ -12,6 +12,7 @@ import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, SEMINARS, 
 import { NEURO_SCANNER_TOOL_ID, MENTOR_IA_TOOL_ID } from "@/hooks/useBonusAccess";
 import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
 import mascotaLeadFlowVideo from "@/assets/mascota-leadflow.webm";
+import recursosHeroImg from "@/assets/recursos-hero-startcompanies.webp";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -144,7 +145,7 @@ export const ConferenciasPage = () => (
 
 export const RecursosPage = () => (
   <PublicLayout>
-    <PageHero kicker="Recursos" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te enviamos el recurso." />
+    <PageHero kicker="Recursos" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te enviamos el recurso." image={recursosHeroImg} />
     <TwoCol
       left={<div className="grid gap-3 sm:grid-cols-2">{RESOURCES.map((r) => (
         <Box key={r.name}><Download className="h-5 w-5 text-primary" /><p className="mt-4 font-heading font-semibold">{r.name}</p><p className="text-xs text-muted-foreground">{r.type}</p></Box>
