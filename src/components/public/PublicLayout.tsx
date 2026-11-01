@@ -186,12 +186,41 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
 
 const HERO_IMGS = [heroBw, editorialBw];
 
-const CARD_FAN = [
-  { rotate: -9, x: -20, y: 6, z: 10 },
-  { rotate: -3, x: -7, y: 0, z: 20 },
-  { rotate: 3, x: 7, y: 0, z: 20 },
-  { rotate: 9, x: 20, y: 6, z: 10 },
+// slot 0 = carta al frente (destacada); el resto se abanican detrás, de más a menos cerca.
+const CARD_SLOTS = [
+  { rotate: 0, x: 0, y: -6, scale: 1.08, z: 40, opacity: 1 },
+  { rotate: -10, x: -20, y: 5, scale: 0.92, z: 30, opacity: 1 },
+  { rotate: 10, x: 20, y: 5, scale: 0.92, z: 20, opacity: 0.95 },
+  { rotate: 0, x: 0, y: 12, scale: 0.85, z: 10, opacity: 0.85 },
 ];
+
+const CardDeck = ({ cards }: { cards: string[] }) => {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setActive((i) => (i + 1) % cards.length), 2600);
+    return () => clearInterval(id);
+  }, [cards.length]);
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      {cards.map((src, i) => {
+        const slot = CARD_SLOTS[(i - active + cards.length) % cards.length];
+        return (
+          <img
+            key={src}
+            src={src}
+            alt=""
+            className="absolute aspect-[3/4] w-[46%] max-w-[240px] rounded-[1.5rem] object-cover shadow-2xl ring-1 ring-black/5 transition duration-700 ease-out"
+            style={{
+              transform: `translate(${slot.x}%, ${slot.y}%) rotate(${slot.rotate}deg) scale(${slot.scale})`,
+              zIndex: slot.z,
+              opacity: slot.opacity,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+};
 
 export const PageHero = ({ kicker, title, accent, text, image, video, cards }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[] }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
@@ -208,20 +237,7 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards }: {
           </div>
           <div className="relative order-1 md:order-2 min-h-[40vh]">
             {cards ? (
-              <div className="absolute inset-0 flex items-center justify-center">
-                {cards.map((src, i) => (
-                  <img
-                    key={src}
-                    src={src}
-                    alt=""
-                    className="absolute aspect-[3/4] w-[46%] max-w-[240px] rounded-[1.5rem] object-cover shadow-2xl ring-1 ring-black/5"
-                    style={{
-                      transform: `translate(${CARD_FAN[i].x}%, ${CARD_FAN[i].y}%) rotate(${CARD_FAN[i].rotate}deg)`,
-                      zIndex: CARD_FAN[i].z,
-                    }}
-                  />
-                ))}
-              </div>
+              <CardDeck cards={cards} />
             ) : video ? (
               <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
             ) : (
