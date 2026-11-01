@@ -25,9 +25,9 @@ export const MENTORSHIPS = [
 ];
 
 export const LEADFLOW_PLANS = [
-  { name: "Starter", text: "Para emprendedores que empiezan a ordenar sus ventas.", features: ["Pipeline de ventas", "Captura de leads", "1 usuario"] },
-  { name: "Growth", text: "Para negocios con equipo comercial.", features: ["Automatizaciones", "WhatsApp y email", "Hasta 5 usuarios"], featured: true },
-  { name: "Empresa", text: "Para operaciones comerciales grandes.", features: ["Usuarios ilimitados", "Integraciones a medida", "Soporte dedicado"] },
+  { name: "Origen", price: 97, text: "Para el emprendedor que empieza a ordenar sus ventas.", features: ["Pipeline CRM + WhatsApp", "Sophia IA Core", "Hasta 3 usuarios"] },
+  { name: "Estratega", price: 297, text: "Para equipos que quieren escalar sin contratar más vendedores.", features: ["4 motores de prospección", "Clon Digital + Shadow Intelligence", "Hasta 10 usuarios"], featured: true },
+  { name: "Arquitecto", price: 497, text: "Para agencias y equipos multi-marca.", features: ["Todo lo de Estratega, y más", "Multi-marca con subcuentas", "Usuarios ilimitados"] },
 ];
 
 export const CONFERENCES = [

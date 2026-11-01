@@ -117,9 +117,10 @@ export const LeadFlowPage = () => (
         <Box key={p.name} className={p.featured ? "dark-island bg-background text-foreground" : ""}>
           {p.featured && <span className="rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground">Más elegido</span>}
           <p className="mt-4 font-heading text-2xl font-semibold">{p.name}</p>
+          <p className="mt-2 font-heading text-3xl font-bold">${p.price}<span className="text-sm font-normal text-muted-foreground"> USD/mes</span></p>
           <p className="mt-1 text-sm text-muted-foreground">{p.text}</p>
           <ul className="mt-6 space-y-2 text-sm">{p.features.map((f) => <li key={f} className="flex gap-2"><Check className="h-4 w-4 text-primary" />{f}</li>)}</ul>
-          <Button asChild variant={p.featured ? "default" : "outline"} className="mt-6 w-full rounded-full"><a href="#leadflow-form">Solicitar {p.name}</a></Button>
+          <Button asChild variant={p.featured ? "default" : "outline"} className="mt-6 w-full rounded-full"><a href="https://leadflowneurosophia.io/#planes" target="_blank" rel="noopener noreferrer">Solicitar {p.name}</a></Button>
         </Box>
       ))}
     </Grid>
