@@ -364,7 +364,7 @@ export const ComunidadPublicPage = () => {
   const { user } = useAuth();
   return (
     <PublicLayout>
-      <PageHero kicker="Comunidad" title="No escales" accent="solo." text="Un espacio para compartir avances, resolver dudas y conectar con emprendedores que están implementando." image={comunidadHeroImg} />
+      <PageHero kicker="Comunidad" title="No escales" accent="solo." text="Un espacio para compartir avances, resolver dudas y conectar con emprendedores que están implementando." image={comunidadHeroImg} ctaLabel="Ir al Marketplace" ctaTo="/marketplace" />
       <section className="mx-auto max-w-7xl px-5">
         <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
           <div className="flex items-center gap-4"><MessagesSquare className="h-8 w-8 text-primary" /><p className="font-heading text-xl font-bold uppercase tracking-tight">Conversaciones por programa, con el Mentor IA respondiendo.</p></div>

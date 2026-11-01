@@ -262,7 +262,7 @@ const CardDeck = ({ cards }: { cards: string[] }) => {
   );
 };
 
-export const PageHero = ({ kicker, title, accent, text, image, video, cards }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[] }) => {
+export const PageHero = ({ kicker, title, accent, text, image, video, cards, ctaLabel, ctaTo }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; ctaLabel?: string; ctaTo?: string }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -274,6 +274,9 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards }: {
               {title} {accent && <span className="serif-accent text-primary">{accent}</span>}
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">{text}</p>
+            {ctaLabel && ctaTo && (
+              <Button asChild className="mt-6 w-fit rounded-full"><Link to={ctaTo}>{ctaLabel}</Link></Button>
+            )}
           </div>
           <div className="relative order-1 md:order-2 min-h-[40vh]">
             {cards ? (
