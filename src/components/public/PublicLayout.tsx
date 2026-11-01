@@ -91,6 +91,31 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const desktopLink = "rounded-full px-3 py-2 text-sm font-medium hover:bg-secondary";
+  const desktopDropdown = (key: string, to: string, label: string, subItems: { to?: string; label: string }[]) => (
+    <div className="group relative">
+      <NavLink
+        to={to}
+        className={({ isActive }) => cn(desktopLink, "inline-flex items-center gap-1", isActive && "bg-secondary")}
+      >
+        {label} <ChevronDown className="h-3.5 w-3.5" />
+      </NavLink>
+      <div className="invisible absolute left-0 top-full pt-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100">
+        <div className="w-56 rounded-2xl border border-border bg-background p-2 shadow-lg">
+          {subItems.map((s) =>
+            s.to ? (
+              <Link key={s.label} to={s.to} className={item}>{s.label}</Link>
+            ) : (
+              <span key={s.label} className={cn(item, "text-muted-foreground cursor-default hover:bg-transparent")}>
+                {s.label} <span className="text-xs">· próximamente</span>
+              </span>
+            )
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl">
@@ -99,11 +124,26 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
             <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-sm text-primary-foreground">PH</span>
             <span>protocolo<span className="serif-accent text-primary text-xl">hack</span></span>
           </Link>
+          <nav className="hidden items-center gap-1 md:flex">
+            {NAV.map((n) =>
+              n.to === "/marketplace" ? (
+                <div key={n.to}>{desktopDropdown("marketplace", n.to, n.label, MARKETPLACE_SUB)}</div>
+              ) : n.to === "/herramientas" ? (
+                <div key={n.to}>{desktopDropdown("herramientas", n.to, n.label, TOOLS_SUB)}</div>
+              ) : (
+                <NavLink key={n.to} to={n.to} end={n.to === "/"} className={({ isActive }) => cn(desktopLink, isActive && "bg-secondary")}>
+                  {n.label}
+                </NavLink>
+              )
+            )}
+            {user && <NavLink to="/dashboard" className={({ isActive }) => cn(desktopLink, isActive && "bg-secondary")}>Métricas</NavLink>}
+            {user && isAdmin && <NavLink to="/producer" className={({ isActive }) => cn(desktopLink, "text-primary", isActive && "bg-secondary")}>Administración</NavLink>}
+          </nav>
           <div className="flex items-center gap-2">
             {!user && <Link to="/login" className="pill-solid px-4 py-2">Entrar</Link>}
             <button
               aria-label="Abrir menú"
-              className="rounded-full p-2 hover:bg-secondary"
+              className="rounded-full p-2 hover:bg-secondary md:hidden"
               onClick={() => setOpen(!open)}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -111,7 +151,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
         {open && (
-          <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto">
+          <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto md:hidden">
             <div className="mx-auto max-w-7xl grid gap-1 md:grid-cols-3 md:gap-6">
               <div>
                 {NAV.filter((n) => n.to !== "/marketplace" && n.to !== "/herramientas").map((n) => (
