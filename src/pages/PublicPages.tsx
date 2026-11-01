@@ -212,7 +212,7 @@ export const MentoriasPage = () => (
 
 export const LeadFlowPage = () => (
   <PublicLayout>
-    <PageHero kicker="Lead Flow" title="Tu CRM para" accent="cerrar más ventas." text="Capta, organiza y da seguimiento a cada oportunidad comercial desde un solo lugar." video={mascotaLeadFlowVideo} />
+    <PageHero kicker="Lead Flow" title="No contrato un community manager." accent="Instalo un sistema que genera leads, crea contenido y edita video, solo." text="Capta, organiza y da seguimiento a cada oportunidad comercial desde un solo lugar." video={mascotaLeadFlowVideo} />
     <Grid>
       {LEADFLOW_PLANS.map((p) => (
         <Box key={p.name} className={p.featured ? "dark-island bg-background text-foreground" : ""}>
