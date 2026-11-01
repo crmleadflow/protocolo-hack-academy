@@ -14,6 +14,10 @@ import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
 import mascotaLeadFlowVideo from "@/assets/mascota-leadflow.webm";
 import recursosHeroImg from "@/assets/recursos-hero-startcompanies.webp";
 import herramientasHeroImg from "@/assets/herramientas-hero-iatools.webp";
+import marketplaceCard1 from "@/assets/marketplace-card-1.jpg";
+import marketplaceCard2 from "@/assets/marketplace-card-2.jpg";
+import marketplaceCard3 from "@/assets/marketplace-card-3.jpg";
+import marketplaceCard4 from "@/assets/marketplace-card-4.jpg";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -70,7 +74,7 @@ export const MarketplacePage = () => {
   const items = useCart();
   return (
     <PublicLayout>
-      <PageHero kicker="Marketplace" title="Herramientas para" accent="vender más." text="Cursos y herramientas del ecosistema Protocolo Hack." />
+      <PageHero kicker="Marketplace" title="Encuentra lo que tu negocio" accent="necesita hoy." text="Cursos y herramientas del ecosistema Protocolo Hack." cards={[marketplaceCard1, marketplaceCard2, marketplaceCard3, marketplaceCard4]} />
       <div className="mx-auto mb-6 flex max-w-7xl justify-end px-5">
         <Button asChild variant="outline" className="rounded-full"><Link to="/carrito"><ShoppingBag className="mr-2 h-4 w-4" />Carrito ({items.length})</Link></Button>
       </div>

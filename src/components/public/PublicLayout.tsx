@@ -186,7 +186,14 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
 
 const HERO_IMGS = [heroBw, editorialBw];
 
-export const PageHero = ({ kicker, title, accent, text, image, video }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string }) => {
+const CARD_FAN = [
+  { rotate: -9, x: -20, y: 6, z: 10 },
+  { rotate: -3, x: -7, y: 0, z: 20 },
+  { rotate: 3, x: 7, y: 0, z: 20 },
+  { rotate: 9, x: 20, y: 6, z: 10 },
+];
+
+export const PageHero = ({ kicker, title, accent, text, image, video, cards }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[] }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -200,12 +207,27 @@ export const PageHero = ({ kicker, title, accent, text, image, video }: { kicker
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">{text}</p>
           </div>
           <div className="relative order-1 md:order-2 min-h-[40vh]">
-            {video ? (
+            {cards ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                {cards.map((src, i) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt=""
+                    className="absolute aspect-[3/4] w-[46%] max-w-[240px] rounded-[1.5rem] object-cover shadow-2xl ring-1 ring-black/5"
+                    style={{
+                      transform: `translate(${CARD_FAN[i].x}%, ${CARD_FAN[i].y}%) rotate(${CARD_FAN[i].rotate}deg)`,
+                      zIndex: CARD_FAN[i].z,
+                    }}
+                  />
+                ))}
+              </div>
+            ) : video ? (
               <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
             ) : (
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />
+            {!cards && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
           </div>
         </div>
       </section>
