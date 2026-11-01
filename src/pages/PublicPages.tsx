@@ -13,6 +13,7 @@ import { NEURO_SCANNER_TOOL_ID, MENTOR_IA_TOOL_ID } from "@/hooks/useBonusAccess
 import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
 import mascotaLeadFlowVideo from "@/assets/mascota-leadflow.webm";
 import recursosHeroImg from "@/assets/recursos-hero-startcompanies.webp";
+import herramientasHeroImg from "@/assets/herramientas-hero-iatools.webp";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -178,7 +179,7 @@ export const HerramientasPage = () => {
   const tools = data.filter((t) => t.type === "tool");
   return (
     <PublicLayout>
-      <PageHero kicker="Herramientas" title="Tu equipo de" accent="inteligencia artificial." text="Analiza tu forma de vender y consulta a tu mentor cuando lo necesites. Se activan desde tu cuenta." />
+      <PageHero kicker="Herramientas" title="Las herramientas de IA que" accent="trabajan por ti." text="Analiza tu forma de vender y consulta a tu mentor cuando lo necesites. Se activan desde tu cuenta." image={herramientasHeroImg} />
       {isLoading ? (
         <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" /></div>
       ) : (
