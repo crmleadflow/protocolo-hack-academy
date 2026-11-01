@@ -10,6 +10,7 @@ import { useCatalog } from "@/pages/CommercePages";
 import { cart, useCart } from "@/lib/cart";
 import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, SEMINARS, CAPACITATIONS, BOOTCAMP_WEEKS } from "@/components/public/content";
 import { NEURO_SCANNER_TOOL_ID, MENTOR_IA_TOOL_ID } from "@/hooks/useBonusAccess";
+import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -37,7 +38,7 @@ export const AcademiaPage = () => {
   });
   return (
     <PublicLayout>
-      <PageHero kicker="Academia" title="Aprende lo que" accent="sí se implementa." text="Cursos y rutas de aprendizaje en inteligencia artificial, neuroventas y estrategia digital, con seguimiento de tu progreso." />
+      <PageHero kicker="Academia" title="Aprende lo que" accent="sí se implementa." text="Cursos y rutas de aprendizaje en inteligencia artificial, neuroventas y estrategia digital, con seguimiento de tu progreso." image={academiaHeroImg} />
       {isLoading ? (
         <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" /></div>
       ) : (

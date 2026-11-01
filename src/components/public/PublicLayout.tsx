@@ -200,7 +200,7 @@ export const PageHero = ({ kicker, title, accent, text, image }: { kicker: strin
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">{text}</p>
           </div>
           <div className="relative order-1 md:order-2 min-h-[40vh]">
-            <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover grayscale" />
+            <img src={img} alt="" className={`absolute inset-0 h-full w-full object-cover ${image ? "" : "grayscale"}`} />
             <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />
           </div>
         </div>
