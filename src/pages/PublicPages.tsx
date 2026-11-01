@@ -11,6 +11,7 @@ import { cart, useCart } from "@/lib/cart";
 import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, SEMINARS, CAPACITATIONS, BOOTCAMP_WEEKS } from "@/components/public/content";
 import { NEURO_SCANNER_TOOL_ID, MENTOR_IA_TOOL_ID } from "@/hooks/useBonusAccess";
 import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
+import mascotaLeadFlowVideo from "@/assets/mascota-leadflow.webm";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -110,7 +111,7 @@ export const MentoriasPage = () => (
 
 export const LeadFlowPage = () => (
   <PublicLayout>
-    <PageHero kicker="Lead Flow" title="Tu CRM para" accent="cerrar más ventas." text="Capta, organiza y da seguimiento a cada oportunidad comercial desde un solo lugar." />
+    <PageHero kicker="Lead Flow" title="Tu CRM para" accent="cerrar más ventas." text="Capta, organiza y da seguimiento a cada oportunidad comercial desde un solo lugar." video={mascotaLeadFlowVideo} />
     <Grid>
       {LEADFLOW_PLANS.map((p) => (
         <Box key={p.name} className={p.featured ? "dark-island bg-background text-foreground" : ""}>

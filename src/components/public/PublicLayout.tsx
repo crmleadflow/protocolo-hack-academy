@@ -186,7 +186,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
 
 const HERO_IMGS = [heroBw, editorialBw];
 
-export const PageHero = ({ kicker, title, accent, text, image }: { kicker: string; title: string; accent?: string; text: string; image?: string }) => {
+export const PageHero = ({ kicker, title, accent, text, image, video }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -200,7 +200,11 @@ export const PageHero = ({ kicker, title, accent, text, image }: { kicker: strin
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">{text}</p>
           </div>
           <div className="relative order-1 md:order-2 min-h-[40vh]">
-            <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
+            {video ? (
+              <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
+            ) : (
+              <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />
           </div>
         </div>
