@@ -21,7 +21,6 @@ import marketplaceCard3 from "@/assets/marketplace-card-3.jpg";
 import marketplaceCard4 from "@/assets/marketplace-card-4.jpg";
 import marketplaceShopCart from "@/assets/marketplace-shop-cart.webp";
 import mentoriasHeroImg from "@/assets/mentorias-hero-creator.webp";
-import comunidadHeroImg from "@/assets/comunidad-hero.png";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
   <section className="mx-auto max-w-7xl px-5 grid gap-4 md:grid-cols-3">{children}</section>
@@ -364,7 +363,7 @@ export const ComunidadPublicPage = () => {
   const { user } = useAuth();
   return (
     <PublicLayout>
-      <PageHero kicker="Comunidad" title="No escales" accent="solo." text="Un espacio para compartir avances, resolver dudas y conectar con emprendedores que están implementando." image={comunidadHeroImg} ctaLabel="Ir al Marketplace" ctaTo="/marketplace" />
+      <PageHero kicker="Comunidad" title="No escales" accent="solo." text="Un espacio para compartir avances, resolver dudas y conectar con emprendedores que están implementando." showcase ctaLabel="Ir al Marketplace" ctaTo="/marketplace" />
       <section className="mx-auto max-w-7xl px-5">
         <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
           <div className="flex items-center gap-4"><MessagesSquare className="h-8 w-8 text-primary" /><p className="font-heading text-xl font-bold uppercase tracking-tight">Conversaciones por programa, con el Mentor IA respondiendo.</p></div>

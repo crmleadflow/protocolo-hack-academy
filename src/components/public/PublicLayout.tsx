@@ -2,7 +2,7 @@ import heroBw from "@/assets/home-hero-bw.jpg";
 import editorialBw from "@/assets/editorial-bw-2.jpg";
 import { useState, useEffect, ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
+import { Menu, X, ArrowUpRight, ChevronDown, MessagesSquare } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -262,7 +262,44 @@ const CardDeck = ({ cards }: { cards: string[] }) => {
   );
 };
 
-export const PageHero = ({ kicker, title, accent, text, image, video, cards, ctaLabel, ctaTo }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; ctaLabel?: string; ctaTo?: string }) => {
+const CommunityShowcase = () => {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
+      <div className="relative w-full max-w-[220px] aspect-[9/16]">
+        <div className="absolute -top-4 left-1/2 z-20 flex w-[94%] -translate-x-1/2 items-center gap-3 rounded-2xl bg-background px-3.5 py-2.5 shadow-xl ring-1 ring-black/5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary font-heading text-[11px] font-bold text-primary-foreground">PH</span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-bold leading-tight">Mentor IA</p>
+            <p className="truncate text-[10px] leading-tight text-muted-foreground">Protocolo Hack · Comunidad</p>
+          </div>
+          <span className="flex h-3.5 items-end gap-0.5">
+            <span className="h-full w-0.5 origin-bottom animate-eq bg-primary" style={{ animationDelay: "0ms" }} />
+            <span className="h-full w-0.5 origin-bottom animate-eq bg-primary" style={{ animationDelay: "180ms" }} />
+            <span className="h-full w-0.5 origin-bottom animate-eq bg-primary" style={{ animationDelay: "360ms" }} />
+          </span>
+        </div>
+        <div className="absolute inset-0 top-7 overflow-hidden rounded-[2.25rem] border-[6px] border-foreground bg-foreground shadow-2xl">
+          <div className="flex h-full flex-col bg-background">
+            <div className="flex items-center gap-1.5 px-4 pb-2 pt-4">
+              <MessagesSquare className="h-3.5 w-3.5 text-primary" />
+              <span className="font-heading text-[10px] font-bold uppercase tracking-tight">Comunidad</span>
+            </div>
+            <div className="flex-1 space-y-2.5 px-3.5 py-2">
+              <div className="max-w-[78%] rounded-2xl rounded-tl-sm bg-secondary px-3 py-2 text-[11px] leading-snug">¿Cómo armo mi primer funnel?</div>
+              <div className="ml-auto max-w-[78%] rounded-2xl rounded-tr-sm bg-primary px-3 py-2 text-[11px] leading-snug text-primary-foreground">Arranca por el lead magnet y mide la conversión del primer paso.</div>
+              <div className="max-w-[78%] rounded-2xl rounded-tl-sm bg-secondary px-3 py-2 text-[11px] leading-snug">Gracias, lo pruebo hoy 🚀</div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute -bottom-3 left-1/2 z-20 -translate-x-1/2">
+          <span className="pill bg-background text-[10px] shadow-lg">PROTOCOLOHACK.COM</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -278,15 +315,17 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, cta
               <Button asChild className="mt-6 w-fit rounded-full"><Link to={ctaTo}>{ctaLabel}</Link></Button>
             )}
           </div>
-          <div className="relative order-1 md:order-2 min-h-[40vh]">
+          <div className={`relative order-1 md:order-2 ${showcase ? "min-h-[30rem] md:min-h-[40vh]" : "min-h-[40vh]"}`}>
             {cards ? (
               <CardDeck cards={cards} />
+            ) : showcase ? (
+              <CommunityShowcase />
             ) : video ? (
               <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
             ) : (
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
             )}
-            {!cards && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
+            {!cards && !showcase && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
           </div>
         </div>
       </section>
