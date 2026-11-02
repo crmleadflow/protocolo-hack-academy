@@ -149,7 +149,18 @@ export default function AdminMembersPage() {
                 if (!toDelete) return;
                 const id = toDelete.id;
                 setToDelete(null);
-                await run(id + "del", { action: "delete", user_id: id });
+                setBusy(id + "del");
+                try {
+                  const { error } = await supabase.rpc("admin_delete_member", { target_id: id });
+                  if (error) throw error;
+                  toast.success("Guardado");
+                  qc.invalidateQueries({ queryKey: ["admin-members"] });
+                  qc.invalidateQueries({ queryKey: ["admin-audit"] });
+                } catch (e) {
+                  toast.error((e as Error).message);
+                } finally {
+                  setBusy(null);
+                }
               }}
             >
               Eliminar definitivamente
