@@ -8,6 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Member = { id: string; email: string; name: string | null; roles: string[]; status: string; last_sign_in_at: string | null };
 const ROLES = [
@@ -16,7 +26,7 @@ const ROLES = [
   { key: "member", label: "Miembro" },
 ];
 const ACTIONS: Record<string, string> = {
-  role_granted: "Rol otorgado", role_revoked: "Rol retirado", account_suspended: "Cuenta suspendida", account_activated: "Cuenta activada",
+  role_granted: "Rol otorgado", role_revoked: "Rol retirado", account_suspended: "Cuenta suspendida", account_activated: "Cuenta activada", member_deleted: "Miembro eliminado",
 };
 
 const call = async (body: Record<string, unknown>) => {
@@ -32,6 +42,7 @@ export default function AdminMembersPage() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [toDelete, setToDelete] = useState<Member | null>(null);
   const { data, isLoading } = useQuery({ queryKey: ["admin-members"], queryFn: () => call({ action: "list" }) });
   const { data: audit } = useQuery({ queryKey: ["admin-audit"], queryFn: () => call({ action: "audit" }) });
   const members: Member[] = data?.members ?? [];
@@ -66,7 +77,7 @@ export default function AdminMembersPage() {
           <div className="overflow-x-auto rounded-3xl border border-border">
             <table className="w-full text-sm">
               <thead className="bg-card text-left text-muted-foreground">
-                <tr><th className="p-4">Miembro</th>{ROLES.map((r) => <th key={r.key} className="p-4">{r.label}</th>)}<th className="p-4">Estado</th></tr>
+                <tr><th className="p-4">Miembro</th>{ROLES.map((r) => <th key={r.key} className="p-4">{r.label}</th>)}<th className="p-4">Estado</th><th className="p-4">Acciones</th></tr>
               </thead>
               <tbody>
                 {filtered.map((m) => {
@@ -93,6 +104,14 @@ export default function AdminMembersPage() {
                         </Button>
                         {m.status === "suspended" && <p className="mt-1 text-xs text-destructive">Suspendida</p>}
                       </td>
+                      <td className="p-4">
+                        <Button
+                          size="sm" variant="destructive" className="rounded-full" disabled={self || busy !== null}
+                          onClick={() => setToDelete(m)}
+                        >
+                          Eliminar
+                        </Button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -106,13 +125,38 @@ export default function AdminMembersPage() {
             {(audit?.entries ?? []).length === 0 && <p className="text-sm text-muted-foreground">Sin cambios registrados todavía.</p>}
             {(audit?.entries ?? []).map((e: any) => (
               <div key={e.id} className="flex flex-wrap justify-between gap-2 rounded-2xl bg-card px-4 py-3 text-sm">
-                <span><b>{ACTIONS[e.action] ?? e.action}</b>{e.details?.role ? ` · ${e.details.role}` : ""} → {byId(e.target_user_id)}</span>
+                <span><b>{ACTIONS[e.action] ?? e.action}</b>{e.details?.role ? ` · ${e.details.role}` : ""} → {e.action === "member_deleted" ? (e.details?.email ?? byId(e.target_user_id)) : byId(e.target_user_id)}</span>
                 <span className="text-muted-foreground">por {e.actor_id ? byId(e.actor_id) : "sistema"} · {new Date(e.created_at).toLocaleString("es")}</span>
               </div>
             ))}
           </div>
         </section>
       </div>
+
+      <AlertDialog open={!!toDelete} onOpenChange={(v) => !v && setToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar a {toDelete?.name || toDelete?.email}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se borra la cuenta por completo y pierde el acceso a la plataforma.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                if (!toDelete) return;
+                const id = toDelete.id;
+                setToDelete(null);
+                await run(id + "del", { action: "delete", user_id: id });
+              }}
+            >
+              Eliminar definitivamente
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }

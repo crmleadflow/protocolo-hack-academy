@@ -7,6 +7,7 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("list") }),
   z.object({ action: z.literal("set_role"), user_id: z.string().uuid(), role: z.enum(ROLES), enabled: z.boolean() }),
   z.object({ action: z.literal("set_status"), user_id: z.string().uuid(), status: z.enum(["active", "suspended"]), reason: z.string().max(300).optional() }),
+  z.object({ action: z.literal("delete"), user_id: z.string().uuid() }),
   z.object({ action: z.literal("audit") }),
 ]);
 
@@ -82,6 +83,14 @@ Deno.serve(async (req) => {
         if (error) return json({ error: error.message }, 500);
       }
       await admin.from("audit_log").insert({ actor_id: actor, action: b.enabled ? "role_granted" : "role_revoked", target_user_id: b.user_id, details: { role: b.role } });
+      return json({ ok: true });
+    }
+
+    if (b.action === "delete") {
+      const { data: targetUser } = await admin.auth.admin.getUserById(b.user_id);
+      const { error: delErr } = await admin.auth.admin.deleteUser(b.user_id);
+      if (delErr) return json({ error: delErr.message }, 500);
+      await admin.from("audit_log").insert({ actor_id: actor, action: "member_deleted", target_user_id: b.user_id, details: { email: targetUser?.user?.email ?? null } });
       return json({ ok: true });
     }
 
