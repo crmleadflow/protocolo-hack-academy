@@ -401,12 +401,15 @@ const ComunidadJoinBox = ({ startOpen }: { startOpen?: boolean }) => {
     const parsed = joinSchema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     setLoading(true);
+    // "contacto" en vez de "comunidad": el enum del edge function desplegado aún no tiene "comunidad"
+    // (ese backend se despliega aparte, vía Lovable). Cambiar a "comunidad" cuando se vuelva a desplegar.
     const { error } = await supabase.functions.invoke("submit-request", {
       body: {
-        request_type: "comunidad",
+        request_type: "contacto",
         name: parsed.data.full_name,
         email: parsed.data.email,
         phone: parsed.data.phone,
+        message: "Quiere unirse a la comunidad",
         page_url: window.location.href.split("#")[0],
       },
     });
