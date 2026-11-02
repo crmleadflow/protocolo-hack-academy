@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
+import { toast } from "sonner";
 import { ShoppingBag, Check, ArrowRight, Download, CalendarDays, MessagesSquare, Loader2, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { PublicLayout, PageHero } from "@/components/public/PublicLayout";
 import { RequestForm } from "@/components/public/RequestForm";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useCatalog } from "@/pages/CommercePages";
 import { cart, useCart } from "@/lib/cart";
 import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, SEMINARS, CAPACITATIONS, BOOTCAMP_WEEKS } from "@/components/public/content";
@@ -381,16 +384,108 @@ export const EventosPage = () => (
   </PublicLayout>
 );
 
+const joinSchema = z.object({
+  full_name: z.string().trim().min(3, "Escribe tu nombre completo").max(120),
+  email: z.string().trim().email("Correo inválido").max(255),
+  phone: z.string().trim().regex(/^\+?[0-9\s-]{7,20}$/, "Teléfono inválido"),
+});
+
+const ComunidadJoinBox = ({ startOpen }: { startOpen?: boolean }) => {
+  const { user } = useAuth();
+  const [step, setStep] = useState<"idle" | "form" | "ready">(startOpen ? "form" : "idle");
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ full_name: "", email: "", phone: "" });
+
+  const submitLead = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = joinSchema.safeParse(form);
+    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    setLoading(true);
+    const { error } = await supabase.functions.invoke("submit-request", {
+      body: {
+        request_type: "comunidad",
+        name: parsed.data.full_name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        page_url: window.location.href.split("#")[0],
+      },
+    });
+    setLoading(false);
+    if (error) return toast.error("No pudimos guardar tus datos. Inténtalo de nuevo.");
+    setStep("ready");
+  };
+
+  const google = async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/login` },
+    });
+    if (error) {
+      setLoading(false);
+      toast.error("No pudimos entrar con Google");
+    }
+  };
+
+  if (user) {
+    return (
+      <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
+        <div className="flex items-center gap-4"><MessagesSquare className="h-8 w-8 text-primary" /><p className="font-heading text-xl font-bold uppercase tracking-tight">Conversaciones por programa, con el Mentor IA respondiendo.</p></div>
+        <Button asChild className="rounded-full"><Link to="/community">Únete a la comunidad</Link></Button>
+      </Box>
+    );
+  }
+
+  if (step === "idle") {
+    return (
+      <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
+        <div className="flex items-center gap-4"><MessagesSquare className="h-8 w-8 text-primary" /><p className="font-heading text-xl font-bold uppercase tracking-tight">Conversaciones por programa, con el Mentor IA respondiendo.</p></div>
+        <Button className="rounded-full" onClick={() => setStep("form")}>Únete a la comunidad</Button>
+      </Box>
+    );
+  }
+
+  return (
+    <Box className="p-8">
+      <p className="font-heading text-xl font-bold uppercase tracking-tight">Únete a la comunidad</p>
+      {step === "form" ? (
+        <form onSubmit={submitLead} className="mt-4 space-y-3 max-w-md">
+          <Input required placeholder="Nombre completo" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="h-12 rounded-xl" />
+          <Input type="email" required placeholder="Correo" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-12 rounded-xl" />
+          <Input type="tel" required placeholder="Celular (ej. +57 300 000 0000)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-12 rounded-xl" />
+          <Button type="submit" className="w-full rounded-full" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Continuar"}
+          </Button>
+        </form>
+      ) : (
+        <div className="mt-4 max-w-md">
+          <p className="text-sm text-muted-foreground mb-3">¡Gracias, {form.full_name.split(" ")[0]}! Ahora entra con tu cuenta de Google.</p>
+          <Button onClick={google} className="w-full rounded-full" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar con Google"}
+          </Button>
+        </div>
+      )}
+    </Box>
+  );
+};
+
 export const ComunidadPublicPage = () => {
   const { user } = useAuth();
+  const [heroStep, setHeroStep] = useState(false);
   return (
     <PublicLayout>
-      <PageHero kicker="Comunidad" title="No escales" accent="solo." text="Un espacio para compartir avances, resolver dudas y conectar con emprendedores que están implementando." image={comunidadHeroImg} ctaLabel="Únete a la comunidad" ctaTo="/community" />
-      <section className="mx-auto max-w-7xl px-5">
-        <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
-          <div className="flex items-center gap-4"><MessagesSquare className="h-8 w-8 text-primary" /><p className="font-heading text-xl font-bold uppercase tracking-tight">Conversaciones por programa, con el Mentor IA respondiendo.</p></div>
-          <Button asChild className="rounded-full"><Link to={user ? "/community" : "/login"}>{user ? "Únete a la comunidad" : "Entrar con Google"}</Link></Button>
-        </Box>
+      <PageHero
+        kicker="Comunidad"
+        title="No escales"
+        accent="solo."
+        text="Un espacio para compartir avances, resolver dudas y conectar con emprendedores que están implementando."
+        image={comunidadHeroImg}
+        ctaLabel="Únete a la comunidad"
+        ctaTo="/community"
+        ctaOnClick={user ? undefined : () => { setHeroStep(true); document.getElementById("unete-comunidad")?.scrollIntoView({ behavior: "smooth" }); }}
+      />
+      <section className="mx-auto max-w-7xl px-5" id="unete-comunidad">
+        <ComunidadJoinBox key={heroStep ? "open" : "closed"} startOpen={heroStep} />
       </section>
     </PublicLayout>
   );

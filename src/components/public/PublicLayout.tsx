@@ -299,7 +299,7 @@ const CommunityShowcase = () => {
   );
 };
 
-export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string }) => {
+export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -311,7 +311,10 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
               {title} {accent && <span className="serif-accent text-primary">{accent}</span>}
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">{text}</p>
-            {ctaLabel && ctaTo && (
+            {ctaLabel && ctaOnClick && (
+              <Button onClick={ctaOnClick} className="mt-6 w-fit rounded-full">{ctaLabel}</Button>
+            )}
+            {ctaLabel && ctaTo && !ctaOnClick && (
               <Button asChild className="mt-6 w-fit rounded-full"><Link to={ctaTo}>{ctaLabel}</Link></Button>
             )}
           </div>
