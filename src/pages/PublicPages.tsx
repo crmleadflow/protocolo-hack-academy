@@ -243,15 +243,35 @@ export const ConferenciasPage = () => (
   </PublicLayout>
 );
 
-export const RecursosPage = () => (
-  <PublicLayout>
-    <PageHero kicker="Recursos" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te enviamos el recurso." image={recursosHeroImg} />
-    <TwoCol
-      left={<div className="grid gap-3 sm:grid-cols-2">{RESOURCES.map((r) => (
-        <Box key={r.name}><Download className="h-5 w-5 text-primary" /><p className="mt-4 font-heading font-semibold">{r.name}</p><p className="text-xs text-muted-foreground">{r.type}</p></Box>
-      ))}</div>}
-      right={<RequestForm type="recurso" title="Recibe los recursos gratis" cta="Enviármelos" />}
-    />
+const usePublicResources = () =>
+  useQuery({
+    queryKey: ["public-resources"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("public_resources")
+        .select("id,title,type,kind,url")
+        .eq("enabled", true)
+        .order("sort_order")
+        .order("created_at");
+      if (error) throw error;
+      return data as { id: string; title: string; type: string; kind: "file" | "link"; url: string }[];
+    },
+  });
+
+export const RecursosPage = () => {
+  const { data: liveResources = [], isLoading } = usePublicResources();
+  const showLive = !isLoading && liveResources.length > 0;
+  return (
+    <PublicLayout>
+      <PageHero kicker="Recursos" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te los entregamos al instante." image={recursosHeroImg} />
+      <TwoCol
+        left={<div className="grid gap-3 sm:grid-cols-2">
+          {(showLive ? liveResources : RESOURCES.map((r) => ({ id: r.name, title: r.name, type: r.type }))).map((r) => (
+            <Box key={r.id}><Download className="h-5 w-5 text-primary" /><p className="mt-4 font-heading font-semibold">{r.title}</p><p className="text-xs text-muted-foreground">{r.type}</p></Box>
+          ))}
+        </div>}
+        right={<RequestForm type="recurso" title="Recibe los recursos gratis" cta="Enviármelos" deliverResources={showLive ? liveResources : undefined} />}
+      />
     <section className="mx-auto max-w-7xl px-5">
       <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
         <div className="flex items-center gap-4">
@@ -264,8 +284,9 @@ export const RecursosPage = () => (
         <Button asChild className="rounded-full"><Link to="/herramientas">Ver herramientas <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
       </Box>
     </section>
-  </PublicLayout>
-);
+    </PublicLayout>
+  );
+};
 
 const TOOL_LINKS: Record<string, { to: string; name: string }> = {
   [NEURO_SCANNER_TOOL_ID]: { to: "/neuro-scanner", name: "Neuro Analyzer Pro" },

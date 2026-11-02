@@ -960,6 +960,51 @@ export type Database = {
           },
         ]
       }
+      public_resources: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          file_name: string | null
+          file_size: number | null
+          id: string
+          kind: string
+          sort_order: number
+          title: string
+          type: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          kind?: string
+          sort_order?: number
+          title: string
+          type?: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          kind?: string
+          sort_order?: number
+          title?: string
+          type?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       lessons: {
         Row: {
           created_at: string

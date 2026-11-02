@@ -22,6 +22,7 @@ import ProducerCourseEditPage from "./pages/ProducerCourseEditPage";
 import AdminStudentsPage from "./pages/AdminStudentsPage";
 import AdminMembersPage from "./pages/AdminMembersPage";
 import AdminLeadsPage from "./pages/AdminLeadsPage";
+import AdminResourcesPage from "./pages/AdminResourcesPage";
 import { CartPage, OrdersPage } from "./pages/CommercePages";
 import CheckoutPage from "./pages/CheckoutPage";
 import CryptoPaymentPage from "./pages/CryptoPaymentPage";
@@ -219,6 +220,7 @@ const App = () => (
             />
             <Route path="/producer/members" element={<ProtectedRoute requireAdmin><AdminMembersPage /></ProtectedRoute>} />
             <Route path="/producer/leads" element={<ProtectedRoute requireAdmin><AdminLeadsPage /></ProtectedRoute>} />
+            <Route path="/producer/resources" element={<ProtectedRoute requireAdmin><AdminResourcesPage /></ProtectedRoute>} />
             <Route path="/carrito" element={<CartPage />} />
             <Route path="/mis-compras" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
             <Route

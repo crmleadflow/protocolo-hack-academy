@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { z } from "zod";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, Download, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+
+type DeliverableResource = { id: string; title: string; type: string; kind: "file" | "link"; url: string };
 
 const schema = z.object({
   name: z.string().trim().min(1, "Escribe tu nombre").max(120),
@@ -22,9 +24,11 @@ type Props = {
   cta?: string;
   showCompany?: boolean;
   context?: string;
+  /** Si se pasa, al enviar el formulario se entregan estos recursos al instante (sin esperar correo ni a una persona). */
+  deliverResources?: DeliverableResource[];
 };
 
-export const RequestForm = ({ type, title, cta = "Enviar solicitud", showCompany, context }: Props) => {
+export const RequestForm = ({ type, title, cta = "Enviar solicitud", showCompany, context, deliverResources }: Props) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -68,8 +72,26 @@ export const RequestForm = ({ type, title, cta = "Enviar solicitud", showCompany
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Check />
         </div>
-        <p className="mt-4 font-heading text-xl font-semibold">Solicitud enviada</p>
-        <p className="mt-1 text-sm text-muted-foreground">Guardamos tu solicitud. Nuestro equipo la revisará.</p>
+        <p className="mt-4 font-heading text-xl font-semibold">{deliverResources?.length ? "¡Listo! Aquí tienes tu recurso" : "Solicitud enviada"}</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {deliverResources?.length ? "Descárgalo ahora mismo. También guardamos tu solicitud." : "Guardamos tu solicitud. Nuestro equipo la revisará."}
+        </p>
+        {!!deliverResources?.length && (
+          <div className="mt-6 space-y-2 text-left">
+            {deliverResources.map((r) => (
+              <a
+                key={r.id}
+                href={r.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-3 rounded-2xl bg-secondary px-4 py-3 text-sm font-medium transition-colors hover:bg-secondary/70"
+              >
+                <span>{r.title}</span>
+                {r.kind === "link" ? <ExternalLink className="h-4 w-4 shrink-0" /> : <Download className="h-4 w-4 shrink-0" />}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     );
 

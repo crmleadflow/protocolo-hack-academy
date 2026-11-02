@@ -113,6 +113,10 @@ const adminSections: { label: string; items: NavEntry[] }[] = [
     ],
   },
   {
+    label: "Marketing",
+    items: [{ title: "Banco de recursos", url: "/producer/resources", icon: Gift }],
+  },
+  {
     label: "Sistema",
     items: [{ title: "Configuración", url: "/producer/settings", icon: Settings }],
   },
