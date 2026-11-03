@@ -34,7 +34,7 @@ import PaymentCancelPage from "./pages/PaymentCancelPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import AchievementsPage from "./pages/AchievementsPage";
-import CommunityPage from "./pages/CommunityPage";
+import { CommunityRoute } from "./components/community/CommunityRoute";
 import MentorPage from "./pages/MentorPage";
 import NeuroScannerPage from "./pages/NeuroScannerPage";
 import ProducerMentorPage from "./pages/ProducerMentorPage";
@@ -166,11 +166,7 @@ const App = () => (
             />
             <Route
               path="/community"
-              element={
-                <ProtectedRoute>
-                  <CommunityPage />
-                </ProtectedRoute>
-              }
+              element={<CommunityRoute />}
             />
             <Route
               path="/mentor"

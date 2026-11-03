@@ -24,6 +24,7 @@ import marketplaceCard3 from "@/assets/marketplace-card-3.jpg";
 import marketplaceCard4 from "@/assets/marketplace-card-4.jpg";
 import marketplaceShopCart from "@/assets/marketplace-shop-cart.webp";
 import mentoriasHeroImg from "@/assets/mentorias-hero-creator.webp";
+import { JoinCommunityForm } from "@/components/community/JoinCommunityForm";
 import comunidadHeroImg from "@/assets/comunidad-hero-persona.webp";
 
 const Grid = ({ children }: { children: React.ReactNode }) => (
@@ -384,51 +385,9 @@ export const EventosPage = () => (
   </PublicLayout>
 );
 
-const joinSchema = z.object({
-  full_name: z.string().trim().min(3, "Escribe tu nombre completo").max(120),
-  email: z.string().trim().email("Correo inválido").max(255),
-  phone: z.string().trim().regex(/^\+?[0-9\s-]{7,20}$/, "Teléfono inválido"),
-});
-
 const ComunidadJoinBox = ({ startOpen }: { startOpen?: boolean }) => {
   const { user } = useAuth();
-  const [step, setStep] = useState<"idle" | "form" | "ready">(startOpen ? "form" : "idle");
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ full_name: "", email: "", phone: "" });
-
-  const submitLead = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = joinSchema.safeParse(form);
-    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
-    setLoading(true);
-    // "contacto" en vez de "comunidad": el enum del edge function desplegado aún no tiene "comunidad"
-    // (ese backend se despliega aparte, vía Lovable). Cambiar a "comunidad" cuando se vuelva a desplegar.
-    const { error } = await supabase.functions.invoke("submit-request", {
-      body: {
-        request_type: "contacto",
-        name: parsed.data.full_name,
-        email: parsed.data.email,
-        phone: parsed.data.phone,
-        message: "Quiere unirse a la comunidad",
-        page_url: window.location.href.split("#")[0],
-      },
-    });
-    setLoading(false);
-    if (error) return toast.error("No pudimos guardar tus datos. Inténtalo de nuevo.");
-    setStep("ready");
-  };
-
-  const google = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/login` },
-    });
-    if (error) {
-      setLoading(false);
-      toast.error("No pudimos entrar con Google");
-    }
-  };
+  const [open, setOpen] = useState(!!startOpen);
 
   if (user) {
     return (
@@ -439,35 +398,19 @@ const ComunidadJoinBox = ({ startOpen }: { startOpen?: boolean }) => {
     );
   }
 
-  if (step === "idle") {
+  if (!open) {
     return (
       <Box className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between p-8">
         <div className="flex items-center gap-4"><MessagesSquare className="h-8 w-8 text-primary" /><p className="font-heading text-xl font-bold uppercase tracking-tight">Conversaciones por programa, con el Mentor IA respondiendo.</p></div>
-        <Button className="rounded-full" onClick={() => setStep("form")}>Únete a la comunidad</Button>
+        <Button className="rounded-full" onClick={() => setOpen(true)}>Únete a la comunidad</Button>
       </Box>
     );
   }
 
   return (
     <Box className="p-8">
-      <p className="font-heading text-xl font-bold uppercase tracking-tight">Únete a la comunidad</p>
-      {step === "form" ? (
-        <form onSubmit={submitLead} className="mt-4 space-y-3 max-w-md">
-          <Input required placeholder="Nombre completo" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="h-12 rounded-xl" />
-          <Input type="email" required placeholder="Correo" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-12 rounded-xl" />
-          <Input type="tel" required placeholder="Celular (ej. +57 300 000 0000)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-12 rounded-xl" />
-          <Button type="submit" className="w-full rounded-full" disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Continuar"}
-          </Button>
-        </form>
-      ) : (
-        <div className="mt-4 max-w-md">
-          <p className="text-sm text-muted-foreground mb-3">¡Gracias, {form.full_name.split(" ")[0]}! Ahora entra con tu cuenta de Google.</p>
-          <Button onClick={google} className="w-full rounded-full" disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar con Google"}
-          </Button>
-        </div>
-      )}
+      <p className="font-heading text-xl font-bold uppercase tracking-tight mb-4">Únete a la comunidad</p>
+      <JoinCommunityForm />
     </Box>
   );
 };

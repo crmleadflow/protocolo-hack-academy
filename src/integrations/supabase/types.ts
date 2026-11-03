@@ -1633,6 +1633,7 @@ export type Database = {
           currency: string
           description: string | null
           id: string
+          is_open_community: boolean
           is_published: boolean
           mentor_id: string | null
           price: number
@@ -1648,6 +1649,7 @@ export type Database = {
           currency?: string
           description?: string | null
           id?: string
+          is_open_community?: boolean
           is_published?: boolean
           mentor_id?: string | null
           price?: number
@@ -1663,6 +1665,7 @@ export type Database = {
           currency?: string
           description?: string | null
           id?: string
+          is_open_community?: boolean
           is_published?: boolean
           mentor_id?: string | null
           price?: number
@@ -1905,6 +1908,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      join_open_community: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       increment_post_views: {
         Args: { _post_id: string }
         Returns: undefined

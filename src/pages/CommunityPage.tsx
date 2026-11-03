@@ -18,6 +18,7 @@ import { useMembers } from "@/hooks/useCommunityModules";
 import { useCommunityPosts, CommunityPost } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
+import { useOpenCommunity } from "@/hooks/useOpenCommunity";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -33,6 +34,8 @@ const CommunityPage: React.FC = () => {
   const { isAdmin, isStaff, user } = useAuth();
   const { programs: allPrograms, isLoading: programsLoading } = useStudentPrograms();
   const { enrollments } = useEnrollment();
+  const { program: openProgram, isLoading: openLoading, join: joinOpen } = useOpenCommunity();
+  const [joining, setJoining] = useState(false);
   
   const [activeTab, setActiveTab] = useState<TabType>("chat");
   const [selectedProgramId, setSelectedProgramId] = useState<string>("");
@@ -41,14 +44,32 @@ const CommunityPage: React.FC = () => {
 
   // Filter programs to only show those with active enrollments (or all for admins)
   const programs = React.useMemo(() => {
-    if (isAdmin) return allPrograms;
-    
-    return allPrograms.filter((program) => {
-      const enrollment = enrollments.find((e) => e.program_id === program.id);
-      return enrollment?.status === "active" && 
-        (!enrollment.expires_at || new Date(enrollment.expires_at) > new Date());
-    });
-  }, [allPrograms, enrollments, isAdmin]);
+    const base = isAdmin
+      ? allPrograms
+      : allPrograms.filter((program) => {
+          const enrollment = enrollments.find((e) => e.program_id === program.id);
+          return enrollment?.status === "active" &&
+            (!enrollment.expires_at || new Date(enrollment.expires_at) > new Date());
+        });
+    // La comunidad abierta no está en el catálogo: solo la ve quien está inscrito (o un admin).
+    if (openProgram && !base.some((p) => p.id === openProgram.id)) {
+      return [
+        { ...openProgram, modules: [], totalLessons: 0, completedLessons: 0, progress: 0 },
+        ...base,
+      ];
+    }
+    return base;
+  }, [allPrograms, enrollments, isAdmin, openProgram]);
+
+  const handleJoinOpen = async () => {
+    setJoining(true);
+    try {
+      await joinOpen();
+    } catch {
+      toast.error("No pudimos unirte. Inténtalo de nuevo.");
+    }
+    setJoining(false);
+  };
 
   const { posts, createPost, toggleLike, refetch } = useCommunityPosts(
     selectedProgramId || null
@@ -154,19 +175,22 @@ const CommunityPage: React.FC = () => {
                 <div><p className="display text-3xl md:text-5xl text-primary">{posts.filter(p=>p.is_resolved).length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Resueltas</p></div>
               </div>
               {/* Program Selector */}
-              {programsLoading ? (
+              {programsLoading || openLoading ? (
                 <Skeleton className="h-10 w-64" />
               ) : programs.length === 0 ? (
                 <div className="rounded-[2rem] bg-secondary p-6 text-center">
                   <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <h3 className="font-heading font-semibold mb-2">
-                    No tienes programas activos
+                    Únete a la comunidad
                   </h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Inscríbete en un programa para acceder a la comunidad
+                    Es gratis: entras al chat y conoces a los demás miembros
                   </p>
-                  <Button onClick={() => navigate("/catalog")}>
-                    Explorar Programas
+                  <Button onClick={handleJoinOpen} disabled={joining}>
+                    {joining ? "Uniéndote..." : "Unirme a la comunidad"}
+                  </Button>
+                  <Button variant="link" onClick={() => navigate("/catalog")}>
+                    Ver programas
                   </Button>
                 </div>
               ) : (

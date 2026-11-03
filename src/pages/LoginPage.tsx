@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { z } from "zod";
+import { readPendingJoin, clearPendingJoin } from "@/lib/joinCommunity";
 
 const schema = z.object({
   full_name: z.string().trim().min(3, "Escribe tu nombre completo").max(120),
@@ -25,17 +26,43 @@ const LoginPage: React.FC = () => {
 
   const from = (location.state as any)?.from?.pathname || "/dashboard";
 
+  // Si venía del formulario de la comunidad: inscribirlo y llevarlo directo al chat.
+  const finishJoin = async () => {
+    await supabase.rpc("join_open_community");
+    clearPendingJoin();
+    navigate("/community", { replace: true });
+  };
+
   useEffect(() => {
     if (!user) return;
     setChecking(true);
+    const pending = readPendingJoin();
     supabase
       .from("profiles")
       .select("full_name, phone, email")
       .eq("user_id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(async ({ data }) => {
+        let complete = !!(data?.full_name && data?.phone);
+        if (!complete && pending) {
+          const parsed = schema.safeParse({
+            full_name: data?.full_name || pending.full_name,
+            email: data?.email || user.email || pending.email,
+            phone: data?.phone || pending.phone,
+          });
+          if (parsed.success) {
+            const { error } = data
+              ? await supabase.from("profiles").update(parsed.data).eq("user_id", user.id)
+              : await supabase.from("profiles").insert({ user_id: user.id, ...parsed.data });
+            complete = !error;
+          }
+        }
+        if (complete) {
+          if (pending) return finishJoin();
+          setChecking(false);
+          return navigate(from, { replace: true });
+        }
         setChecking(false);
-        if (data?.full_name && data?.phone) return navigate(from, { replace: true });
         setForm({
           full_name: data?.full_name || (user.user_metadata?.full_name as string) || "",
           email: data?.email || user.email || "",
@@ -69,6 +96,7 @@ const LoginPage: React.FC = () => {
     setLoading(false);
     if (error) return toast.error("No pudimos guardar tus datos", { description: error.message });
     toast.success("¡Bienvenido!");
+    if (readPendingJoin()) return finishJoin();
     navigate(from, { replace: true });
   };
 
