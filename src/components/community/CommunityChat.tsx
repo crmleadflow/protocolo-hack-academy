@@ -14,11 +14,17 @@ import {
   Loader2,
   MessagesSquare,
   Smile,
-  Trash2
+  Trash2,
+  Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useCommunityChat, ChatMessage } from "@/hooks/useCommunity";
+import { useCommunityChat, ChatMessage, ContentType } from "@/hooks/useCommunity";
+import { useChallenges, useOpportunities } from "@/hooks/useCommunityModules";
+import { usePolls } from "@/hooks/useCommunityPolls";
+import { ChatCard, CARD_KINDS, CardContext } from "@/components/community/ChatCards";
+import { SendItemDialog, SendKind, SEND_LABELS } from "@/components/community/SendItemDialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,6 +34,10 @@ import { toast } from "sonner";
 interface CommunityChatProps {
   programId: string;
   programTitle: string;
+  isStaff: boolean;
+  createPost: (title: string, content: string, type: ContentType) => Promise<{ id: string } | null>;
+  onOpenPost: (postId: string) => void;
+  onItemCreated: () => void;
 }
 
 function formatFileSize(bytes: number) {
@@ -56,9 +66,26 @@ function isVideoFile(fileType: string | null) {
 export const CommunityChat: React.FC<CommunityChatProps> = ({
   programId,
   programTitle,
+  isStaff,
+  createPost,
+  onOpenPost,
+  onItemCreated,
 }) => {
   const { user, isAdmin } = useAuth();
-  const { messages, isLoading, isUploading, sendMessage, uploadFile, refetch } = useCommunityChat(programId);
+  const { messages, isLoading, isUploading, sendMessage, sendCard, uploadFile, refetch } = useCommunityChat(programId);
+  const challenges = useChallenges(programId, isStaff);
+  const opportunities = useOpportunities(programId, isStaff);
+  const polls = usePolls(programId, user?.id);
+  const [sendKind, setSendKind] = useState<SendKind | null>(null);
+  const cardCtx: CardContext = { userId: user?.id, onOpenPost, challenges, opportunities, polls };
+  const sendKinds = (["discussion", "question", ...(isStaff ? ["challenge", "opportunity", "poll"] : [])]) as SendKind[];
+
+  const handleCardCreated = () => {
+    challenges.refresh();
+    opportunities.refresh();
+    polls.refresh();
+    onItemCreated();
+  };
 
   const handleDeleteMessage = async (messageId: string) => {
     if (!confirm("¿Estás seguro de eliminar este mensaje?")) return;
@@ -212,6 +239,7 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
               isOwn={message.user_id === user?.id}
               isAdmin={isAdmin}
               onDelete={() => handleDeleteMessage(message.id)}
+              cardCtx={cardCtx}
             />
           ))
         )}
@@ -256,6 +284,26 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
             accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
           />
           
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Enviar discusión, pregunta, reto, oportunidad o encuesta"
+                className="flex-shrink-0 hover:bg-primary/10 hover:text-primary"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {sendKinds.map((k) => (
+                <DropdownMenuItem key={k} onSelect={() => setSendKind(k)}>
+                  {SEND_LABELS[k]}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Button
             variant="ghost"
             size="icon"
@@ -308,6 +356,15 @@ export const CommunityChat: React.FC<CommunityChatProps> = ({
           Presiona Enter para enviar • Shift + Enter para nueva línea
         </p>
       </div>
+
+      <SendItemDialog
+        kind={sendKind}
+        programId={programId}
+        onClose={() => setSendKind(null)}
+        createPost={createPost}
+        sendCard={sendCard}
+        onCreated={handleCardCreated}
+      />
     </div>
   );
 };
@@ -317,16 +374,18 @@ interface MessageBubbleProps {
   isOwn: boolean;
   isAdmin?: boolean;
   onDelete?: () => void;
+  cardCtx: CardContext;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, isAdmin, onDelete }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, isAdmin, onDelete, cardCtx }) => {
+  const isCard = !!message.kind && CARD_KINDS.includes(message.kind) && !!message.ref_id;
   const hasFile = !!message.file_url;
   const isImage = isImageFile(message.file_type);
   const isVideo = isVideoFile(message.file_type);
   const FileIcon = getFileIcon(message.file_type);
   
   // Detectar si es un mensaje del Mentor IA
-  const isMentorMessage = message.content.startsWith("🤖 ");
+  const isMentorMessage = !isCard && message.content.startsWith("🤖 ");
 
   return (
     <div className={cn("flex gap-3 group", isOwn && !isMentorMessage && "flex-row-reverse")}>
@@ -392,11 +451,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, isAdmin, 
             "inline-block rounded-2xl overflow-hidden",
             isMentorMessage
               ? "bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/30 rounded-tl-md"
-              : isOwn
+              : isCard
+                ? "text-foreground"
+                : isOwn
                 ? "bg-primary text-primary-foreground rounded-tr-md"
                 : "bg-background/60 border border-border/50 rounded-tl-md"
           )}
         >
+          {isCard && <ChatCard message={message} ctx={cardCtx} />}
           {/* File attachment */}
           {hasFile && (
             <div className={cn("p-1", message.content && "pb-0")}>
@@ -443,7 +505,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, isAdmin, 
           )}
           
           {/* Text content */}
-          {message.content && (
+          {message.content && !isCard && (
             <p className="p-3 text-sm whitespace-pre-wrap">{message.content}</p>
           )}
         </div>

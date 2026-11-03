@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  Loader2, Upload, Link2, Trash2, Megaphone, Target, CalendarDays, BarChart3, ExternalLink, X, Plus,
+  Loader2, Upload, Link2, Trash2, Megaphone, Target, CalendarDays, BarChart3, ExternalLink, X, Plus, Briefcase,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +14,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
-import { useChallenges, useEvents } from "@/hooks/useCommunityModules";
+import { useEvents, useMembers } from "@/hooks/useCommunityModules";
+import { ChallengesSection } from "@/components/community/ChallengesSection";
+import { OpportunitiesSection } from "@/components/community/OpportunitiesSection";
 import { usePolls } from "@/hooks/useCommunityPolls";
 import { toast } from "sonner";
 
@@ -136,48 +138,10 @@ function AnnouncementTab({ programId, userId, onPosted }: { programId: string; u
   );
 }
 
-function ChallengeTab({ programId }: { programId: string }) {
-  const { challenges, create, setStatus, remove } = useChallenges(programId, true);
-  const [f, setF] = useState({ title: "", description: "", xp: "50", due: "" });
-  const submit = async () => {
-    if (!f.title.trim()) return toast.error("Escribe el título del reto");
-    await create({
-      title: f.title.trim(),
-      description: f.description.trim(),
-      xp_reward: Math.max(0, parseInt(f.xp, 10) || 0),
-      due_date: f.due ? new Date(f.due).toISOString() : null,
-    });
-    setF({ title: "", description: "", xp: "50", due: "" });
-  };
-  return (
-    <div className="space-y-6">
-      <div className={card}>
-        <Input placeholder="Título del reto" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} />
-        <Textarea placeholder="Qué deben hacer y qué deben entregar" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} />
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div><Label>Puntos que gana</Label><Input type="number" min={0} value={f.xp} onChange={(e) => setF({ ...f, xp: e.target.value })} /></div>
-          <div><Label>Fecha límite (opcional)</Label><Input type="date" value={f.due} onChange={(e) => setF({ ...f, due: e.target.value })} /></div>
-        </div>
-        <Button className="rounded-full" onClick={submit}>Publicar reto</Button>
-      </div>
-      <ul className="space-y-2">
-        {challenges.map((c) => (
-          <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-card p-4 text-sm">
-            <div className="min-w-0 flex-1">
-              <p className="font-medium">{c.title}</p>
-              <p className="text-xs text-muted-foreground">{c.xp_reward} pts · {c.status === "open" ? "Abierto" : "Cerrado"}</p>
-            </div>
-            <Button size="sm" variant="outline" className="rounded-full" onClick={() => setStatus(c.id, c.status === "open" ? "closed" : "open")}>
-              {c.status === "open" ? "Cerrar" : "Reabrir"}
-            </Button>
-            <Button size="icon" variant="ghost" aria-label="Eliminar reto" onClick={() => confirm("¿Eliminar este reto?") && remove(c.id)}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+function ChallengesAdmin({ programId, userId }: { programId: string; userId: string }) {
+  const { members } = useMembers(programId);
+  const nameFor = (id: string) => (id === userId ? "Tú" : members.find((m) => m.user_id === id)?.full_name || "Miembro");
+  return <ChallengesSection programId={programId} isStaff userId={userId} nameFor={nameFor} />;
 }
 
 function EventTab({ programId, userId }: { programId: string; userId: string }) {
@@ -350,13 +314,15 @@ export default function AdminCommunityPage() {
               <TabsList className="h-12 flex-wrap rounded-full bg-secondary p-1">
                 <TabsTrigger value="anuncio" className={TAB_CLS}><Megaphone className="h-4 w-4" /> Anuncio</TabsTrigger>
                 <TabsTrigger value="reto" className={TAB_CLS}><Target className="h-4 w-4" /> Reto</TabsTrigger>
+                <TabsTrigger value="oportunidad" className={TAB_CLS}><Briefcase className="h-4 w-4" /> Oportunidad</TabsTrigger>
                 <TabsTrigger value="evento" className={TAB_CLS}><CalendarDays className="h-4 w-4" /> Evento</TabsTrigger>
                 <TabsTrigger value="encuesta" className={TAB_CLS}><BarChart3 className="h-4 w-4" /> Encuesta</TabsTrigger>
               </TabsList>
               <TabsContent value="anuncio">
                 <AnnouncementTab key={postedCount} programId={current} userId={user!.id} onPosted={() => setPostedCount((n) => n + 1)} />
               </TabsContent>
-              <TabsContent value="reto"><ChallengeTab programId={current} /></TabsContent>
+              <TabsContent value="reto"><ChallengesAdmin programId={current} userId={user!.id} /></TabsContent>
+              <TabsContent value="oportunidad"><OpportunitiesSection programId={current} isStaff userId={user!.id} /></TabsContent>
               <TabsContent value="evento"><EventTab programId={current} userId={user!.id} /></TabsContent>
               <TabsContent value="encuesta"><PollTab programId={current} /></TabsContent>
             </Tabs>

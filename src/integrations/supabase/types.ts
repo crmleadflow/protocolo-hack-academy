@@ -399,6 +399,8 @@ export type Database = {
           file_url: string | null
           id: string
           is_deleted: boolean
+          kind: string
+          ref_id: string | null
           program_id: string
           user_id: string
         }
@@ -411,6 +413,8 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_deleted?: boolean
+          kind?: string
+          ref_id?: string | null
           program_id: string
           user_id: string
         }
@@ -423,6 +427,8 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_deleted?: boolean
+          kind?: string
+          ref_id?: string | null
           program_id?: string
           user_id?: string
         }

@@ -53,6 +53,8 @@ export interface ChatMessage {
   file_name?: string | null;
   file_size?: number | null;
   file_type?: string | null;
+  kind?: string;
+  ref_id?: string | null;
   author?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -626,11 +628,27 @@ export function useCommunityChat(programId: string | null) {
     }
   };
 
+  const sendCard = async (kind: string, refId: string, title: string) => {
+    if (!user || !programId) return null;
+    const { data, error } = await supabase
+      .from("community_messages")
+      .insert({ program_id: programId, user_id: user.id, content: title, kind, ref_id: refId })
+      .select()
+      .single();
+    if (error) {
+      console.error("Error sending card:", error);
+      toast.error("Se creó, pero no se pudo mostrar en el chat");
+      return null;
+    }
+    return data;
+  };
+
   return {
     messages,
     isLoading,
     isUploading,
     sendMessage,
+    sendCard,
     uploadFile,
     refetch: fetchMessages,
   };

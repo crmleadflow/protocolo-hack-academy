@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  MessageSquare, HelpCircle, MessagesSquare, Plus,
-  BookOpen, Users, TrendingUp, Sparkles,
-  Target, Crown, CalendarDays, Briefcase
-} from "lucide-react";
+import { MessagesSquare, BookOpen, Users, TrendingUp, Crown, CalendarDays } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { FloatingSidebarTrigger } from "@/components/ui/floating-sidebar-trigger";
@@ -13,19 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { CommunityPostCard } from "@/components/community/CommunityPostCard";
 import { CommunityChat } from "@/components/community/CommunityChat";
-import { CreatePostDialog } from "@/components/community/CreatePostDialog";
 import { PostDetailDialog } from "@/components/community/PostDetailDialog";
-import { QuickPostInput } from "@/components/community/QuickPostInput";
-import { ChallengesSection } from "@/components/community/ChallengesSection";
 import { LeaderboardSection } from "@/components/community/LeaderboardSection";
 import { EventsSection } from "@/components/community/EventsSection";
-import { OpportunitiesSection } from "@/components/community/OpportunitiesSection";
 import { MembersSection } from "@/components/community/MembersSection";
 import { useMembers } from "@/hooks/useCommunityModules";
-import { PollsSection } from "@/components/community/PollsSection";
-import { useCommunityPosts, CommunityPost, ContentType } from "@/hooks/useCommunity";
+import { useCommunityPosts, CommunityPost } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,15 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type TabType =
-  | "discussions"
-  | "questions"
-  | "chat"
-  | "retos"
-  | "ranking"
-  | "miembros"
-  | "eventos"
-  | "oportunidades";
+type TabType = "chat" | "ranking" | "miembros" | "eventos";
 
 const TAB_CLS =
   "gap-2 h-10 px-4 rounded-full uppercase tracking-wide text-xs font-semibold data-[state=active]:bg-foreground data-[state=active]:text-background whitespace-nowrap";
@@ -52,9 +34,8 @@ const CommunityPage: React.FC = () => {
   const { programs: allPrograms, isLoading: programsLoading } = useStudentPrograms();
   const { enrollments } = useEnrollment();
   
-  const [activeTab, setActiveTab] = useState<TabType>("discussions");
+  const [activeTab, setActiveTab] = useState<TabType>("chat");
   const [selectedProgramId, setSelectedProgramId] = useState<string>("");
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
   const [postDetailOpen, setPostDetailOpen] = useState(false);
 
@@ -69,7 +50,7 @@ const CommunityPage: React.FC = () => {
     });
   }, [allPrograms, enrollments, isAdmin]);
 
-  const { posts, isLoading: postsLoading, createPost, toggleLike, refetch } = useCommunityPosts(
+  const { posts, createPost, toggleLike, refetch } = useCommunityPosts(
     selectedProgramId || null
   );
 
@@ -91,25 +72,16 @@ const CommunityPage: React.FC = () => {
 
   const selectedProgram = programs.find((p) => p.id === selectedProgramId);
 
-  // Filter posts based on active tab
-  const filteredPosts = posts.filter((post) => {
-    if (activeTab === "discussions") {
-      return post.content_type === "discussion" || post.content_type === "announcement";
-    }
-    if (activeTab === "questions") {
-      return post.content_type === "question";
-    }
-    return false;
-  });
-
-  const handleCreatePost = async (title: string, content: string, type: ContentType) => {
-    await createPost(title, content, type);
-  };
-
   const handlePostClick = (post: CommunityPost) => {
     setSelectedPost(post);
     setPostDetailOpen(true);
     supabase.rpc("increment_post_views", { _post_id: post.id }).then(() => {});
+  };
+
+  const handleOpenPostById = (postId: string) => {
+    const post = posts.find((p) => p.id === postId);
+    if (post) handlePostClick(post);
+    else toast.error("No se encontró esa publicación");
   };
 
   const handlePostLike = () => {
@@ -123,25 +95,6 @@ const CommunityPage: React.FC = () => {
           ? selectedPost.likes_count - 1
           : selectedPost.likes_count + 1,
       });
-    }
-  };
-
-  const handleDeletePost = async (postId: string) => {
-    if (!confirm("¿Estás seguro de eliminar esta publicación? También se eliminarán todos sus comentarios.")) return;
-    
-    try {
-      const { error } = await supabase
-        .from("community_posts")
-        .delete()
-        .eq("id", postId);
-      
-      if (error) throw error;
-      
-      toast.success("Publicación eliminada");
-      refetch();
-    } catch (error) {
-      console.error("Error deleting post:", error);
-      toast.error("Error al eliminar la publicación");
     }
   };
 
@@ -170,21 +123,9 @@ const CommunityPage: React.FC = () => {
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="overflow-x-auto">
                   <TabsList className="h-12 rounded-full bg-secondary p-1 flex-nowrap">
-                    <TabsTrigger value="discussions" className={TAB_CLS}>
-                      <MessageSquare className="w-4 h-4" />
-                      <span className="hidden sm:inline">Discusiones</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="questions" className={TAB_CLS}>
-                      <HelpCircle className="w-4 h-4" />
-                      <span className="hidden sm:inline">Preguntas</span>
-                    </TabsTrigger>
                     <TabsTrigger value="chat" className={TAB_CLS}>
                       <MessagesSquare className="w-4 h-4" />
                       <span className="hidden sm:inline">Chat</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="retos" className={TAB_CLS}>
-                      <Target className="w-4 h-4" />
-                      <span className="hidden sm:inline">Retos</span>
                     </TabsTrigger>
                     <TabsTrigger value="ranking" className={TAB_CLS}>
                       <Crown className="w-4 h-4" />
@@ -198,23 +139,9 @@ const CommunityPage: React.FC = () => {
                       <CalendarDays className="w-4 h-4" />
                       <span className="hidden sm:inline">Eventos</span>
                     </TabsTrigger>
-                    <TabsTrigger value="oportunidades" className={TAB_CLS}>
-                      <Briefcase className="w-4 h-4" />
-                      <span className="hidden sm:inline">Oportunidades</span>
-                    </TabsTrigger>
                   </TabsList>
                 </div>
 
-                {(activeTab === "discussions" || activeTab === "questions") && (
-                  <Button
-                    onClick={() => setCreateDialogOpen(true)}
-                    variant="outline"
-                    className="gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50"
-                  >
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="hidden sm:inline">Publicación Avanzada</span>
-                  </Button>
-                )}
               </div>
             </div>
           )}
@@ -275,110 +202,6 @@ const CommunityPage: React.FC = () => {
           {selectedProgramId && (
             <div className="container mx-auto px-4 py-6">
               <div className="space-y-6 py-4">
-                {/* Discussions Tab */}
-                <TabsContent value="discussions" className="space-y-4">
-                  <PollsSection programId={selectedProgramId} userId={user?.id} />
-                  {/* Quick Post Input */}
-                  <QuickPostInput
-                    type="discussion"
-                    onSubmit={handleCreatePost}
-                    onOpenFullDialog={() => setCreateDialogOpen(true)}
-                  />
-
-                  {postsLoading ? (
-                    <div className="space-y-4">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="rounded-[2rem] bg-secondary p-4">
-                          <div className="flex gap-3">
-                            <Skeleton className="w-10 h-10 rounded-full" />
-                            <div className="flex-1 space-y-2">
-                              <Skeleton className="h-4 w-32" />
-                              <Skeleton className="h-6 w-3/4" />
-                              <Skeleton className="h-4 w-full" />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : filteredPosts.length === 0 ? (
-                    <div className="rounded-[2rem] bg-secondary p-8 text-center">
-                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                        <MessageSquare className="w-8 h-8 text-primary" />
-                      </div>
-                      <h3 className="font-heading font-semibold mb-2">
-                        No hay discusiones aún
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Usa el campo de arriba para iniciar una conversación
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {filteredPosts.map((post) => (
-                        <CommunityPostCard
-                          key={post.id}
-                          post={post}
-                          onClick={() => handlePostClick(post)}
-                          onLike={() => toggleLike(post.id)}
-                          onDelete={() => handleDeletePost(post.id)}
-                          isAdmin={isAdmin}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
-
-                {/* Questions Tab */}
-                <TabsContent value="questions" className="space-y-4">
-                  {/* Quick Post Input */}
-                  <QuickPostInput
-                    type="question"
-                    onSubmit={handleCreatePost}
-                    onOpenFullDialog={() => setCreateDialogOpen(true)}
-                  />
-
-                  {postsLoading ? (
-                    <div className="space-y-4">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="rounded-[2rem] bg-secondary p-4">
-                          <div className="flex gap-3">
-                            <Skeleton className="w-10 h-10 rounded-full" />
-                            <div className="flex-1 space-y-2">
-                              <Skeleton className="h-4 w-32" />
-                              <Skeleton className="h-6 w-3/4" />
-                              <Skeleton className="h-4 w-full" />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : filteredPosts.length === 0 ? (
-                    <div className="rounded-[2rem] bg-secondary p-8 text-center">
-                      <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
-                        <HelpCircle className="w-8 h-8 text-secondary" />
-                      </div>
-                      <h3 className="font-heading font-semibold mb-2">
-                        No hay preguntas aún
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Usa el campo de arriba para hacer tu pregunta
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {filteredPosts.map((post) => (
-                        <CommunityPostCard
-                          key={post.id}
-                          post={post}
-                          onClick={() => handlePostClick(post)}
-                          onLike={() => toggleLike(post.id)}
-                          onDelete={() => handleDeletePost(post.id)}
-                          isAdmin={isAdmin}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
 
                 {/* Chat Tab */}
                 <TabsContent value="chat">
@@ -386,18 +209,12 @@ const CommunityPage: React.FC = () => {
                     <CommunityChat
                       programId={selectedProgramId}
                       programTitle={selectedProgram.title}
+                      isStaff={isStaff}
+                      createPost={createPost}
+                      onOpenPost={handleOpenPostById}
+                      onItemCreated={refetch}
                     />
                   )}
-                </TabsContent>
-
-                {/* Retos Tab */}
-                <TabsContent value="retos">
-                  <ChallengesSection
-                    programId={selectedProgramId}
-                    isStaff={isStaff}
-                    userId={user?.id}
-                    nameFor={nameFor}
-                  />
                 </TabsContent>
 
                 {/* Ranking Tab */}
@@ -428,13 +245,6 @@ const CommunityPage: React.FC = () => {
                 </TabsContent>
 
                 {/* Oportunidades Tab */}
-                <TabsContent value="oportunidades">
-                  <OpportunitiesSection
-                    programId={selectedProgramId}
-                    isStaff={isStaff}
-                    userId={user?.id}
-                  />
-                </TabsContent>
               </div>
             </div>
           )}
@@ -443,13 +253,6 @@ const CommunityPage: React.FC = () => {
       </div>
 
       {/* Dialogs */}
-      <CreatePostDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-        onSubmit={handleCreatePost}
-        isAdmin={isAdmin}
-      />
-
       <PostDetailDialog
         post={selectedPost}
         open={postDetailOpen}

@@ -18,6 +18,7 @@ interface Vote {
 }
 
 // Las tablas de encuestas son nuevas y aún no están en los tipos generados.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
 
 export function usePolls(programId: string | null, userId?: string) {
