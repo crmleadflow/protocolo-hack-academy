@@ -75,29 +75,21 @@ export function useMentorSettings() {
     }
   }, []);
 
+  // Se guarda directo en la tabla (la función del servidor rechaza el PUT desde el navegador
+  // y solo aceptaba el rol "admin"); las políticas de la tabla ya cubren admin y super_admin.
   const updateSettings = async (updates: Partial<MentorSettings>) => {
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) throw new Error("Not authenticated");
+      const { id: _ignored, ...fields } = updates;
+      const query = settings?.id
+        ? supabase.from("mentor_settings").update(fields).eq("id", settings.id)
+        : supabase.from("mentor_settings").insert(fields as { mentor_name: string });
+      const { data, error } = await query.select().single();
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mentor-settings`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${sessionData.session.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updates),
-        }
-      );
+      if (error) throw error;
 
-      if (!response.ok) throw new Error("Failed to update settings");
-
-      const data = await response.json();
-      setSettings(data.settings);
+      setSettings(data as MentorSettings);
       toast({ title: "Configuración actualizada" });
-      return data.settings;
+      return data;
     } catch (error) {
       console.error("Error updating mentor settings:", error);
       toast({
