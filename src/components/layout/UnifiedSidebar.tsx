@@ -4,7 +4,7 @@ import {
   Home, BookOpen, Trophy, Settings, LogOut, User,
   Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain, PanelLeft,
   LayoutDashboard, Users, BarChart3, DollarSign, Plus, FileVideo, Mail,
-  Gift, Wrench, ChevronDown
+  Gift, Wrench, ChevronDown, Megaphone
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -111,6 +111,10 @@ const adminSections: { label: string; items: NavEntry[] }[] = [
       { title: "Oportunidades", url: "/producer/leads", icon: BarChart3 },
       { title: "Mensajes", url: "/producer/messages", icon: MessageSquare },
     ],
+  },
+  {
+    label: "Comunidad",
+    items: [{ title: "Comunidad", url: "/producer/community", icon: Megaphone }],
   },
   {
     label: "Marketing",

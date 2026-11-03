@@ -24,6 +24,7 @@ import { EventsSection } from "@/components/community/EventsSection";
 import { OpportunitiesSection } from "@/components/community/OpportunitiesSection";
 import { MembersSection } from "@/components/community/MembersSection";
 import { useMembers } from "@/hooks/useCommunityModules";
+import { PollsSection } from "@/components/community/PollsSection";
 import { useCommunityPosts, CommunityPost, ContentType } from "@/hooks/useCommunity";
 import { useStudentPrograms } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
@@ -276,6 +277,7 @@ const CommunityPage: React.FC = () => {
               <div className="space-y-6 py-4">
                 {/* Discussions Tab */}
                 <TabsContent value="discussions" className="space-y-4">
+                  <PollsSection programId={selectedProgramId} userId={user?.id} />
                   {/* Quick Post Input */}
                   <QuickPostInput
                     type="discussion"

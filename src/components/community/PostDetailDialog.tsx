@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCommunityComments, CommunityPost, CommunityComment } from "@/hooks/useCommunity";
 import { useAuth } from "@/contexts/AuthContext";
+import { RichContent } from "@/components/community/RichContent";
 
 interface PostDetailDialogProps {
   post: CommunityPost | null;
@@ -124,7 +125,7 @@ export const PostDetailDialog: React.FC<PostDetailDialogProps> = ({
           <div className="py-4 space-y-6">
             {/* Post Content */}
             <div className="prose prose-invert max-w-none">
-              <p className="whitespace-pre-wrap text-foreground">{post.content}</p>
+              <RichContent text={post.content} />
             </div>
 
             {/* Post Actions */}
