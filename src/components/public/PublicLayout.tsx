@@ -299,7 +299,7 @@ const CommunityShowcase = () => {
   );
 };
 
-export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void }) => {
+export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -329,6 +329,9 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
             )}
             {!cards && !showcase && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
+            {fadeImageLeft && (
+              <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-secondary from-5% via-secondary/60 via-35% to-transparent to-75%" />
+            )}
           </div>
         </div>
       </section>

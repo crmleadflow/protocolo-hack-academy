@@ -483,6 +483,7 @@ export const ComunidadPublicPage = () => {
         accent="solo."
         text="Un espacio para compartir avances, resolver dudas y conectar con emprendedores que están implementando."
         image={comunidadHeroImg}
+        fadeImageLeft
         ctaLabel="Únete a la comunidad"
         ctaTo="/community"
         ctaOnClick={user ? undefined : () => { setHeroStep(true); document.getElementById("unete-comunidad")?.scrollIntoView({ behavior: "smooth" }); }}
