@@ -43,13 +43,16 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
 
   const { icon: Icon, placeholder, titlePlaceholder, buttonText, color, mentorEnabled } = config[type];
 
+  const canSubmit = Boolean(title.trim() || content.trim());
+
   const handleSubmit = async () => {
-    if (!content.trim()) return;
+    if (!canSubmit) return;
     const finalTitle = title.trim() || content.trim().split("\n")[0].slice(0, 100);
+    const finalContent = content.trim() || finalTitle;
 
     setIsSubmitting(true);
     try {
-      await onSubmit(finalTitle, content, type);
+      await onSubmit(finalTitle, finalContent, type);
       setTitle("");
       setContent("");
       setIsExpanded(false);
@@ -59,7 +62,7 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && content.trim()) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && canSubmit) {
       handleSubmit();
     }
   };
@@ -158,7 +161,7 @@ export const QuickPostInput: React.FC<QuickPostInputProps> = ({
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={!content.trim() || isSubmitting}
+                disabled={!canSubmit || isSubmitting}
                 size="sm"
                 className={cn(
                   "gap-2",

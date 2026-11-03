@@ -108,6 +108,7 @@ const CommunityPage: React.FC = () => {
   const handlePostClick = (post: CommunityPost) => {
     setSelectedPost(post);
     setPostDetailOpen(true);
+    supabase.rpc("increment_post_views", { _post_id: post.id }).then(() => {});
   };
 
   const handlePostLike = () => {
@@ -162,7 +163,62 @@ const CommunityPage: React.FC = () => {
             </p>
           </section>
 
-          <div className="container mx-auto px-4 mt-10">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)}>
+          {selectedProgramId && (
+            <div className="container mx-auto px-4 mt-10">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="overflow-x-auto">
+                  <TabsList className="h-12 rounded-full bg-secondary p-1 flex-nowrap">
+                    <TabsTrigger value="discussions" className={TAB_CLS}>
+                      <MessageSquare className="w-4 h-4" />
+                      <span className="hidden sm:inline">Discusiones</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="questions" className={TAB_CLS}>
+                      <HelpCircle className="w-4 h-4" />
+                      <span className="hidden sm:inline">Preguntas</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="chat" className={TAB_CLS}>
+                      <MessagesSquare className="w-4 h-4" />
+                      <span className="hidden sm:inline">Chat</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="retos" className={TAB_CLS}>
+                      <Target className="w-4 h-4" />
+                      <span className="hidden sm:inline">Retos</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="ranking" className={TAB_CLS}>
+                      <Crown className="w-4 h-4" />
+                      <span className="hidden sm:inline">Ranking</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="miembros" className={TAB_CLS}>
+                      <Users className="w-4 h-4" />
+                      <span className="hidden sm:inline">Miembros</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="eventos" className={TAB_CLS}>
+                      <CalendarDays className="w-4 h-4" />
+                      <span className="hidden sm:inline">Eventos</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="oportunidades" className={TAB_CLS}>
+                      <Briefcase className="w-4 h-4" />
+                      <span className="hidden sm:inline">Oportunidades</span>
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+
+                {(activeTab === "discussions" || activeTab === "questions") && (
+                  <Button
+                    onClick={() => setCreateDialogOpen(true)}
+                    variant="outline"
+                    className="gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50"
+                  >
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    <span className="hidden sm:inline">Publicación Avanzada</span>
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="container mx-auto px-4 mt-6">
             <div className="dark-island rounded-[2rem] p-6 md:p-10">
               <div className="grid grid-cols-3 gap-4 mb-8">
                 <div><p className="display text-3xl md:text-5xl">{posts.filter(p=>p.content_type!=="question").length}</p><p className="text-xs uppercase tracking-widest opacity-70 mt-1">Discusiones</p></div>
@@ -217,61 +273,7 @@ const CommunityPage: React.FC = () => {
           {/* Content */}
           {selectedProgramId && (
             <div className="container mx-auto px-4 py-6">
-              <Tabs
-                value={activeTab}
-                onValueChange={(v) => setActiveTab(v as TabType)}
-                className="space-y-6 py-4"
-              >
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <div className="overflow-x-auto">
-                    <TabsList className="h-12 rounded-full bg-secondary p-1 flex-nowrap">
-                      <TabsTrigger value="discussions" className={TAB_CLS}>
-                        <MessageSquare className="w-4 h-4" />
-                        <span className="hidden sm:inline">Discusiones</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="questions" className={TAB_CLS}>
-                        <HelpCircle className="w-4 h-4" />
-                        <span className="hidden sm:inline">Preguntas</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="chat" className={TAB_CLS}>
-                        <MessagesSquare className="w-4 h-4" />
-                        <span className="hidden sm:inline">Chat</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="retos" className={TAB_CLS}>
-                        <Target className="w-4 h-4" />
-                        <span className="hidden sm:inline">Retos</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="ranking" className={TAB_CLS}>
-                        <Crown className="w-4 h-4" />
-                        <span className="hidden sm:inline">Ranking</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="miembros" className={TAB_CLS}>
-                        <Users className="w-4 h-4" />
-                        <span className="hidden sm:inline">Miembros</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="eventos" className={TAB_CLS}>
-                        <CalendarDays className="w-4 h-4" />
-                        <span className="hidden sm:inline">Eventos</span>
-                      </TabsTrigger>
-                      <TabsTrigger value="oportunidades" className={TAB_CLS}>
-                        <Briefcase className="w-4 h-4" />
-                        <span className="hidden sm:inline">Oportunidades</span>
-                      </TabsTrigger>
-                    </TabsList>
-                  </div>
-
-                  {(activeTab === "discussions" || activeTab === "questions") && (
-                    <Button
-                      onClick={() => setCreateDialogOpen(true)}
-                      variant="outline"
-                      className="gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50"
-                    >
-                      <Sparkles className="w-4 h-4 text-primary" />
-                      <span className="hidden sm:inline">Publicación Avanzada</span>
-                    </Button>
-                  )}
-                </div>
-
+              <div className="space-y-6 py-4">
                 {/* Discussions Tab */}
                 <TabsContent value="discussions" className="space-y-4">
                   {/* Quick Post Input */}
@@ -431,9 +433,10 @@ const CommunityPage: React.FC = () => {
                     userId={user?.id}
                   />
                 </TabsContent>
-              </Tabs>
+              </div>
             </div>
           )}
+          </Tabs>
         </main>
       </div>
 

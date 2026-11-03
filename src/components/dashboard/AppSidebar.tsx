@@ -27,7 +27,13 @@ import { cn } from "@/lib/utils";
 
 import { Mail } from "lucide-react";
 
-const menuItems = [
+const menuItems: {
+  title: string;
+  url: string;
+  icon: React.ElementType;
+  hasBadge?: boolean;
+  requiresBonus?: "mentor" | "neuro-scanner";
+}[] = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Comunidad", url: "/community", icon: MessageSquare },
   { title: "Mensajes", url: "/messages", icon: Mail, hasBadge: true },

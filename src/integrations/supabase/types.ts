@@ -1899,6 +1899,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      increment_post_views: {
+        Args: { _post_id: string }
+        Returns: undefined
+      }
       add_user_xp: {
         Args: { _user_id: string; _xp_amount: number }
         Returns: undefined

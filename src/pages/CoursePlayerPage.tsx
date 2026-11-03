@@ -210,6 +210,7 @@ const CoursePlayerPage: React.FC = () => {
             <LessonListView
               program={program}
               hasAccess={hasAccess}
+              mentor={mentor}
               onSelectLesson={handleSelectLesson}
             />
           ) : (
@@ -246,10 +247,12 @@ const CoursePlayerPage: React.FC = () => {
 function LessonListView({
   program,
   hasAccess,
+  mentor,
   onSelectLesson,
 }: {
   program: any;
   hasAccess: boolean;
+  mentor: { full_name: string | null; avatar_url: string | null } | null | undefined;
   onSelectLesson: (lesson: LessonWithProgress) => void;
 }) {
   const [displayMode, setDisplayMode] = useState<ListDisplayMode>("list");
