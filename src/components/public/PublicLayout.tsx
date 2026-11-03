@@ -330,7 +330,7 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
             )}
             {!cards && !showcase && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
             {fadeImageLeft && (
-              <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-secondary from-5% via-secondary/60 via-35% to-transparent to-75%" />
+              <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-secondary/70 from-0% via-secondary/25 via-20% to-transparent to-45%" />
             )}
           </div>
         </div>
