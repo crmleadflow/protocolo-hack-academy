@@ -23,6 +23,7 @@ import { useEnrollment } from "@/hooks/useEnrollment";
 import { useLessonResources } from "@/hooks/useLessonResources";
 import { useMentorProfile } from "@/hooks/useMentorProfile";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 import lessonThumbnail from "@/assets/lesson-thumbnail-default.png";
 
@@ -178,6 +179,7 @@ const CoursePlayerPage: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2">
+                <ThemeToggle />
                 {!hasAccess && !enrollmentLoading && (
                   <NeonButton size="sm" onClick={() => navigate(`/checkout/${courseId}`)}>
                     <Lock className="w-4 h-4" />

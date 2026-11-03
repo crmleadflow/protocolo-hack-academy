@@ -4,6 +4,7 @@ import {
   Play, Clock, BookOpen, Search, Lock, Loader2, CheckCircle, Filter, GripVertical, Sparkles, Crown
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 // ID del paquete Arsenal Maestro: Hack 6 (recomendado)
 const ARSENAL_MAESTRO_HACK6_ID = "c5496a23-6acd-43f9-bb63-affd19992c3f";
@@ -83,9 +84,10 @@ const CatalogPage: React.FC = () => {
   }, [programs, searchQuery]);
 
   return (
-    <AppLayout 
+    <AppLayout
       title="Arsenal de Entrenamiento"
       subtitle={`${programs.length} programas disponibles${isAdmin ? " • Arrastra para reordenar" : ""}`}
+      headerContent={<ThemeToggle />}
     >
       {isLoading ? (
         <div className="flex items-center justify-center py-16">

@@ -59,6 +59,37 @@
     --shadow-card: 0 8px 24px -12px hsl(0 0% 0% / 0.6);
   }
 
+  .dark {
+    --background: 240 5% 7%;
+    --foreground: 37 27% 94%;
+    --card: 240 7% 11%;
+    --card-foreground: 37 27% 94%;
+    --popover: 240 7% 11%;
+    --popover-foreground: 37 27% 94%;
+    --primary: 36 79% 57%;
+    --primary-foreground: 240 5% 7%;
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 37 27% 94%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 62%;
+    --accent: 36 79% 57%;
+    --accent-foreground: 240 5% 7%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 17%;
+    --input: 240 6% 17%;
+    --ring: 36 79% 57%;
+
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 37 27% 94%;
+    --sidebar-primary: 36 79% 57%;
+    --sidebar-primary-foreground: 240 5% 7%;
+    --sidebar-accent: 240 5% 15%;
+    --sidebar-accent-foreground: 37 27% 94%;
+    --sidebar-border: 240 6% 17%;
+    --sidebar-ring: 36 79% 57%;
+  }
+
   html { color-scheme: dark; scroll-behavior: smooth; }
   * { @apply border-border; }
   body { @apply bg-background text-foreground font-body antialiased; min-height: 100vh; }
