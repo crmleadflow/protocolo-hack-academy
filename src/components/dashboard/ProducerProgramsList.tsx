@@ -155,7 +155,7 @@ function ProgramCard({
           <BarChart3 className="w-4 h-4" />
         </button>
         <button
-          onClick={() => navigate(`/producer/courses/${program.id}`)}
+          onClick={() => navigate(`/producer/course/${program.id}/edit`)}
           className="p-2 rounded-lg glass hover:bg-white/5 transition-colors"
           title="Editar programa"
         >
