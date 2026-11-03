@@ -21,6 +21,7 @@ import { LessonMentorQuestion } from "@/components/lesson/LessonMentorQuestion";
 import { useStudentProgramDetail, LessonWithProgress, ModuleWithProgress } from "@/hooks/useStudentPrograms";
 import { useEnrollment } from "@/hooks/useEnrollment";
 import { useLessonResources } from "@/hooks/useLessonResources";
+import { useMentorProfile } from "@/hooks/useMentorProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import lessonThumbnail from "@/assets/lesson-thumbnail-default.png";
@@ -36,6 +37,7 @@ const CoursePlayerPage: React.FC = () => {
 
   const { program, isLoading, markLessonCompleted } = useStudentProgramDetail(courseId);
   const { hasActiveEnrollment, isLoading: enrollmentLoading } = useEnrollment(courseId);
+  const { mentor } = useMentorProfile(program?.mentor_id);
 
   // Admin always has access
   const hasAccess = isAdmin || hasActiveEnrollment;
@@ -287,6 +289,22 @@ function LessonListView({
                 <span>{program.modules.length} módulos</span>
               </div>
             </div>
+            {mentor && (
+              <div className="flex items-center gap-2 mt-4">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                  {mentor.avatar_url ? (
+                    <img src={mentor.avatar_url} alt={mentor.full_name || "Mentor"} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/20 text-primary text-xs font-bold">
+                      {(mentor.full_name || "M").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  Mentor: <span className="text-foreground font-medium">{mentor.full_name || "Sin nombre"}</span>
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </HolographicCard>

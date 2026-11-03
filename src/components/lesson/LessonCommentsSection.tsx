@@ -23,8 +23,9 @@ export const LessonCommentsSection: React.FC<LessonCommentsSectionProps> = ({
 }) => {
   const { comments, isLoading, isSubmitting, addComment, deleteComment } =
     useLessonComments(lessonId);
-  const { summary, isSubmitting: isRatingSubmitting, rateLesson } =
-    useLessonRatings(lessonId);
+  const videoRating = useLessonRatings(lessonId, "video");
+  const mentorRating = useLessonRatings(lessonId, "mentor");
+  const topicRating = useLessonRatings(lessonId, "topic");
   const { user } = useAuth();
 
   return (
@@ -45,15 +46,28 @@ export const LessonCommentsSection: React.FC<LessonCommentsSectionProps> = ({
       </div>
 
       {/* Rating Section */}
-      <div className="pb-4">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="pb-4 space-y-4">
+        <div className="flex items-center gap-2 mb-1">
           <Star className="w-4 h-4 text-amber-400" />
           <span className="text-sm font-medium text-foreground">Calificación</span>
         </div>
         <LessonRatingSection
-          summary={summary}
-          isSubmitting={isRatingSubmitting}
-          onRate={rateLesson}
+          label="Video"
+          summary={videoRating.summary}
+          isSubmitting={videoRating.isSubmitting}
+          onRate={videoRating.rateLesson}
+        />
+        <LessonRatingSection
+          label="Mentor"
+          summary={mentorRating.summary}
+          isSubmitting={mentorRating.isSubmitting}
+          onRate={mentorRating.rateLesson}
+        />
+        <LessonRatingSection
+          label="Tema"
+          summary={topicRating.summary}
+          isSubmitting={topicRating.isSubmitting}
+          onRate={topicRating.rateLesson}
         />
       </div>
 

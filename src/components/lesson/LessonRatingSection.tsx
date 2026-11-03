@@ -8,18 +8,23 @@ interface LessonRatingSectionProps {
   summary: RatingSummary;
   isSubmitting: boolean;
   onRate: (rating: number) => void;
+  label?: string;
 }
 
 export const LessonRatingSection: React.FC<LessonRatingSectionProps> = ({
   summary,
   isSubmitting,
   onRate,
+  label,
 }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const { user } = useAuth();
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
+      {label && (
+        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      )}
       {/* Star Rating */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex items-center gap-1">

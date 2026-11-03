@@ -880,6 +880,7 @@ export type Database = {
       }
       lesson_ratings: {
         Row: {
+          category: string
           created_at: string
           id: string
           lesson_id: string
@@ -888,6 +889,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string
           created_at?: string
           id?: string
           lesson_id: string
@@ -896,6 +898,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string
           created_at?: string
           id?: string
           lesson_id?: string
@@ -1625,6 +1628,7 @@ export type Database = {
           description: string | null
           id: string
           is_published: boolean
+          mentor_id: string | null
           price: number
           sort_order: number
           thumbnail_url: string | null
@@ -1639,6 +1643,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_published?: boolean
+          mentor_id?: string | null
           price?: number
           sort_order?: number
           thumbnail_url?: string | null
@@ -1653,6 +1658,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_published?: boolean
+          mentor_id?: string | null
           price?: number
           sort_order?: number
           thumbnail_url?: string | null

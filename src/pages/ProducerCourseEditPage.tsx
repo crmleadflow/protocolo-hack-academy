@@ -47,6 +47,7 @@ import { LessonResourceManager } from "@/components/lesson/LessonResourceManager
 import { useLessonResources } from "@/hooks/useLessonResources";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LessonVideoInput } from "@/components/lesson/LessonVideoInput";
+import { useMentors } from "@/hooks/useMentors";
 
 const ProducerCourseEditPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -73,8 +74,10 @@ const ProducerCourseEditPage: React.FC = () => {
     price: 0,
     currency: "USD",
     is_published: false,
+    mentor_id: "",
   });
   const [isSavingConfig, setIsSavingConfig] = useState(false);
+  const { mentors } = useMentors();
   
   // Module dialog state
   const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
@@ -122,6 +125,7 @@ const ProducerCourseEditPage: React.FC = () => {
         price: program.price,
         currency: program.currency,
         is_published: program.is_published,
+        mentor_id: program.mentor_id || "",
       });
     }
   }, [program]);
@@ -140,6 +144,7 @@ const ProducerCourseEditPage: React.FC = () => {
           price: programForm.price,
           currency: programForm.currency,
           is_published: programForm.is_published,
+          mentor_id: programForm.mentor_id || null,
         })
         .eq("id", program.id);
 
@@ -672,6 +677,29 @@ const ProducerCourseEditPage: React.FC = () => {
                               <option value="MXN">MXN</option>
                             </select>
                           </div>
+                        </div>
+
+                        {/* Mentor */}
+                        <div>
+                          <Label htmlFor="edit-mentor">Mentor del curso</Label>
+                          <select
+                            id="edit-mentor"
+                            value={programForm.mentor_id}
+                            onChange={(e) => setProgramForm(prev => ({ ...prev, mentor_id: e.target.value }))}
+                            className="w-full mt-1 glass rounded-lg px-3 py-2 bg-background border border-border"
+                          >
+                            <option value="">Sin mentor asignado</option>
+                            {mentors.map((m) => (
+                              <option key={m.user_id} value={m.user_id}>
+                                {m.full_name || "Mentor sin nombre"}
+                              </option>
+                            ))}
+                          </select>
+                          {mentors.length === 0 && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Nadie tiene el rol "Mentor" todavía. Asígnalo en Miembros.
+                            </p>
+                          )}
                         </div>
 
                         {/* Publishing */}

@@ -3,11 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
+export type RatingCategory = "video" | "mentor" | "topic";
+
 export interface LessonRating {
   id: string;
   lesson_id: string;
   user_id: string;
   rating: number;
+  category: RatingCategory;
   created_at: string;
 }
 
@@ -17,7 +20,10 @@ export interface RatingSummary {
   userRating: number | null;
 }
 
-export function useLessonRatings(lessonId: string | undefined) {
+export function useLessonRatings(
+  lessonId: string | undefined,
+  category: RatingCategory = "video"
+) {
   const [summary, setSummary] = useState<RatingSummary>({
     averageRating: 0,
     totalRatings: 0,
@@ -39,7 +45,8 @@ export function useLessonRatings(lessonId: string | undefined) {
       const { data: ratings, error } = await supabase
         .from("lesson_ratings")
         .select("*")
-        .eq("lesson_id", lessonId);
+        .eq("lesson_id", lessonId)
+        .eq("category", category);
 
       if (error) throw error;
 
@@ -68,7 +75,7 @@ export function useLessonRatings(lessonId: string | undefined) {
     } finally {
       setIsLoading(false);
     }
-  }, [lessonId, user]);
+  }, [lessonId, category, user]);
 
   const rateLesson = async (rating: number) => {
     if (!lessonId || !user || rating < 1 || rating > 5) return;
@@ -81,6 +88,7 @@ export function useLessonRatings(lessonId: string | undefined) {
         .select("id")
         .eq("lesson_id", lessonId)
         .eq("user_id", user.id)
+        .eq("category", category)
         .maybeSingle();
 
       if (existing) {
@@ -98,6 +106,7 @@ export function useLessonRatings(lessonId: string | undefined) {
           lesson_id: lessonId,
           user_id: user.id,
           rating,
+          category,
         });
 
         if (error) throw error;
