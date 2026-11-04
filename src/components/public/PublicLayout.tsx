@@ -1,6 +1,6 @@
 import heroBw from "@/assets/home-hero-bw.jpg";
 import editorialBw from "@/assets/editorial-bw-2.jpg";
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, ReactNode, CSSProperties } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, ArrowUpRight, ChevronDown, MessagesSquare } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -299,6 +299,13 @@ const CommunityShowcase = () => {
   );
 };
 
+const FADE_ALL_EDGES: CSSProperties = {
+  maskImage: "linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent)",
+  maskComposite: "intersect",
+  WebkitMaskImage: "linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent)",
+  WebkitMaskComposite: "source-in",
+};
+
 export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft, imageLeft }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean; imageLeft?: boolean }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
@@ -325,6 +332,10 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
               <CommunityShowcase />
             ) : video ? (
               <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
+            ) : imageLeft && image ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <img src={img} alt="" className="h-auto w-full" style={FADE_ALL_EDGES} />
+              </div>
             ) : (
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
             )}
