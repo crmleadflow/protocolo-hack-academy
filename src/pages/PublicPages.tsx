@@ -267,7 +267,7 @@ export const RecursosPage = () => {
   const showLive = !isLoading && liveResources.length > 0;
   return (
     <PublicLayout>
-      <PageHero kicker="Recursos" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te los entregamos al instante." image={recursosHeroImg} />
+      <PageHero kicker="Recursos" title="Empieza hoy," accent="sin costo." text="Guías, plantillas y clases gratuitas. Déjanos tu correo y te los entregamos al instante." image={recursosHeroImg} fadeImageLeft />
       <TwoCol
         left={<div className="grid gap-3 sm:grid-cols-2">
           {(showLive ? liveResources : RESOURCES.map((r) => ({ id: r.name, title: r.name, type: r.type }))).map((r) => (
