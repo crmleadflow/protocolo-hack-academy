@@ -18,6 +18,7 @@ import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
 import mascotaLeadFlowVideo from "@/assets/mascota-leadflow.webm";
 import eventosHeroImg from "@/assets/eventos-hero-leadflow.webp";
 import seminariosHeroImg from "@/assets/seminarios-hero-oficina.webp";
+import conferenciasHeroImg from "@/assets/conferencias-hero-auditorio.webp";
 import recursosHeroImg from "@/assets/recursos-hero-startcompanies.webp";
 import herramientasHeroImg from "@/assets/herramientas-hero-iatools.webp";
 import marketplaceCard1 from "@/assets/marketplace-card-1.jpg";
@@ -239,7 +240,7 @@ export const LeadFlowPage = () => (
 
 export const ConferenciasPage = () => (
   <PublicLayout>
-    <PageHero kicker="Conferencias" title="Formación que" accent="mueve equipos." text="Conferencias y capacitaciones empresariales sobre IA, ventas y transformación digital." />
+    <PageHero kicker="Conferencias" title="Formación que" accent="mueve equipos." text="Conferencias y capacitaciones empresariales sobre IA, ventas y transformación digital." image={conferenciasHeroImg} fadeImageLeft />
     <TwoCol
       left={<div className="grid gap-4">{CONFERENCES.map((c) => (
         <Box key={c.name}><p className="font-heading text-xl font-bold uppercase tracking-tight">{c.name}</p><p className="mt-1 text-sm text-muted-foreground">{c.text}</p></Box>
