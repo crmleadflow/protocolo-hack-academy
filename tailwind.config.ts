@@ -19,6 +19,13 @@ export default {
         serif: ["Instrument Serif", "serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
+      // Solo para textos: salmón oficial de Lead Flow (#FA8072) en modo claro
+      textColor: {
+        primary: {
+          DEFAULT: "hsl(var(--primary-text) / <alpha-value>)",
+          foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
+        },
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
