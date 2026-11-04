@@ -307,7 +307,7 @@ const FADE_ALL_EDGES: CSSProperties = {
   WebkitMaskComposite: "source-in",
 };
 
-export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft, imageLeft, fadeAllEdges }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean; imageLeft?: boolean; fadeAllEdges?: boolean }) => {
+export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft, imageLeft, fadeAllEdges, shadowImage }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean; imageLeft?: boolean; fadeAllEdges?: boolean; shadowImage?: boolean }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -338,7 +338,7 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
                 <img src={img} alt="" className="h-auto w-auto max-h-full max-w-full" style={FADE_ALL_EDGES} />
               </div>
             ) : (
-              <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
+              <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} style={shadowImage ? { filter: "drop-shadow(0 18px 28px rgba(0,0,0,0.35))" } : undefined} />
             )}
             {!cards && !showcase && !fadeAllEdges && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
                         {fadeImageLeft && (

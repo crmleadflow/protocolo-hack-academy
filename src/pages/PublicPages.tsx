@@ -349,7 +349,7 @@ export const SeminariosPage = () => (
 
 export const CapacitacionesPage = () => (
   <PublicLayout>
-    <PageHero kicker="Capacitaciones" title="Tu equipo," accent="al mismo nivel." text="Programas a medida para empresas: mismo estándar de conversación, mismas herramientas, mismos criterios." image={capacitacionesHeroImg} />
+    <PageHero kicker="Capacitaciones" title="Tu equipo," accent="al mismo nivel." text="Programas a medida para empresas: mismo estándar de conversación, mismas herramientas, mismos criterios." image={capacitacionesHeroImg} shadowImage />
     <TwoCol
       left={<div className="grid gap-4">{CAPACITATIONS.map((c) => (
         <Box key={c.name}><p className="text-xs text-primary">{c.format}</p><p className="mt-2 font-heading text-xl font-bold uppercase tracking-tight">{c.name}</p><p className="mt-1 text-sm text-muted-foreground">{c.text}</p></Box>
