@@ -90,7 +90,8 @@
     --sidebar-ring: 36 79% 57%;
   }
 
-  html { color-scheme: dark; scroll-behavior: smooth; }
+  html { color-scheme: light; scroll-behavior: smooth; }
+  html.dark { color-scheme: dark; }
   * { @apply border-border; }
   body { @apply bg-background text-foreground font-body antialiased; min-height: 100vh; }
   h1, h2, h3, h4, h5, h6 { @apply font-heading tracking-tight; }
@@ -204,3 +205,13 @@
 .dark-island { background: hsl(var(--background)); }
 body { letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
 .display { letter-spacing: -0.035em; }
+
+/* Desvanecido de fotos solo en tablet/escritorio; en móvil se ven completas */
+@media (min-width: 768px) {
+  .fade-all-edges-md {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}

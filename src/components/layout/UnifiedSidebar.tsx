@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { 
   Home, BookOpen, Trophy, Settings, LogOut, User,
   Zap, MessageSquare, HelpCircle, Shield, Sparkles, Brain, PanelLeft,
@@ -417,6 +418,9 @@ export function UnifiedSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4 border-t border-border/50">
+        <div className={cn("mb-3 flex", collapsed && "justify-center")}>
+          <ThemeToggle />
+        </div>
         {/* User info */}
         <div className={cn(
           "flex items-center gap-3 mb-4",

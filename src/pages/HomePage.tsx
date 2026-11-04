@@ -54,12 +54,12 @@ const HomePage = () => {
     <PublicLayout>
       {/* 1. Hero editorial (NeoVision): blanco, foto B/N de cuerpo entero, titular gigante */}
       <section className="relative overflow-hidden bg-background">
-        <div className="absolute inset-0 flex justify-end">
-          <img src={heroImgControl} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="h-full w-auto max-w-full object-contain object-right md:[mask-image:linear-gradient(to_right,transparent,#000_28%)] md:[-webkit-mask-image:linear-gradient(to_right,transparent,#000_28%)]" />
+        <div className="relative lg:absolute lg:inset-0 lg:flex lg:justify-end">
+          <img src={heroImgControl} alt="Retrato editorial en blanco y negro" width={1920} height={1088} className="h-auto w-full lg:h-full lg:w-auto lg:max-w-full object-contain object-right lg:[mask-image:linear-gradient(to_right,transparent,#000_28%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent,#000_28%)]" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-background from-0% via-background/35 via-20% to-transparent to-45%" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-        <div className="relative z-10 mx-auto flex min-h-[92vh] max-h-[1100px] max-w-7xl flex-col justify-end px-5 pb-14 pt-24">
+        <div className="absolute inset-0 hidden lg:block bg-gradient-to-r from-background from-0% via-background/35 via-20% to-transparent to-45%" />
+        <div className="absolute inset-0 hidden lg:block bg-gradient-to-t from-background via-background/50 to-transparent" />
+        <div className="relative z-10 mx-auto flex lg:min-h-[92vh] max-h-[1100px] max-w-7xl flex-col justify-end px-5 pb-14 pt-6 lg:pt-24">
           <span className="pill kinetic-word w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Protocolo Hack · Héctor Galensky</span>
           <h1 className="display mt-6 max-w-4xl text-[2.3rem] sm:text-6xl lg:text-[5.4rem]">
             <Kinetic text="Tres habilidades que" />

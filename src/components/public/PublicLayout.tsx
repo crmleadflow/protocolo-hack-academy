@@ -1,7 +1,8 @@
 import heroBw from "@/assets/home-hero-bw.jpg";
 import editorialBw from "@/assets/editorial-bw-2.jpg";
-import { useState, useEffect, ReactNode, CSSProperties } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Menu, X, ArrowUpRight, ChevronDown, MessagesSquare } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -120,12 +121,12 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5">
-          <Link to="/" className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight">
-            <img src={logoIcon} alt="Protocolo Hack" className="h-8 w-auto" />
-            <span>protocolo<span className="serif-accent text-primary text-xl">hack</span></span>
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:gap-4 sm:px-5">
+          <Link to="/" className="flex min-w-0 items-center gap-1.5 font-heading text-base font-bold tracking-tight sm:gap-2 sm:text-lg">
+            <img src={logoIcon} alt="Protocolo Hack" className="h-7 w-auto sm:h-8 dark:rounded-md dark:bg-white dark:px-1" />
+            <span className="whitespace-nowrap">protocolo<span className="serif-accent text-primary text-lg sm:text-xl">hack</span></span>
           </Link>
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 lg:flex">
             {NAV.map((n) =>
               n.to === "/marketplace" ? (
                 <div key={n.to}>{desktopDropdown("marketplace", n.to, n.label, MARKETPLACE_SUB)}</div>
@@ -140,11 +141,12 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
             {user && <NavLink to="/dashboard" className={({ isActive }) => cn(desktopLink, isActive && "bg-secondary")}>Métricas</NavLink>}
             {user && isAdmin && <NavLink to="/producer" className={({ isActive }) => cn(desktopLink, "text-primary", isActive && "bg-secondary")}>Administración</NavLink>}
           </nav>
-          <div className="flex items-center gap-2">
-            {!user && <Link to="/login" className="pill-solid px-4 py-2">Entrar</Link>}
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <ThemeToggle />
+            {!user && <Link to="/login" className="pill-solid px-3 py-2 sm:px-4">Entrar</Link>}
             <button
               aria-label="Abrir menú"
-              className="rounded-full p-2 hover:bg-secondary md:hidden"
+              className="rounded-full p-2 hover:bg-secondary lg:hidden"
               onClick={() => setOpen(!open)}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -152,7 +154,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
         {open && (
-          <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto md:hidden">
+          <nav className="border-t border-border bg-background px-5 py-4 max-h-[80vh] overflow-y-auto lg:hidden">
             <div className="mx-auto max-w-7xl grid gap-1 md:grid-cols-3 md:gap-6">
               <div>
                 {NAV.filter((n) => n.to !== "/marketplace" && n.to !== "/herramientas").map((n) => (
@@ -300,13 +302,6 @@ const CommunityShowcase = () => {
   );
 };
 
-const FADE_ALL_EDGES: CSSProperties = {
-  maskImage: "linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent)",
-  maskComposite: "intersect",
-  WebkitMaskImage: "linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent)",
-  WebkitMaskComposite: "source-in",
-};
-
 export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft, imageLeft, fadeAllEdges, shadowImage }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean; imageLeft?: boolean; fadeAllEdges?: boolean; shadowImage?: boolean }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
@@ -335,12 +330,12 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
               <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
             ) : fadeAllEdges && image ? (
               <div className="absolute inset-0 flex items-center justify-center">
-                <img src={img} alt="" className="h-auto w-auto max-h-full max-w-full" style={FADE_ALL_EDGES} />
+                <img src={img} alt="" className="h-auto w-auto max-h-full max-w-full fade-all-edges-md" />
               </div>
             ) : (
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} style={shadowImage ? { filter: "drop-shadow(0 18px 28px rgba(0,0,0,0.35))" } : undefined} />
             )}
-            {!cards && !showcase && !fadeAllEdges && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
+            {!cards && !showcase && !fadeAllEdges && <div className="absolute inset-0 hidden md:block md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
                         {fadeImageLeft && (
               <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-secondary/70 from-0% via-secondary/25 via-20% to-transparent to-45%" />
             )}
