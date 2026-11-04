@@ -6,6 +6,7 @@ import { Menu, X, ArrowUpRight, ChevronDown, MessagesSquare } from "lucide-react
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoIcon from "@/assets/logo-icon.png";
 
 export const NAV = [
   { to: "/", label: "Inicio" },
@@ -121,7 +122,7 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
       <header className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5">
           <Link to="/" className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight">
-            <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-sm text-primary-foreground">PH</span>
+            <img src={logoIcon} alt="Protocolo Hack" className="h-8 w-auto" />
             <span>protocolo<span className="serif-accent text-primary text-xl">hack</span></span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
