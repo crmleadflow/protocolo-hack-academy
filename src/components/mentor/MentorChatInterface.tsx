@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from "react";
-import { Send, Trash2, ExternalLink } from "lucide-react";
+import { Send, Trash2, ExternalLink, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -12,16 +12,26 @@ import mentorAvatar from "@/assets/hector-galensky-mentor-avatar.png";
 
 interface MentorChatInterfaceProps {
   className?: string;
+  onBack?: () => void;
 }
+
+const SUGGESTIONS = [
+  "¿Cómo estructuro mi oferta?",
+  "Ayúdame a pulir mi oratoria",
+  "¿Cómo cierro más ventas?",
+  "Dame un plan para mi primera semana",
+];
 
 export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
   className,
+  onBack,
 }) => {
   const navigate = useNavigate();
   const { settings, isLoading: settingsLoading } = useMentorSettings();
   const { messages, isLoading, sendMessage, clearConversation } = useMentorChat();
   const [input, setInput] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const lastMsgRef = useRef<HTMLDivElement>(null);
   const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
 
   const {
@@ -54,9 +64,23 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
     }
   }, [isSpeaking, isPaused]);
 
+  // Respuesta nueva de la IA: se muestra desde su INICIO (no al final).
+  // Mensaje del usuario / cargando: se baja al final para ver el indicador.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const container = scrollRef.current;
+    if (!container || messages.length === 0) return;
+    const last = messages[messages.length - 1];
+    if (last.role === "assistant" && !isLoading && lastMsgRef.current) {
+      container.scrollTo({
+        top: Math.max(lastMsgRef.current.offsetTop - 12, 0),
+        behavior: "smooth",
+      });
+    } else {
+      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+    }
+    // Solo al cambiar la cantidad de mensajes o el estado de carga
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length, isLoading]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -91,225 +115,232 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
 
   if (settingsLoading) {
     return (
-      <div className={cn("flex flex-col h-[calc(100vh-200px)] min-h-[500px]", className)}>
-        <div className="glass-card rounded-t-xl p-4 border-b border-border/50">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-muted animate-pulse" />
-            <div className="flex-1 space-y-2">
-              <div className="h-5 w-32 bg-muted rounded animate-pulse" />
-              <div className="h-4 w-48 bg-muted rounded animate-pulse" />
-            </div>
+      <div
+        className={cn(
+          "flex flex-col h-full min-h-0 rounded-xl border border-border bg-card overflow-hidden",
+          className
+        )}
+      >
+        <div className="flex items-center gap-3 px-3 sm:px-4 h-14 border-b border-border">
+          <div className="w-9 h-9 rounded-full bg-muted animate-pulse" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+            <div className="h-3 w-48 bg-muted rounded animate-pulse" />
           </div>
         </div>
-        <div className="flex-1 glass-card flex items-center justify-center">
-          <div className="w-32 h-32 rounded-full bg-muted animate-pulse" />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-muted animate-pulse" />
         </div>
-        <div className="glass-card rounded-b-xl p-4 border-t border-border/50">
-          <div className="h-12 bg-muted rounded-lg animate-pulse" />
+        <div className="border-t border-border p-3">
+          <div className="h-11 bg-muted rounded-lg animate-pulse" />
         </div>
       </div>
     );
   }
 
-  return (
-    <div className={cn("flex flex-col h-[calc(100vh-200px)] min-h-[500px]", className)}>
-      {/* Header with mentor avatar */}
-      <div className="glass-card rounded-t-xl p-4 border-b border-border/50">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden ring-2 ring-primary/30 shadow-[0_0_15px_rgba(0,217,255,0.3)]">
-            <img
-              src={mentorAvatar}
-              alt="Héctor Galensky"
-              className="w-full h-full object-cover object-top"
-            />
-          </div>
-          <div className="flex-1">
-            <h2 className="font-heading font-bold text-lg">
-              {settings?.mentor_name || "Mi Mentor"}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Tu asistente personal basado en IA
-            </p>
-          </div>
-          {messages.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearConversation}
-              className="text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Nueva conversación
-            </Button>
-          )}
-        </div>
-      </div>
+  const mentorName = settings?.mentor_name || "Mi Mentor";
 
-      {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 glass-card">
+  return (
+    <div
+      className={cn(
+        "flex flex-col h-full min-h-0 rounded-xl border border-border bg-card shadow-sm overflow-hidden",
+        className
+      )}
+    >
+      {/* Barra única compacta */}
+      <header className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 h-14 sm:h-16 shrink-0 border-b border-border">
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="p-2 rounded-lg hover:bg-muted transition-colors text-foreground"
+            title="Volver"
+            aria-label="Volver"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden ring-2 ring-primary/30 shrink-0">
+          <img
+            src={mentorAvatar}
+            alt={mentorName}
+            className="w-full h-full object-cover object-top"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h1 className="font-heading font-bold text-base sm:text-lg leading-tight truncate text-foreground">
+            Mi Mentor IA
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-tight truncate">
+            {mentorName} · Tu asistente 24/7
+          </p>
+        </div>
+        {messages.length > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearConversation}
+            className="text-muted-foreground hover:text-destructive shrink-0 px-2 sm:px-3"
+            title="Nueva conversación"
+            aria-label="Nueva conversación"
+          >
+            <Trash2 className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Nueva conversación</span>
+          </Button>
+        )}
+      </header>
+
+      {/* Mensajes: único elemento con scroll */}
+      <div
+        ref={scrollRef}
+        className="relative flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 sm:px-5 py-4"
+      >
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            {/* Holographic Avatar Container */}
-            <div className="relative mb-6">
-              {/* Outer glow rings */}
-              <div className="absolute inset-0 w-48 h-48 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 blur-2xl animate-pulse" />
-                <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 blur-xl animate-pulse" style={{ animationDelay: "0.5s" }} />
-                <div className="absolute inset-4 rounded-full border-2 border-primary/20 animate-spin" style={{ animationDuration: "20s" }} />
-                <div className="absolute inset-6 rounded-full border border-secondary/30 animate-spin" style={{ animationDuration: "15s", animationDirection: "reverse" }} />
-              </div>
-              
-              {/* Avatar with holographic effect */}
-              <div className="relative w-40 h-40 rounded-full overflow-hidden ring-4 ring-primary/40 shadow-[0_0_40px_rgba(0,217,255,0.4),0_0_80px_rgba(176,38,255,0.2)]">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80 z-10" />
-                <img
-                  src={mentorAvatar}
-                  alt="Héctor Galensky"
-                  className="w-full h-full object-cover object-top scale-110"
-                  style={{ mixBlendMode: "normal" }}
-                />
-                {/* Scanline effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent animate-pulse opacity-50" />
-              </div>
-              
-              {/* Floating particles effect */}
-              <div className="absolute -inset-4">
-                <div className="absolute top-0 left-1/4 w-1 h-1 rounded-full bg-primary animate-ping" style={{ animationDuration: "2s" }} />
-                <div className="absolute top-1/4 right-0 w-1.5 h-1.5 rounded-full bg-secondary animate-ping" style={{ animationDuration: "2.5s", animationDelay: "0.5s" }} />
-                <div className="absolute bottom-1/4 left-0 w-1 h-1 rounded-full bg-cyan-400 animate-ping" style={{ animationDuration: "3s", animationDelay: "1s" }} />
-              </div>
+          <div className="flex flex-col items-center justify-center min-h-full text-center gap-5 py-4">
+            <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-primary/40 shadow-sm bg-muted">
+              <img
+                src={mentorAvatar}
+                alt={mentorName}
+                className="w-full h-full object-cover object-top"
+              />
             </div>
-            
-            <p className="text-muted-foreground max-w-md text-base leading-relaxed">
+            <p className="text-muted-foreground max-w-xl text-sm sm:text-base leading-relaxed">
               El conocimiento sin ejecución es solo ruido. Por eso, he volcado toda mi trayectoria en esta IA para que te acompañe en las trincheras. Desde pulir tu oratoria hasta estructurar tu oferta, ¿en qué te puedo ayudar?
             </p>
+            <div className="flex flex-wrap justify-center gap-2 max-w-2xl">
+              {SUGGESTIONS.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => sendMessage(q)}
+                  disabled={isLoading}
+                  className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors disabled:opacity-50 min-h-[40px]"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
-          messages.map((msg, index) => (
-            <div
-              key={index}
-              className={cn(
-                "flex gap-3",
-                msg.role === "user" && "flex-row-reverse"
-              )}
-            >
-              {/* Avatar */}
+          <div className="space-y-4 max-w-4xl mx-auto">
+            {messages.map((msg, index) => (
               <div
+                key={index}
+                ref={index === messages.length - 1 ? lastMsgRef : undefined}
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden",
-                  msg.role === "assistant"
-                    ? "bg-gradient-to-br from-primary to-secondary shadow-[0_0_10px_rgba(0,217,255,0.3)]"
-                    : "bg-muted"
+                  "flex gap-2 sm:gap-3",
+                  msg.role === "user" && "flex-row-reverse"
                 )}
               >
-                {msg.role === "assistant" ? (
+                {/* Avatar de la IA (oculto en móvil para dar ancho a la burbuja) */}
+                {msg.role === "assistant" && (
+                  <div className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center flex-shrink-0 overflow-hidden bg-muted ring-1 ring-border mt-1">
+                    <img
+                      src={mentorAvatar}
+                      alt=""
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                )}
+
+                {/* Message content */}
+                <div
+                  className={cn(
+                    "space-y-2 min-w-0",
+                    msg.role === "assistant"
+                      ? "max-w-[95%] sm:max-w-[min(88%,46rem)]"
+                      : "max-w-[88%] sm:max-w-[min(80%,36rem)] text-right"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "inline-block rounded-2xl text-left",
+                      msg.role === "user"
+                        ? "bg-primary text-primary-foreground rounded-tr-md p-3"
+                        : "bg-muted/60 border border-border rounded-tl-md"
+                    )}
+                  >
+                    {msg.role === "assistant" ? (
+                      <div className="px-4 pt-3 pb-2">
+                        <div className="prose prose-sm sm:prose-base dark:prose-invert max-w-none leading-relaxed prose-p:my-2 prose-p:leading-7 prose-li:leading-7 prose-ul:my-2 prose-ol:my-2 prose-p:text-foreground prose-li:text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-strong:font-semibold">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                        {isSupported && (
+                          <div className="flex justify-end mt-2 pt-2 border-t border-border">
+                            <VoiceControls
+                              spanishVoices={spanishVoices}
+                              selectedVoice={selectedVoice}
+                              selectVoice={selectVoice}
+                              isSpeaking={speakingMessageIndex === index && isSpeaking}
+                              isPaused={speakingMessageIndex === index && isPaused}
+                              isSupported={isSupported}
+                              onSpeak={() => handleSpeak(msg.content, index)}
+                              onPause={pause}
+                              onResume={resume}
+                              onStop={() => {
+                                stop();
+                                setSpeakingMessageIndex(null);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm sm:text-base whitespace-pre-wrap break-words">{msg.content}</p>
+                    )}
+                  </div>
+
+                  {/* Citations */}
+                  {msg.citations && msg.citations.length > 0 && (
+                    <div className="space-y-1">
+                      {msg.citations.map((citation, cidx) => (
+                        <button
+                          key={cidx}
+                          onClick={() => handleCitationClick(citation)}
+                          className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors bg-primary/10 rounded-lg px-2 py-1"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>
+                            {citation.program_title} → {citation.lesson_title}
+                            {citation.timestamp && (
+                              <span className="ml-1 font-mono">
+                                [{formatTimestamp(citation.timestamp)}]
+                              </span>
+                            )}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {isLoading && (
+              <div className="flex gap-2 sm:gap-3">
+                <div className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center overflow-hidden bg-muted ring-1 ring-border">
                   <img
                     src={mentorAvatar}
                     alt=""
                     className="w-full h-full object-cover object-top"
                   />
-                ) : (
-                  <span className="text-xs font-bold">Tú</span>
-                )}
-              </div>
-
-              {/* Message content */}
-              <div
-                className={cn(
-                  "max-w-[80%] space-y-2",
-                  msg.role === "user" && "text-right"
-                )}
-              >
-                <div
-                  className={cn(
-                    "inline-block rounded-2xl",
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-tr-md p-3"
-                      : "glass rounded-tl-md"
-                  )}
-                >
-                  {msg.role === "assistant" ? (
-                    <div className="p-3 pb-2">
-                      <div className="prose prose-sm prose-invert max-w-none">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
-                      </div>
-                      {isSupported && (
-                        <div className="flex justify-end mt-2 pt-2 border-t border-border/30">
-                          <VoiceControls
-                            spanishVoices={spanishVoices}
-                            selectedVoice={selectedVoice}
-                            selectVoice={selectVoice}
-                            isSpeaking={speakingMessageIndex === index && isSpeaking}
-                            isPaused={speakingMessageIndex === index && isPaused}
-                            isSupported={isSupported}
-                            onSpeak={() => handleSpeak(msg.content, index)}
-                            onPause={pause}
-                            onResume={resume}
-                            onStop={() => {
-                              stop();
-                              setSpeakingMessageIndex(null);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-sm p-3">{msg.content}</p>
-                  )}
                 </div>
-
-                {/* Citations */}
-                {msg.citations && msg.citations.length > 0 && (
-                  <div className="space-y-1">
-                    {msg.citations.map((citation, cidx) => (
-                      <button
-                        key={cidx}
-                        onClick={() => handleCitationClick(citation)}
-                        className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors bg-primary/10 rounded-lg px-2 py-1"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        <span>
-                          {citation.program_title} → {citation.lesson_title}
-                          {citation.timestamp && (
-                            <span className="ml-1 font-mono">
-                              [{formatTimestamp(citation.timestamp)}]
-                            </span>
-                          )}
-                        </span>
-                      </button>
-                    ))}
+                <div className="bg-muted/60 border border-border px-4 py-3 rounded-2xl rounded-tl-md">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
-                )}
+                </div>
               </div>
-            </div>
-          ))
-        )}
-
-        {isLoading && (
-          <div className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(0,217,255,0.3)]">
-              <img
-                src={mentorAvatar}
-                alt=""
-                className="w-full h-full object-cover object-top"
-              />
-            </div>
-            <div className="glass p-3 rounded-2xl rounded-tl-md">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-            </div>
+            )}
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area */}
-      <div className="glass-card rounded-b-xl p-4 border-t border-border/50">
-        <div className="flex gap-2">
+      {/* Caja de escribir: siempre visible abajo. En móvil deja libre el botón flotante del menú (abajo-izquierda). */}
+      <div className="shrink-0 border-t border-border bg-card p-2 sm:p-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] max-md:pl-[4.75rem]">
+        <div className="flex gap-2 max-w-4xl mx-auto">
           <GlassInput
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -322,7 +353,8 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
             size="icon"
-            className="bg-primary hover:bg-primary/90"
+            className="bg-primary hover:bg-primary/90 shrink-0"
+            aria-label="Enviar"
           >
             <Send className="w-4 h-4" />
           </Button>
