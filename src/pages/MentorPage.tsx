@@ -35,7 +35,7 @@ const MentorPage: React.FC = () => {
         <AppSidebar />
         <FloatingSidebarTrigger />
         <main className="flex-1 min-w-0 h-[100dvh] flex flex-col p-2 sm:p-3 lg:p-4 overflow-hidden">
-          <div className="w-full max-w-5xl mx-auto flex-1 min-h-0">
+          <div className="w-full max-w-[1600px] mx-auto flex-1 min-h-0">
             <MentorChatInterface onBack={() => navigate(-1)} />
           </div>
         </main>

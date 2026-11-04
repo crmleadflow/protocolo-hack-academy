@@ -222,7 +222,7 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
             </div>
           </div>
         ) : (
-          <div className="space-y-4 max-w-4xl mx-auto">
+          <div className="space-y-4 max-w-6xl mx-auto">
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -248,8 +248,8 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
                   className={cn(
                     "space-y-2 min-w-0",
                     msg.role === "assistant"
-                      ? "max-w-[95%] sm:max-w-[min(88%,46rem)]"
-                      : "max-w-[88%] sm:max-w-[min(80%,36rem)] text-right"
+                      ? "max-w-[95%] sm:max-w-[min(92%,64rem)]"
+                      : "max-w-[88%] sm:max-w-[min(80%,44rem)] text-right"
                   )}
                 >
                   <div
@@ -340,7 +340,7 @@ export const MentorChatInterface: React.FC<MentorChatInterfaceProps> = ({
 
       {/* Caja de escribir: siempre visible abajo. En móvil deja libre el botón flotante del menú (abajo-izquierda). */}
       <div className="shrink-0 border-t border-border bg-card p-2 sm:p-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] max-md:pl-[4.75rem]">
-        <div className="flex gap-2 max-w-4xl mx-auto">
+        <div className="flex gap-2 max-w-6xl mx-auto">
           <GlassInput
             value={input}
             onChange={(e) => setInput(e.target.value)}
