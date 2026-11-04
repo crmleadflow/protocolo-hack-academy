@@ -25,7 +25,7 @@ import marketplaceCard2 from "@/assets/marketplace-card-2.jpg";
 import marketplaceCard3 from "@/assets/marketplace-card-3.jpg";
 import marketplaceCard4 from "@/assets/marketplace-card-4.jpg";
 import marketplaceShopCart from "@/assets/marketplace-shop-cart.webp";
-import mentoriasHeroImg from "@/assets/mentorias-hero-creator.webp";
+import mentoriasHeroImg from "@/assets/mentorias-hero-creator-wide.webp";
 import { JoinCommunityForm } from "@/components/community/JoinCommunityForm";
 import comunidadHeroImg from "@/assets/comunidad-hero-persona.webp";
 
@@ -206,7 +206,7 @@ export const TiendaPage = () => {
 
 export const MentoriasPage = () => (
   <PublicLayout>
-    <PageHero kicker="Mentorías" title="Trabaja directo con" accent="Héctor Galensky." text="Sesiones individuales y grupales para destrabar tu negocio y ejecutar con claridad." image={mentoriasHeroImg} fadeAllEdges />
+    <PageHero kicker="Mentorías" title="Trabaja directo con" accent="Héctor Galensky." text="Sesiones individuales y grupales para destrabar tu negocio y ejecutar con claridad." image={mentoriasHeroImg} fadeImageLeft />
     <TwoCol
       left={<div className="grid gap-4">{MENTORSHIPS.map((m) => (
         <Box key={m.name}><p className="text-xs text-primary">{m.format}</p><p className="mt-2 font-heading text-xl font-bold uppercase tracking-tight">{m.name}</p><p className="mt-1 text-sm text-muted-foreground">{m.text}</p></Box>
