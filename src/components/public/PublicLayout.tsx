@@ -299,13 +299,13 @@ const CommunityShowcase = () => {
   );
 };
 
-export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean }) => {
+export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft, imageLeft }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean; imageLeft?: boolean }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
       <section className="px-3 pt-3 md:px-5">
         <div className="relative overflow-hidden rounded-[2rem] bg-secondary min-h-[70vh] grid md:grid-cols-2">
-          <div className="relative z-10 flex flex-col justify-end p-6 md:p-14 order-2 md:order-1">
+          <div className={`relative z-10 flex flex-col justify-end p-6 md:p-14 order-2 ${imageLeft ? "md:order-2" : "md:order-1"}`}>
             <span className="pill w-fit"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> {kicker}</span>
             <h1 className="display mt-6 text-5xl md:text-6xl lg:text-8xl">
               {title} {accent && <span className="serif-accent text-primary">{accent}</span>}
@@ -318,7 +318,7 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
               <Button asChild className="mt-6 w-fit rounded-full"><Link to={ctaTo}>{ctaLabel}</Link></Button>
             )}
           </div>
-          <div className={`relative order-1 md:order-2 ${showcase ? "min-h-[30rem] md:min-h-[40vh]" : "min-h-[40vh]"}`}>
+          <div className={`relative order-1 ${imageLeft ? "md:order-1" : "md:order-2"} ${showcase ? "min-h-[30rem] md:min-h-[40vh]" : "min-h-[40vh]"}`}>
             {cards ? (
               <CardDeck cards={cards} />
             ) : showcase ? (
@@ -328,7 +328,8 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
             ) : (
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
             )}
-            {!cards && !showcase && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
+            {!cards && !showcase && !imageLeft && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
+            {imageLeft && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-l md:from-secondary/70 md:from-0% md:via-secondary/25 md:via-20% md:to-transparent md:to-45%" />}
             {fadeImageLeft && (
               <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-secondary/70 from-0% via-secondary/25 via-20% to-transparent to-45%" />
             )}

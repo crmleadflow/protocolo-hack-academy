@@ -16,6 +16,7 @@ import { MENTORSHIPS, LEADFLOW_PLANS, CONFERENCES, RESOURCES, EVENTS, SEMINARS, 
 import { NEURO_SCANNER_TOOL_ID, MENTOR_IA_TOOL_ID } from "@/hooks/useBonusAccess";
 import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
 import mascotaLeadFlowVideo from "@/assets/mascota-leadflow.webm";
+import eventosHeroImg from "@/assets/eventos-hero-leadflow.webp";
 import recursosHeroImg from "@/assets/recursos-hero-startcompanies.webp";
 import herramientasHeroImg from "@/assets/herramientas-hero-iatools.webp";
 import marketplaceCard1 from "@/assets/marketplace-card-1.jpg";
@@ -375,7 +376,7 @@ export const BootcampPage = () => (
 
 export const EventosPage = () => (
   <PublicLayout>
-    <PageHero kicker="Eventos" title="Aprende" accent="en vivo." text="Webinars, clases abiertas y sesiones de preguntas y respuestas." />
+    <PageHero kicker="Eventos" title="Aprende" accent="en vivo." text="Webinars, clases abiertas y sesiones de preguntas y respuestas." image={eventosHeroImg} imageLeft />
     <TwoCol
       left={<div className="grid gap-3">{EVENTS.map((e) => (
         <Box key={e.name} className="flex items-center gap-4"><CalendarDays className="h-6 w-6 text-primary" /><div className="flex-1"><p className="font-heading font-semibold">{e.name}</p><p className="text-xs text-muted-foreground">{e.mode}</p></div><span className="text-xs text-muted-foreground">{e.date}</span></Box>
