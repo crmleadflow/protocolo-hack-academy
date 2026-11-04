@@ -25,7 +25,7 @@ import marketplaceCard2 from "@/assets/marketplace-card-2.jpg";
 import marketplaceCard3 from "@/assets/marketplace-card-3.jpg";
 import marketplaceCard4 from "@/assets/marketplace-card-4.jpg";
 import marketplaceShopCart from "@/assets/marketplace-shop-cart.webp";
-import mentoriasHeroImg from "@/assets/mentorias-hero-creator-wide.webp";
+import mentoriasHeroImg from "@/assets/mentorias-hero-creator.webp";
 import { JoinCommunityForm } from "@/components/community/JoinCommunityForm";
 import comunidadHeroImg from "@/assets/comunidad-hero-persona.webp";
 
