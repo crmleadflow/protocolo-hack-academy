@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import logoIcon from "@/assets/logo-icon.png";
+import logoIconDark from "@/assets/logo-icon-dark.png";
 
 export const NAV = [
   { to: "/", label: "Inicio" },
@@ -123,7 +124,8 @@ export const PublicLayout = ({ children }: { children: ReactNode }) => {
       <header className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:gap-4 sm:px-5">
           <Link to="/" className="flex min-w-0 items-center gap-1.5 font-heading text-base font-bold tracking-tight sm:gap-2 sm:text-lg">
-            <img src={logoIcon} alt="Protocolo Hack" className="h-7 w-auto sm:h-8 dark:rounded-md dark:bg-white dark:px-1" />
+            <img src={logoIcon} alt="Protocolo Hack" className="h-7 w-auto sm:h-8 dark:hidden" />
+            <img src={logoIconDark} alt="Protocolo Hack" className="hidden h-7 w-auto sm:h-8 dark:block" />
             <span className="whitespace-nowrap">protocolo<span className="serif-accent text-primary text-lg sm:text-xl">hack</span></span>
           </Link>
           <nav className="hidden items-center gap-1 lg:flex">
