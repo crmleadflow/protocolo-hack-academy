@@ -334,7 +334,7 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
               <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
             ) : fadeAllEdges && image ? (
               <div className="absolute inset-0 flex items-center justify-center">
-                <img src={img} alt="" className="h-auto w-full" style={FADE_ALL_EDGES} />
+                <img src={img} alt="" className="h-auto w-auto max-h-full max-w-full" style={FADE_ALL_EDGES} />
               </div>
             ) : (
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />

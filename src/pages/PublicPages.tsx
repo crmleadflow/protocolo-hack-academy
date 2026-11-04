@@ -206,7 +206,7 @@ export const TiendaPage = () => {
 
 export const MentoriasPage = () => (
   <PublicLayout>
-    <PageHero kicker="Mentorías" title="Trabaja directo con" accent="Héctor Galensky." text="Sesiones individuales y grupales para destrabar tu negocio y ejecutar con claridad." image={mentoriasHeroImg} />
+    <PageHero kicker="Mentorías" title="Trabaja directo con" accent="Héctor Galensky." text="Sesiones individuales y grupales para destrabar tu negocio y ejecutar con claridad." image={mentoriasHeroImg} fadeAllEdges />
     <TwoCol
       left={<div className="grid gap-4">{MENTORSHIPS.map((m) => (
         <Box key={m.name}><p className="text-xs text-primary">{m.format}</p><p className="mt-2 font-heading text-xl font-bold uppercase tracking-tight">{m.name}</p><p className="mt-1 text-sm text-muted-foreground">{m.text}</p></Box>
