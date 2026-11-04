@@ -306,7 +306,7 @@ const FADE_ALL_EDGES: CSSProperties = {
   WebkitMaskComposite: "source-in",
 };
 
-export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft, imageLeft }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean; imageLeft?: boolean }) => {
+export const PageHero = ({ kicker, title, accent, text, image, video, cards, showcase, ctaLabel, ctaTo, ctaOnClick, fadeImageLeft, imageLeft, fadeAllEdges }: { kicker: string; title: string; accent?: string; text: string; image?: string; video?: string; cards?: string[]; showcase?: boolean; ctaLabel?: string; ctaTo?: string; ctaOnClick?: () => void; fadeImageLeft?: boolean; imageLeft?: boolean; fadeAllEdges?: boolean }) => {
   const img = image ?? HERO_IMGS[kicker.length % HERO_IMGS.length];
   return (
     <>
@@ -332,16 +332,15 @@ export const PageHero = ({ kicker, title, accent, text, image, video, cards, sho
               <CommunityShowcase />
             ) : video ? (
               <video src={video} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-contain" />
-            ) : imageLeft && image ? (
+            ) : fadeAllEdges && image ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <img src={img} alt="" className="h-auto w-full" style={FADE_ALL_EDGES} />
               </div>
             ) : (
               <img src={img} alt="" className={`absolute inset-0 h-full w-full ${image ? "object-contain" : "object-cover grayscale"}`} />
             )}
-            {!cards && !showcase && !imageLeft && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
-            {imageLeft && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-l md:from-secondary/70 md:from-0% md:via-secondary/25 md:via-20% md:to-transparent md:to-45%" />}
-            {fadeImageLeft && (
+            {!cards && !showcase && !fadeAllEdges && <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent md:bg-gradient-to-r md:from-secondary md:via-transparent" />}
+                        {fadeImageLeft && (
               <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-secondary/70 from-0% via-secondary/25 via-20% to-transparent to-45%" />
             )}
           </div>

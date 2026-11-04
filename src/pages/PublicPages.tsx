@@ -17,6 +17,7 @@ import { NEURO_SCANNER_TOOL_ID, MENTOR_IA_TOOL_ID } from "@/hooks/useBonusAccess
 import academiaHeroImg from "@/assets/academia-hero-justdoit.webp";
 import mascotaLeadFlowVideo from "@/assets/mascota-leadflow.webm";
 import eventosHeroImg from "@/assets/eventos-hero-leadflow.webp";
+import seminariosHeroImg from "@/assets/seminarios-hero-oficina.webp";
 import recursosHeroImg from "@/assets/recursos-hero-startcompanies.webp";
 import herramientasHeroImg from "@/assets/herramientas-hero-iatools.webp";
 import marketplaceCard1 from "@/assets/marketplace-card-1.jpg";
@@ -334,7 +335,7 @@ export const HerramientasPage = () => {
 
 export const SeminariosPage = () => (
   <PublicLayout>
-    <PageHero kicker="Seminarios" title="Un tema, una sesión," accent="cero relleno." text="Sesiones intensas en vivo: entiendes el concepto y sales con acciones concretas para tu negocio." />
+    <PageHero kicker="Seminarios" title="Un tema, una sesión," accent="cero relleno." text="Sesiones intensas en vivo: entiendes el concepto y sales con acciones concretas para tu negocio." image={seminariosHeroImg} fadeAllEdges />
     <TwoCol
       left={<div className="grid gap-4">{SEMINARS.map((s) => (
         <Box key={s.name}><p className="text-xs text-primary">{s.mode}</p><p className="mt-2 font-heading text-xl font-bold uppercase tracking-tight">{s.name}</p><p className="mt-1 text-sm text-muted-foreground">{s.text}</p></Box>
@@ -376,7 +377,7 @@ export const BootcampPage = () => (
 
 export const EventosPage = () => (
   <PublicLayout>
-    <PageHero kicker="Eventos" title="Aprende" accent="en vivo." text="Webinars, clases abiertas y sesiones de preguntas y respuestas." image={eventosHeroImg} imageLeft />
+    <PageHero kicker="Eventos" title="Aprende" accent="en vivo." text="Webinars, clases abiertas y sesiones de preguntas y respuestas." image={eventosHeroImg} imageLeft fadeAllEdges />
     <TwoCol
       left={<div className="grid gap-3">{EVENTS.map((e) => (
         <Box key={e.name} className="flex items-center gap-4"><CalendarDays className="h-6 w-6 text-primary" /><div className="flex-1"><p className="font-heading font-semibold">{e.name}</p><p className="text-xs text-muted-foreground">{e.mode}</p></div><span className="text-xs text-muted-foreground">{e.date}</span></Box>
